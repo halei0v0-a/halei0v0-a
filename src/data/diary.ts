@@ -25,14 +25,21 @@ const diaryData: DiaryItem[] = [
 		content:
 			"2025.10.24博客更新到V5.3并部署到了Vercel和Netlify上使用新域名！！🎉但是作者也是同一时间推出了V6.1【莫名其妙Vercel和netlify部署到环境预览会报错，未解决，但好像不影响就不管了】",
 		date: "2025-10-24",
-		images: ["/images/diary/start3.jpeg","/images/diary/show1.jpeg"],
+		images: ["/images/diary/start3.jpeg", "/images/diary/show1.jpeg"],
 	},
 	{
 		id: 3,
-		content:
-			"2025.11.22博客更新到V7.5",
+		content: "2025.11.22博客更新到V7.5",
 		date: "2025-11-22",
 		images: ["/images/diary/7.5更新.png"],
+	},
+	{
+		id: 4,
+		content: "2026.08.08备用博客部署到netlify",
+		date: "2026-08-10",
+		images: [
+			"https://picture.halei0v0.ccwu.cc/images/Classification/%E4%BA%8C%E6%AC%A1%E5%85%83/2026-04-25%2000-17%20%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E5%B9%BB%E6%83%B3%E8%89%BA%E6%9C%AF-%E6%80%A7%E6%84%9F.png",
+		],
 	},
 ];
 
@@ -88,7 +95,9 @@ export const getDiaryWithImages = () => {
 export const getDiaryByTag = (tag: string) => {
 	return diaryData
 		.filter((item) => item.tags?.includes(tag))
-		.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+		.sort(
+			(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+		);
 };
 
 // 获取所有标签

@@ -3,7 +3,7 @@ title: "AIRI：开源 AI 数字桌宠 / 赛博生命"
 published: 2026-03-08
 description: "一个模型驱动的开源数字生命容器：能聊天、能听见、能开口说话，支持 Live2D / VRM 桌宠、游戏智能体与 MCP 工具。"
 tags: [AI, 工具]
-image: "https://picture.tianhw.top/images/1070.webp"
+image: "https://airi.moeru.ai/docs/zh-Hans/"
 category: 工具
 draft: false
 comment: true
