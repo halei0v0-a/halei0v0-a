@@ -1,5 +1,5 @@
 ---
-title: Edgeone Pages部署博客
+title: Edgeone Pages部署博客遇到的问题
 published: 2026-08-10
 description: 本次备用博客使用Edgeone Pages部署的一些感受
 tags: [技术, 静态网站]
@@ -9,3 +9,17 @@ draft: false
 ---
 
 # 使用Edgeone Pages部署博客
+
+**问题：**
+
+:::tip[注意]
+
+Edgeone Pages在自定义域名的时候如果你使用的是Cloudflare请注意！
+
+:::
+
+如果你用的是子域名注意：
+
+Edgeone Pages给的TXT记录名中的域名是**不全**的而CNAME记录名中的域名又给多了后缀。
+
+我被这东西卡了20分钟没看出来(ˉ▽ˉ；)...
