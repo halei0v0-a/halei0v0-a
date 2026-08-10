@@ -35,7 +35,8 @@ const diaryData: DiaryItem[] = [
 	},
 	{
 		id: 4,
-		content: "2026.08.08备用博客部署到netlify",
+		content:
+			"2026.08.08备用博客部署到Edgeone Pages海外版，多的不说，这坑是真多，光一个部署和添加域名就花了我1小时，然后愣是还要手动点申请域名免费证书，真够无语的，不过好歹是成功了。现在Vercel注册新账号还要手机验证码是我没想到的。Edgeone Pages目前海外版可以只用邮箱注册。",
 		date: "2026-08-10",
 		images: [
 			"https://picture.halei0v0.ccwu.cc/images/Classification/%E4%BA%8C%E6%AC%A1%E5%85%83/2026-04-25%2000-17%20%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E5%B9%BB%E6%83%B3%E8%89%BA%E6%9C%AF-%E6%80%A7%E6%84%9F.png",
