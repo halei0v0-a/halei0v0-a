@@ -1,0 +1,25 @@
+<p>这是备用站且与主站内容不同</p>
+<p>开始于2025.10.08</p>
+<p>已运行 <span class="runtime-counter"></span></p>
+
+<script>
+	if (typeof window.runtimeStart === "undefined") {
+		window.runtimeStart = new Date("2025-10-08").getTime();
+		window.runtimeUpdate = function () {
+			const now = new Date().getTime();
+			const diff = now - window.runtimeStart;
+			const d = Math.floor(diff / 86400000);
+			const h = Math.floor((diff % 86400000) / 3600000);
+			const m = Math.floor((diff % 3600000) / 60000);
+			const s = Math.floor((diff % 60000) / 1000);
+			const text = d + "天" + h + "时" + m + "分" + s + "秒";
+			document
+				.querySelectorAll(".runtime-counter")
+				.forEach(function (el) {
+					el.textContent = text;
+				});
+		};
+		window.runtimeUpdate();
+		setInterval(window.runtimeUpdate, 1000);
+	}
+</script>

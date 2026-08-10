@@ -1,0 +1,10 @@
+{
+	"title": "建站素材",
+	"hidden": false,
+	"description": "这相当于一个测试相册，里面放一些建站素材。",
+	"date": "2025-10-17",
+	"location": "haowallpaper.com",
+	"tags": ["素材", "建站", "测试"],
+	"layout": "masonry",
+	"columns": 3
+}

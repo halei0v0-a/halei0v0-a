@@ -1,0 +1,40 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "lanlong.moc3",
+		"Textures": [
+			"lanlong.4096/texture_00.png"
+		],
+		"Physics": "lanlong.physics3.json",
+		"DisplayInfo": "lanlong.cdi3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": [
+				"ParamAngleX",
+				"ParamAngleY",
+				"ParamAngleZ",
+				"ParamEyeBallX",
+				"ParamEyeBallY",
+				"ParamEyeROpen",
+				"ParamEyeRSmile",
+				"ParamEyeLSmile",
+				"ParamEyeLOpen",
+				"Param",
+				"Param2",
+				"ParamBrowRY",
+				"ParamBrowRForm"
+			]
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": [
+				"ParamMouthForm",
+				"ParamMouthOpenY"
+			]
+		}
+	]
+}
