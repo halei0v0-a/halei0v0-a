@@ -1,0 +1,57 @@
+---
+import { Icon } from "astro-icon/components";
+
+import WidgetLayout from "../common/WidgetLayout.astro";
+import type { WidgetComponentConfig } from "../../../types/config";
+import { getSortedPosts } from "../../../utils/content-utils";
+import { getPostUrl } from "../../../utils/url-utils";
+
+interface Props {
+  class?: string;
+  style?: string;
+  widgetConfig?: WidgetComponentConfig;
+}
+
+const { class: className, style, widgetConfig } = Astro.props;
+const showTitle = widgetConfig?.showTitle !== false;
+const configuredLimit = widgetConfig?.specificConfig?.dynamic?.limit ?? 3;
+const limit = Math.max(1, Math.floor(configuredLimit));
+
+const posts = await getSortedPosts();
+const latestPosts = posts.slice(0, limit);
+---
+
+<WidgetLayout
+  name="最新动态"
+  showTitle={showTitle}
+  id="latest-dynamics"
+  class={className}
+  style={style}
+>
+  <div class="flex flex-col gap-2">
+    {
+      latestPosts.map((post) => (
+        <a
+          href={getPostUrl(post)}
+          class="group flex items-start gap-2 rounded-lg px-2 py-2 transition hover:bg-[var(--btn-plain-bg-hover)]"
+        >
+          <div class="mt-0.5 text-[var(--primary)]">
+            <Icon name="material-symbols:dynamic-feed-rounded" />
+          </div>
+          <div class="min-w-0">
+            <div class="text-xs text-neutral-500 dark:text-neutral-400">
+              {post.data.published.toLocaleDateString("zh-CN", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              })}
+            </div>
+            <div class="line-clamp-2 text-sm font-medium text-neutral-800 dark:text-neutral-200 group-hover:text-[var(--primary)]">
+              {post.data.title}
+            </div>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+</WidgetLayout>

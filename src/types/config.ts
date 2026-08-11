@@ -367,6 +367,14 @@ export interface FooterConfig {
 	customHtml?: string; // 自定义HTML内容，用于添加备案号等信息
 }
 
+export interface DynamicWidgetConfig {
+	limit?: number;
+}
+
+export interface SiteInfoConfig {
+	unknownBuildPlatform?: string;
+}
+
 // 组件配置类型定义
 export type WidgetComponentType =
 	| "profile"
@@ -379,6 +387,8 @@ export type WidgetComponentType =
 	| "music-sidebar"
 	| "pio" // 添加 pio 组件类型
 	| "site-stats" // 站点统计组件
+	| "site-info" // 站点信息组件
+	| "dynamic" // 最新动态组件
 	| "calendar" // 日历组件
 	| "custom";
 
@@ -388,9 +398,16 @@ export interface WidgetComponentConfig {
 	class?: string; // 自定义CSS类名
 	style?: string; // 自定义内联样式
 	animationDelay?: number; // 动画延迟时间（毫秒）
+	showTitle?: boolean;
+	showOnPostPage?: boolean;
+	hideOnNonPostPage?: boolean;
 	responsive?: {
 		hidden?: ("mobile" | "tablet" | "desktop")[]; // 在指定设备上隐藏
 		collapseThreshold?: number; // 折叠阈值
+	};
+	specificConfig?: {
+		dynamic?: DynamicWidgetConfig;
+		siteInfo?: SiteInfoConfig;
 	};
 	customProps?: Record<string, any>; // 自定义属性，用于扩展组件功能
 }
