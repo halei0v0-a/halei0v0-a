@@ -15,7 +15,13 @@
 
 ## About:
 
-![GitHub Streak](https://streak-stats.demolab.com/?user=halei0v0)
+<div>
+  <img src="https://streak-stats.demolab.com/?user=halei0v0" alt="GitHub Streak" />
+</div>
+
+<div>
+  <img src="https://streak-stats.demolab.com/?user=halei0v0-a" alt="GitHub Streak" />
+</div>
 
 你好呀！我是**halei0v0**，一个热衷于开源项目和技术实践的开发者✨
 
