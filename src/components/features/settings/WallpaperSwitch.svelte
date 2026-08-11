@@ -39,9 +39,31 @@
 	];
 
 	let mode: WALLPAPER_MODE = $state(WALLPAPER_BANNER);
+	let bgVideoPlaying = $state(false);
 
 	onMount(() => {
 		mode = getStoredWallpaperMode();
+
+		const syncBgVideoState = () => {
+			bgVideoPlaying =
+				typeof document !== "undefined" &&
+				document.documentElement.hasAttribute("data-bg-video-playing");
+		};
+
+		const handleBgPlayerState = (event: Event) => {
+			const customEvent = event as CustomEvent<{ playing?: boolean }>;
+			bgVideoPlaying = !!customEvent.detail?.playing;
+		};
+
+		syncBgVideoState();
+		window.addEventListener("bg-player-state-change", handleBgPlayerState);
+
+		return () => {
+			window.removeEventListener(
+				"bg-player-state-change",
+				handleBgPlayerState,
+			);
+		};
 	});
 
 	const currentIcon = $derived(
@@ -50,6 +72,9 @@
 	);
 
 	function switchWallpaperMode(newMode: WALLPAPER_MODE) {
+		if (newMode === WALLPAPER_FULLSCREEN && bgVideoPlaying) {
+			return;
+		}
 		mode = newMode;
 		setWallpaperMode(newMode);
 	}
@@ -81,7 +106,15 @@
 					class="flex transition whitespace-nowrap items-center !justify-start w-full btn-plain rounded-lg h-11 px-3 font-medium active:scale-95 theme-switch-btn mb-0.5 last:mb-0"
 					data-active={mode === option.mode}
 					class:scale-animation={mode !== option.mode}
+					class:opacity-50={option.mode === WALLPAPER_FULLSCREEN &&
+						bgVideoPlaying}
+					class:pointer-events-none={option.mode ===
+						WALLPAPER_FULLSCREEN && bgVideoPlaying}
 					role="menuitem"
+					disabled={option.mode === WALLPAPER_FULLSCREEN &&
+						bgVideoPlaying}
+					aria-disabled={option.mode === WALLPAPER_FULLSCREEN &&
+						bgVideoPlaying}
 					onclick={() => switchWallpaperMode(option.mode)}
 				>
 					<Icon icon={option.icon} class="text-[1.25rem] mr-3"></Icon>

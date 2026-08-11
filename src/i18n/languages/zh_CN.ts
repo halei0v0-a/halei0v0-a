@@ -6,6 +6,11 @@ export const zh_CN: Translation = {
 	[Key.about]: "关于我们",
 	[Key.archive]: "归档",
 	[Key.search]: "搜索",
+	[Key.searchNoResults]: "找不到相关结果。",
+	[Key.searchTypeSomething]: "请输入搜索关键词。",
+	[Key.searchLoading]: "正在搜索...",
+	[Key.searchContent]: "内容",
+	[Key.searchViewMore]: "查看更多结果 ({count} 个更多)",
 	[Key.other]: "其他",
 
 	// 导航栏标题
@@ -344,6 +349,13 @@ export const zh_CN: Translation = {
 	// 布局切换按钮
 	[Key.switchToGridMode]: "切换到网格模式",
 	[Key.switchToListMode]: "切换到列表模式",
+
+	// 背景视频壁纸
+	[Key.videoPlay]: "播放背景视频",
+	[Key.videoPause]: "暂停背景视频",
+	[Key.videoPrev]: "上一个视频",
+	[Key.videoNext]: "下一个视频",
+	[Key.videoLoadError]: "视频加载失败",
 
 	// 相关文章与随机文章
 	[Key.relatedPosts]: "相关文章",

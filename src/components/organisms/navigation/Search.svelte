@@ -11,6 +11,7 @@
 	let keywordDesktop = $state("");
 	let keywordMobile = $state("");
 	let result: SearchResult[] = $state([]);
+	let isSearching = $state(false);
 	let pagefindLoaded = false;
 	let initialized = $state(false);
 	let isDesktopSearchExpanded = $state(false);
@@ -119,11 +120,13 @@
 		if (!keyword) {
 			setPanelVisibility(false, isDesktop);
 			result = [];
+			isSearching = false;
 			return;
 		}
 		if (!initialized) {
 			return;
 		}
+		isSearching = true;
 		try {
 			let searchResults: SearchResult[] = [];
 			if (import.meta.env.PROD && pagefindLoaded && window.pagefind) {
@@ -145,6 +148,8 @@
 			console.error("Search error:", error);
 			result = [];
 			setPanelVisibility(false, isDesktop);
+		} finally {
+			isSearching = false;
 		}
 	};
 
@@ -333,26 +338,86 @@
 		/>
 	</div>
 	<!-- search results -->
-	{#each result as item}
-		<a
-			href={item.url}
-			onclick={(e) => handleResultClick(e, item.url)}
-			class="transition first-of-type:mt-2 lg:first-of-type:mt-0 group block
-       rounded-xl text-lg px-3 py-2 hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)]"
+	{#if isSearching}
+		<div
+			class="transition first-of-type:mt-2 lg:first-of-type:mt-0 block rounded-xl text-lg px-3 py-2 text-50"
 		>
-			<div
-				class="transition text-90 inline-flex font-bold group-hover:text-[var(--primary)]"
+			{i18n(I18nKey.searchLoading)}
+		</div>
+	{:else if result.length > 0}
+		{#each result.slice(0, 5) as item}
+			<a
+				href={item.url}
+				onclick={(e) => handleResultClick(e, item.url)}
+				class="transition first-of-type:mt-2 lg:first-of-type:mt-0 group block
+       rounded-xl text-lg px-3 py-2 hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)]"
 			>
-				{item.meta.title}<Icon
-					icon="fa7-solid:chevron-right"
-					class="transition text-[0.75rem] translate-x-1 my-auto text-[var(--primary)]"
-				></Icon>
-			</div>
-			<div class="transition text-sm text-50">
-				{@html item.excerpt}
-			</div>
-		</a>
-	{/each}
+				<div
+					class="transition text-90 inline-flex font-bold group-hover:text-[var(--primary)]"
+				>
+					{@html item.meta.title}<Icon
+						icon="fa7-solid:chevron-right"
+						class="transition text-[0.75rem] translate-x-1 my-auto text-[var(--primary)]"
+					></Icon>
+				</div>
+				{#if item.excerpt.includes("<mark>")}
+					<div
+						class="transition text-sm text-50"
+						style="display: flex; align-items: flex-start; margin-top: 0.1rem"
+					>
+						<div>{@html item.excerpt}</div>
+					</div>
+				{/if}
+				{#if item.content && item.content.includes("<mark>")}
+					<div
+						class="transition text-sm text-30"
+						style="display: flex; align-items: flex-start; margin-top: 0.1rem"
+					>
+						<span
+							style="display: inline-block; background-color: var(--btn-plain-bg-active); color: var(--primary); padding: 0.1em 0.4em; border-radius: 5px; font-size: 0.75em; font-weight: 600; margin-right: 0.5em;"
+						>
+							{i18n(I18nKey.searchContent)}
+						</span>
+						<div>{@html item.content}</div>
+					</div>
+				{/if}
+			</a>
+		{/each}
+		{#if result.length > 5}
+			<a
+				href={getSearchUrl(keywordDesktop || keywordMobile)}
+				onclick={(e) =>
+					handleResultClick(
+						e,
+						getSearchUrl(keywordDesktop || keywordMobile),
+					)}
+				class="transition first-of-type:mt-2 lg:first-of-type:mt-0 group block rounded-xl text-lg px-3 py-2 hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] text-[var(--primary)] font-bold text-center"
+			>
+				<span class="inline-flex items-center">
+					{i18n(I18nKey.searchViewMore).replace(
+						"{count}",
+						(result.length - 5).toString(),
+					)}
+					<Icon
+						icon="fa7-solid:arrow-right"
+						class="transition text-[0.75rem] ml-1"
+					></Icon>
+				</span>
+			</a>
+		{/if}
+	{:else if result.length === 0 && (keywordDesktop || keywordMobile)}
+		<div
+			class="transition first-of-type:mt-2 lg:first-of-type:mt-0 block rounded-xl text-lg px-3 py-2 text-50"
+		>
+			{i18n(I18nKey.searchNoResults)}
+		</div>
+	{:else if keywordDesktop || keywordMobile}
+		<div
+			class="transition first-of-type:mt-2 lg:first-of-type:mt-0 block rounded-xl text-lg px-3 py-2 text-50"
+		>
+			{i18n(I18nKey.searchTypeSomething)}
+		</div>
+	{/if}
 </div>
 
 <style>

@@ -182,11 +182,28 @@
 			state = nextState;
 		});
 		musicPlayerStore.initialize();
+
+		// 监听导航栏音乐按钮事件，展开/收起播放器
+		const handleMusicToggle = () => {
+			musicPlayerStore.toggleExpanded();
+		};
+		window.addEventListener("music-player-toggle", handleMusicToggle);
+		window.__musicPlayerToggleHandler = handleMusicToggle;
 	});
 
 	onDestroy(() => {
 		if (unsubscribe) {
 			unsubscribe();
+		}
+		if (
+			typeof window !== "undefined" &&
+			window.__musicPlayerToggleHandler
+		) {
+			window.removeEventListener(
+				"music-player-toggle",
+				window.__musicPlayerToggleHandler,
+			);
+			delete window.__musicPlayerToggleHandler;
 		}
 		musicPlayerStore.destroy();
 	});

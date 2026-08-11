@@ -87,6 +87,9 @@ declare global {
 		__mizukiRightSidebarResizeHandler?: () => void;
 		__mizukiRightSidebarSwupHooked?: boolean;
 		__mizukiRightSidebarManagerInitialized?: boolean;
+
+		// Music player navbar toggle handler
+		__musicPlayerToggleHandler?: () => void;
 	}
 
 	interface Fancybox {

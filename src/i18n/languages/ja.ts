@@ -6,6 +6,11 @@ export const ja: Translation = {
 	[Key.about]: "このブログについて",
 	[Key.archive]: "アーカイブ",
 	[Key.search]: "検索",
+	[Key.searchNoResults]: "関連する結果が見つかりません。",
+	[Key.searchTypeSomething]: "検索キーワードを入力してください。",
+	[Key.searchLoading]: "検索中...",
+	[Key.searchContent]: "内容",
+	[Key.searchViewMore]: "さらに結果を見る ({count} 件)",
 	[Key.other]: "その他",
 
 	// ナビゲーションバータイトル
@@ -360,6 +365,13 @@ export const ja: Translation = {
 	// レイアウト切り替えボタン
 	[Key.switchToGridMode]: "グリッド表示に切り替え",
 	[Key.switchToListMode]: "リスト表示に切り替え",
+
+	// 背景ビデオ壁紙
+	[Key.videoPlay]: "背景ビデオを再生",
+	[Key.videoPause]: "背景ビデオを一時停止",
+	[Key.videoPrev]: "前のビデオ",
+	[Key.videoNext]: "次のビデオ",
+	[Key.videoLoadError]: "ビデオの読み込みに失敗しました",
 
 	// 関連記事とランダム記事
 	[Key.relatedPosts]: "関連記事",

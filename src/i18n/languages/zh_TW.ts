@@ -6,6 +6,11 @@ export const zh_TW: Translation = {
 	[Key.about]: "關於我們",
 	[Key.archive]: "歸檔",
 	[Key.search]: "搜尋",
+	[Key.searchNoResults]: "找不到相關結果。",
+	[Key.searchTypeSomething]: "請輸入搜尋關鍵詞。",
+	[Key.searchLoading]: "正在搜尋...",
+	[Key.searchContent]: "內容",
+	[Key.searchViewMore]: "查看更多結果 ({count} 個更多)",
 	[Key.other]: "其他",
 
 	// 導航欄標題
@@ -346,6 +351,13 @@ export const zh_TW: Translation = {
 	// 布局切換按鈕
 	[Key.switchToGridMode]: "切換到網格模式",
 	[Key.switchToListMode]: "切換到列表模式",
+
+	// 背景影片壁紙
+	[Key.videoPlay]: "播放背景影片",
+	[Key.videoPause]: "暫停背景影片",
+	[Key.videoPrev]: "上一個影片",
+	[Key.videoNext]: "下一個影片",
+	[Key.videoLoadError]: "影片載入失敗",
 
 	// 相关文章与随机文章
 	[Key.relatedPosts]: "相關文章",

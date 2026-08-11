@@ -6,6 +6,11 @@ export const en: Translation = {
 	[Key.about]: "About",
 	[Key.archive]: "Archive",
 	[Key.search]: "Search",
+	[Key.searchNoResults]: "No results found.",
+	[Key.searchTypeSomething]: "Type something to search.",
+	[Key.searchLoading]: "Searching...",
+	[Key.searchContent]: "Content",
+	[Key.searchViewMore]: "View more results ({count} more)",
 	[Key.other]: "Other",
 
 	// Navigation bar titles
@@ -357,6 +362,13 @@ export const en: Translation = {
 	// Layout Switch Button
 	[Key.switchToGridMode]: "Switch to Grid Mode",
 	[Key.switchToListMode]: "Switch to List Mode",
+
+	// Background Video Wallpaper
+	[Key.videoPlay]: "Play background video",
+	[Key.videoPause]: "Pause background video",
+	[Key.videoPrev]: "Previous video",
+	[Key.videoNext]: "Next video",
+	[Key.videoLoadError]: "Video failed to load",
 
 	// Related Posts & Random Posts
 	[Key.relatedPosts]: "Related Posts",

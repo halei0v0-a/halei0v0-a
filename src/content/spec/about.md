@@ -1,7 +1,7 @@
 <div align="center">
 
 
-  <img src="https://blog.halei0v0.dpdns.org/_astro/avatar.LShDDjOr_t8kMR.webp" width="150" height="150" alt="Profile Avatar" style="border-radius: 50%; margin-top: 20px; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
+  <img src="https://avatars.githubusercontent.com/u/206404910?v=4" width="150" height="150" alt="Profile Avatar" style="border-radius: 50%; margin-top: 20px; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
 
   # Hi, I'm Halei0v0 👋
 

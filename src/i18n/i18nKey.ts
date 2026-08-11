@@ -3,6 +3,11 @@ enum I18nKey {
 	about = "about",
 	archive = "archive",
 	search = "search",
+	searchNoResults = "searchNoResults",
+	searchTypeSomething = "searchTypeSomething",
+	searchLoading = "searchLoading",
+	searchContent = "searchContent",
+	searchViewMore = "searchViewMore",
 	other = "other",
 
 	// 导航栏标题
@@ -334,6 +339,13 @@ enum I18nKey {
 	// 布局切换按钮
 	switchToGridMode = "switchToGridMode",
 	switchToListMode = "switchToListMode",
+
+	// 背景视频壁纸
+	videoPlay = "videoPlay",
+	videoPause = "videoPause",
+	videoPrev = "videoPrev",
+	videoNext = "videoNext",
+	videoLoadError = "videoLoadError",
 
 	// 相关文章与随机文章
 	relatedPosts = "relatedPosts",

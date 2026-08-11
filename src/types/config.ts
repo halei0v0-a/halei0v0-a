@@ -146,6 +146,10 @@ export interface SiteConfig {
 					desktop?: string | string[];
 					mobile?: string | string[];
 			  }; // 支持单个图片、图片数组或分别设置桌面端和移动端图片
+		// 背景视频壁纸配置（参考 Firefly 实现）
+		playerEnable?: boolean; // 是否启用背景视频播放，启用后导航栏显示视频播放按钮
+		playerUrl?: string | string[]; // 背景视频播放地址，支持单个视频路径或数组（多视频循环）
+		playerMode?: "order" | "random"; // 多视频播放模式："order" 顺序循环（默认），"random" 随机切换
 		position?: "top" | "center" | "bottom";
 		carousel?: {
 			enable: boolean; // 是否启用轮播

@@ -98,6 +98,10 @@ export function getFileDirFromPath(filePath: string): string {
 	return filePath.replace(/^src\//, "").replace(/\/[^/]+$/, "");
 }
 
+export function getSearchUrl(query: string): string {
+	return url(`/search/?q=${encodeURIComponent(query.trim())}`);
+}
+
 export function url(path: string) {
 	return joinUrl("", import.meta.env.BASE_URL, path);
 }

@@ -1,5 +1,6 @@
 ---
 import FloatingControls from "@components/control/FloatingControls.astro";
+import BackgroundPlayer from "@components/features/BackgroundPlayer.astro";
 import { SidebarTOC } from "@components/features/toc";
 import Banner from "@components/layout/Banner.astro";
 import RightSideBar from "@components/layout/RightSideBar.astro";
@@ -36,6 +37,12 @@ interface Props {
 
 // 获取 banner 图片
 const bannerImages = await getBannerImages(siteConfig);
+
+// 背景视频壁纸配置
+const bgPlayerEnable =
+	siteConfig.banner.playerEnable && !!siteConfig.banner.playerUrl;
+const bgPlayerUrl = siteConfig.banner.playerUrl;
+const bgPlayerMode = siteConfig.banner.playerMode ?? "order";
 
 const {
 	title,
@@ -133,6 +140,16 @@ const defaultPostListLayout = siteConfig.postListLayout?.defaultMode || "list";
 		showTextOverlay={isHomePage &&
 			(siteConfig.banner.homeText?.enable ?? false)}
 	/>
+
+	<!-- 背景视频壁纸播放器 -->
+	{
+		bgPlayerEnable && bgPlayerUrl && (
+			<BackgroundPlayer
+				playerUrl={bgPlayerUrl}
+				playerMode={bgPlayerMode}
+			/>
+		)
+	}
 
 	<!-- Main content -->
 	<div

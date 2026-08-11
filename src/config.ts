@@ -112,26 +112,27 @@ export const siteConfig: SiteConfig = {
 	// 壁纸模式配置
 	wallpaperMode: {
 		// 默认壁纸模式：banner=顶部横幅，fullscreen=全屏壁纸，none=无壁纸
-		defaultMode: "none",
+		defaultMode: "banner",
 		// 整体布局方案切换按钮显示设置（默认："desktop"）
 		// "off" = 不显示
 		// "mobile" = 仅在移动端显示
 		// "desktop" = 仅在桌面端显示
 		// "both" = 在所有设备上显示
-		showModeSwitchOnMobile: "off",
+		showModeSwitchOnMobile: "desktop",
 	},
 
 	banner: {
 		// 支持单张图片或图片数组，当数组长度 > 1 时自动启用轮播
 		src: {
 			desktop: [
-				"/assets/desktop-banner/cat (1).png",
-				"/assets/desktop-banner/cat (2).png",
-				"/assets/desktop-banner/cat (3).png",
-				"/assets/desktop-banner/cat (4).png",
-				"/assets/desktop-banner/cat (7).png",
-				"/assets/desktop-banner/cat (8).png",
-				"/assets/desktop-banner/cat (9).png",
+				"https://blogpicture.halei0v0.ccwu.cc/api/random/博客",
+				// "/assets/desktop-banner/cat (1).png",
+				// "/assets/desktop-banner/cat (2).png",
+				// "/assets/desktop-banner/cat (3).png",
+				// "/assets/desktop-banner/cat (4).png",
+				// "/assets/desktop-banner/cat (7).png",
+				// "/assets/desktop-banner/cat (8).png",
+				// "/assets/desktop-banner/cat (9).png",
 			], // 桌面横幅图片
 			mobile: [
 				"/assets/mobile-banner/cat (1).png",
@@ -159,6 +160,14 @@ export const siteConfig: SiteConfig = {
 		}, // 使用本地横幅图片
 
 		position: "center", // 等同于 object-position，仅支持 'top', 'center', 'bottom'。默认为 'center'
+
+		// 背景视频壁纸配置（参考 Firefly 实现）
+		// 启用后导航栏会显示视频播放/暂停按钮，点击后以视频替代静态壁纸
+		playerEnable: true, // 是否启用背景视频播放
+		// 支持单个视频路径（字符串）或多个视频循环（数组）
+		// 支持远程视频URL，本地视频请放在 public/assets/videos/ 目录下
+		playerUrl: "https://bed.twoleaf.cn/file/1785658612716_firefly.mp4",
+		playerMode: "random", // 多视频播放模式："order" 顺序循环，"random" 随机切换
 
 		carousel: {
 			enable: true, // 为 true 时：为多张图片启用轮播。为 false 时：从数组中随机显示一张图片
