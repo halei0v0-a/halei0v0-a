@@ -1,7 +1,7 @@
 ---
 title: 免费大模型API
 published: 2026-08-12
-description: Openrouter和Opencode的免费模型API分享整理与体验。
+description: 国内外低门槛免费模型API分享整理与体验。
 tags: [AI,API]
 category: AI
 draft: false
@@ -11,7 +11,7 @@ draft: false
 
 :::note[注意]
 
-第一部分汇总国外仅需邮箱注册的模型API，第二部分汇总国内需实名的免费API。只总结可长期白嫖的，新注册提供额度和第三方小众平台不在收录范围内。
+第一部分汇总国外低门槛注册的模型API，第二部分汇总国内需实名的免费API。只总结可长期白嫖的，新注册提供额度和第三方小众平台不在收录范围内。
 
 :::
 
@@ -98,7 +98,7 @@ Opencode的north-mini-code:free无法正常调用
 
 ### 二、硅基流动（SiliconFlow）
 
-- 免费额度：许多开源模型长期免费。（且新用户注册通常赠送高达 2000万 Tokens的免费额度）
+- 免费额度：许多开源模型长期免费，虽然提供的免费模型都一般。（新用户注册通常赠送高达 2000万 Tokens的免费额度）
 
 - 特点：这是一站式大模型API聚合平台，集成了 Qwen、DeepSeek、Kimi、GLM 等众多国内外顶尖模型。
 
@@ -155,3 +155,38 @@ Opencode的north-mini-code:free无法正常调用
 
 - 免费额度：提供每年 100万 Tokens的免费额度。
 - 特点：包含 `hunyuan-lite` 等轻量级模型，适合对成本敏感且需要腾讯生态支持的场景。
+
+# 总结补充
+
+> 个人比较中意Opencode和魔搭社区（ModelScope）
+
+**国内免费大模型 API 平台**
+阿里云百炼（通义千问系列）
+火山引擎（豆包大模型）
+腾讯云（混元大模型）
+百度千帆大模型平台（文心一言系列）
+智谱 AI 开放平台（GLM 系列）
+科大讯飞星火开放平台
+小米 MiMo API 开放平台
+硅基流动（SiliconFlow，聚合平台）
+魔搭社区（ModelScope，阿里开源社区）
+零一万物（Yi 系列）
+百川智能（Baichuan 系列）
+阶跃星辰（Step 系列）
+月之暗面（Kimi 开放平台）
+商汤科技（SenseNova 日日新）
+昆仑万维（天工 Skykwork）
+
+**国外免费大模型 API 平台**
+Google AI Studio（Gemini 系列，提供 Free Tier）
+Groq（提供极速的 Llama、Mixtral 等开源模型免费推理）
+OpenRouter（API 聚合路由，包含大量免费的开源模型）
+Hugging Face（Inference API，提供基础免费调用层）
+Mistral AI（La Plateforme，提供部分模型免费层/试用额度）
+Cohere（提供 Trial API Key 用于开发测试）
+Cloudflare Workers AI（提供 Serverless 的免费 AI 推理额度）
+Together AI（注册赠送免费 Credits，支持众多开源模型）
+NVIDIA NIM（提供模型推理微服务的免费试用额度）
+AI21 Labs（提供 Jamba 等模型的 Studio 免费试用）
+Deepinfra（注册赠送免费额度，主打开源模型部署）
+Ollama / LM Studio（支持本地部署并自动生成兼容 OpenAI 格式的本地免费 API）
