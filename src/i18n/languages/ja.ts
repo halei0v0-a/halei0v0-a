@@ -31,6 +31,14 @@ export const ja: Translation = {
 	[Key.announcementClose]: "閉じる",
 
 	[Key.comments]: "コメント",
+	[Key.commentSection]: "コメント欄",
+	[Key.commentSubtitle]: "あなたの考えを共有し、みんなと議論しましょう",
+	[Key.commentNotConfigured]: "コメントシステムが設定されていません",
+	[Key.guestbook]: "掲示板",
+	[Key.guestbookDescription]:
+		"ここに足跡を残して、あなたの考えや提案を共有してください",
+	[Key.guestbookCommentHint]:
+		"設定ファイルでコメントシステムをまだ有効にしていません。有効にすると、訪問者がここにメッセージを残せるようになります",
 	[Key.friends]: "友達",
 	[Key.friendsSubtitle]: "もっと素敵なウェブサイトを見つける",
 	[Key.friendsSearchPlaceholder]: "友達の名前または説明を検索...",

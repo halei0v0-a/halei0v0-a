@@ -31,6 +31,13 @@ export const zh_CN: Translation = {
 	[Key.announcementClose]: "关闭",
 
 	[Key.comments]: "评论",
+	[Key.commentSection]: "评论区",
+	[Key.commentSubtitle]: "分享你的想法，与大家交流讨论",
+	[Key.commentNotConfigured]: "评论系统暂未配置",
+	[Key.guestbook]: "留言板",
+	[Key.guestbookDescription]: "欢迎在这里留下你的足迹，分享你的想法和建议",
+	[Key.guestbookCommentHint]:
+		"您还未在配置文件中启用评论系统，启用后访客才可在此留言",
 	[Key.friends]: "友链",
 	[Key.friendsSubtitle]: "发现更多优质网站",
 	[Key.friendsSearchPlaceholder]: "搜索友链名称或描述...",

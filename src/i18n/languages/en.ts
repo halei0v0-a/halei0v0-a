@@ -31,6 +31,14 @@ export const en: Translation = {
 	[Key.announcementClose]: "Close",
 
 	[Key.comments]: "Comments",
+	[Key.commentSection]: "Comments",
+	[Key.commentSubtitle]: "Share your thoughts and discuss with everyone",
+	[Key.commentNotConfigured]: "Comment system not configured",
+	[Key.guestbook]: "Guestbook",
+	[Key.guestbookDescription]:
+		"Welcome to leave your mark here, share your thoughts and suggestions",
+	[Key.guestbookCommentHint]:
+		"You have not enabled the comment system in the configuration file yet. After enabling it, visitors will be able to leave messages here",
 	[Key.friends]: "Friends",
 	[Key.friendsSubtitle]: "Discover more great websites",
 	[Key.friendsSearchPlaceholder]: "Search friend's name or description...",

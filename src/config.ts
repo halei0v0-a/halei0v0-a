@@ -1,6 +1,5 @@
 ﻿import type {
 	AnnouncementConfig,
-	CommentConfig,
 	ExpressiveCodeConfig,
 	FooterConfig,
 	FullscreenWallpaperConfig,
@@ -397,6 +396,11 @@ export const navBarConfig: NavBarConfig = {
 			icon: "material-symbols:more-horiz",
 			children: [
 				{
+					name: "留言板",
+					url: "/guestbook/",
+					icon: "material-symbols:chat",
+				},
+				{
 					name: "Projects",
 					url: "/projects/",
 					icon: "material-symbols:work",
@@ -480,28 +484,8 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 	hideDuringThemeTransition: true,
 };
 
-export const commentConfig: CommentConfig = {
-	enable: true, // 启用评论功能。当设置为 false 时，评论组件将不会显示在文章区域。
-	system: "twikoo", // 评论系统选择: "twikoo" | "giscus"
-	twikoo: {
-		envId: "https://tool.halei0v0.dpdns.org",
-		lang: "zh_CN", // 设置 Twikoo 评论系统语言为中文
-	},
-	giscus: {
-		repo: "your-github-username/your-repo-name",
-		repoId: "your-repo-id",
-		category: "Announcements",
-		categoryId: "your-category-id",
-		mapping: "pathname",
-		strict: "0",
-		reactionsEnabled: "1",
-		emitMetadata: "0",
-		inputPosition: "top",
-		theme: "preferred_color_scheme",
-		lang: SITE_LANG,
-		loading: "lazy",
-	},
-};
+// 评论配置已拆分到 src/config/commentConfig.ts
+export { commentConfig } from "./config/commentConfig";
 
 export const shareConfig: ShareConfig = {
 	enable: true, // 启用分享功能

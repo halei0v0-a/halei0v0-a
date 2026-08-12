@@ -28,6 +28,12 @@ enum I18nKey {
 	announcementClose = "announcementClose",
 
 	comments = "comments",
+	commentSection = "commentSection",
+	commentSubtitle = "commentSubtitle",
+	commentNotConfigured = "commentNotConfigured",
+	guestbook = "guestbook",
+	guestbookDescription = "guestbookDescription",
+	guestbookCommentHint = "guestbookCommentHint",
 
 	untitled = "untitled",
 	uncategorized = "uncategorized",

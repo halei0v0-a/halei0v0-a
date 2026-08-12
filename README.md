@@ -10,7 +10,7 @@
 
 ## My Blog：
 
-[哈雷0V0的博客 | Halei0v0's Biog](blog.halei0v0.dpdns.org)
+[哈雷0V0的博客 | Halei0v0's Biog](https://blog.halei0v0.ccwu.cc)
 
 ## About:
 
@@ -39,5 +39,5 @@
 
 ### 联系与交流
 
-如果你对我的项目感兴趣，或是有技术问题想要探讨，欢迎通过 GitHub 导航（https://halei0v0-a.github.io）找到我，期待和志同道合的开发者一起交流成长！
+如果你对我的项目感兴趣，或是有技术问题想要探讨，欢迎通过 [GitHub 导航](https://halei0v0-a.github.io)找到我，期待和志同道合的开发者一起交流成长！
 
