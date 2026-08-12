@@ -87,7 +87,7 @@ async function processAlbumFolder(
 
 	// 检查是否隐藏相册
 	if (info.hidden === true) {
-		console.log(`相册 ${folderName} 已设置为隐藏，跳过显示`);
+		console.warn(`相册 ${folderName} 已设置为隐藏，跳过显示`);
 		return null;
 	}
 

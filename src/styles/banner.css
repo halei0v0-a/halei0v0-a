@@ -19,6 +19,93 @@
   line-height: 1.2;
 }
 
+/* ==========================================================================
+   文章页 Banner 简介覆盖层（参考 Firefly banner-title.css）
+   ========================================================================== */
+.banner-post-title {
+  max-width: 72rem;
+  font-size: 2rem;
+  line-height: 1.2;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.65);
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.banner-post-description {
+  position: relative;
+  max-width: min(var(--banner-post-description-width, 50rem), 78vw);
+  padding: 0.85rem 3rem;
+  border-radius: var(--radius-large);
+  background: rgba(0, 0, 0, 0.16);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  font-weight: 400;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6);
+  text-wrap: pretty;
+}
+
+.banner-post-description-quote {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 1.35rem;
+  pointer-events: none;
+}
+
+.banner-post-description-quote-start {
+  top: 0.35rem;
+  left: 0.35rem;
+  transform: rotate(180deg);
+}
+
+.banner-post-description-quote-end {
+  right: 0.35rem;
+  bottom: 0.35rem;
+}
+
+.banner-post-description-divider {
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+}
+
+@media (min-width: 1280px) {
+  .banner-post-title {
+    font-size: 2.5rem;
+  }
+}
+
+/* 较矮屏幕：下移避开导航栏并压缩字号 */
+@media (min-width: 1280px) and (max-height: 850px) {
+  .banner-post-meta-overlay {
+    padding-top: 4.5rem;
+  }
+
+  .banner-post-meta-overlay > div {
+    gap: 0.5rem;
+  }
+
+  .banner-post-title {
+    font-size: 1.7rem;
+  }
+
+  .banner-post-description {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    padding: 0.55rem 2.5rem;
+  }
+}
+
+/* 超矮屏幕：进一步压缩 */
+@media (min-width: 1280px) and (max-height: 700px) {
+  .banner-post-title {
+    font-size: 1.45rem;
+  }
+
+  .banner-post-description {
+    font-size: 0.78rem;
+    line-height: 1.5;
+    padding: 0.4rem 2rem;
+  }
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;

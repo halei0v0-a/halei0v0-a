@@ -58,6 +58,8 @@ const hasBannerLink = !!siteConfig.banner.credit.url;
 
 // 检查是否为首页
 const isHomePage = Astro.url.pathname === "/" || Astro.url.pathname === "";
+// 是否为文章页面（仅文章页显示目录）
+const isPostPage = Astro.url.pathname.startsWith("/posts/");
 // 手机端非首页不显示banner的CSS类
 const mobileNonHomeBannerClass = !isHomePage ? "mobile-hide-banner" : "";
 
@@ -139,6 +141,8 @@ const defaultPostListLayout = siteConfig.postListLayout?.defaultMode || "list";
 		mobileNonHomeBannerClass={mobileNonHomeBannerClass}
 		showTextOverlay={isHomePage &&
 			(siteConfig.banner.homeText?.enable ?? false)}
+		postTitle={isPostPage ? title : undefined}
+		postDescription={isPostPage ? description : undefined}
 	/>
 
 	<!-- 背景视频壁纸播放器 -->
@@ -220,7 +224,7 @@ const defaultPostListLayout = siteConfig.postListLayout?.defaultMode || "list";
 							<div
 								class={`right-sidebar-container ${rightSidebarClass} ${transparentClass}`}
 							>
-								<RightSideBar headings={headings} />
+								<RightSideBar headings={headings} isPostPage={isPostPage} />
 							</div>
 						)
 					}
@@ -267,10 +271,10 @@ const defaultPostListLayout = siteConfig.postListLayout?.defaultMode || "list";
 		}
 	</style>
 
-	<!-- 侧边栏TOC模式 -->
+	<!-- 侧边栏TOC模式（仅文章页面显示） -->
 	{
-		siteConfig.toc.enable && siteConfig.toc.desktopSidebar && (
-			<div class="absolute w-full z-0 hidden 2xl:block">
+		siteConfig.toc.enable && siteConfig.toc.desktopSidebar && isPostPage && (
+			<div class="absolute w-full z-0 hidden xl:block">
 				<div class="relative max-w-(--page-width) mx-auto">
 					<div
 						id="toc-wrapper"

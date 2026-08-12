@@ -333,6 +333,12 @@ export const navBarConfig: NavBarConfig = {
 					icon: "fa7-brands:github",
 				},
 				{
+					name: "Guideline",
+					url: "https://halei0v0-a.github.io",
+					external: true,
+					icon: "material-symbols:menu-book",
+				},
+				{
 					name: "Bilibili",
 					url: "https://space.bilibili.com/524530873?spm_id_from=333.1007.0.0",
 					external: true,
@@ -610,6 +616,13 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			class: "onload-animation",
 			// 动画延迟时间
 			animationDelay: 250,
+			// 组件专属配置
+			specificConfig: {
+				siteInfo: {
+					// 未能识别的构建平台回退显示文本，可自定义
+					unknownBuildPlatform: "Unknown CI",
+				},
+			},
 		},
 		{
 			// 组件类型：站点统计组件
@@ -631,12 +644,24 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			// 动画延迟时间
 			animationDelay: 350,
 		},
+		{
+			// 组件类型：卡片式目录组件
+			type: "card-toc",
+			// 组件位置
+			position: "sticky",
+			// CSS 类名（xl 及以上由页面右侧悬浮目录接管，此处隐藏）
+			class: "onload-animation xl:hidden",
+			// 动画延迟时间
+			animationDelay: 400,
+			// 非文章页面不显示目录
+			hideOnNonPostPage: true,
+		},
 	],
 
 	// 侧栏组件布局配置
 	components: {
 		left: ["profile", "announcement", "categories", "tags"],
-		right: ["dynamic", "site-info", "site-stats", "calendar"],
+		right: ["dynamic", "site-stats", "site-info", "calendar", "card-toc"],
 		drawer: ["profile", "announcement", "categories", "tags"],
 	},
 

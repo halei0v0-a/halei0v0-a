@@ -109,7 +109,6 @@
 				},
 			});
 			(window as any).__l2dWidgetInstance = widgetInstance;
-			console.log("l2d-widget initialized (lanlong model)");
 		} catch (e) {
 			console.error("l2d-widget initialization error:", e);
 		}
@@ -142,7 +141,6 @@
 
 	onDestroy(() => {
 		// 保持实例存活，避免页面切换（Swup）时模型销毁重建
-		console.log("Pio component destroyed (keeping widget alive)");
 	});
 </script>
 

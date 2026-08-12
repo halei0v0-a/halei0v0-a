@@ -110,10 +110,7 @@ export async function GET(context: APIContext) {
 						new URL(optimizedImg.src, context.site).href,
 					);
 				} else {
-					// Debug: log the failed import path
-					console.log(
-						`Failed to load image: ${importPath} for post: ${post.id}`,
-					);
+					// image import failed, leave src as-is
 				}
 			} else if (src.startsWith("/")) {
 				// images starting with `/` are in public dir

@@ -701,7 +701,6 @@
 				"https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js";
 
 			script.onload = () => {
-				console.log("Mermaid library loaded successfully");
 				resolve();
 			};
 
@@ -713,7 +712,6 @@
 					"https://unpkg.com/mermaid@11/dist/mermaid.min.js";
 
 				fallbackScript.onload = () => {
-					console.log("Mermaid library loaded from fallback CDN");
 					resolve();
 				};
 

@@ -6,9 +6,10 @@ import SidebarColumn from "@/components/layout/SidebarColumn.astro";
 interface Props {
 	class?: string;
 	headings?: MarkdownHeading[];
+	isPostPage?: boolean;
 }
 
-const { class: className, headings } = Astro.props;
+const { class: className, headings, isPostPage } = Astro.props;
 ---
 
 <SidebarColumn
@@ -17,6 +18,7 @@ const { class: className, headings } = Astro.props;
 	stickyId="right-sidebar-sticky"
 	rootClass={`${className ?? ""} w-full`}
 	headings={headings}
+	isPostPage={isPostPage}
 	showMobile={false}
 	showTablet={false}
 	showDesktop={true}

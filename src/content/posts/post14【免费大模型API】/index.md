@@ -29,6 +29,8 @@ OpencodeAPI接口：https://opencode.ai/zen/v1
 
 Opencode的Zen需使用GitHub注册登录
 
+DeepSeek V4 flash和mimo V2.5的上下文只有200K，不是满血的1M，HY3的上下文是256K
+
 :::
 
 ![preview](https://blogpicture.halei0v0.ccwu.cc/images/Classification/%E7%B4%A0%E6%9D%90/2026-08-12%2009-39%20%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE(5).png)
@@ -89,7 +91,7 @@ Opencode的north-mini-code:free无法正常调用
 
 :::note[注意]
 
-我认为比较好的平台，使用需绑定已身份证照片实名的阿里云账号。
+我认为比较好的平台，需使用已绑定身份证照片实名的阿里云账号。
 
 :::
 

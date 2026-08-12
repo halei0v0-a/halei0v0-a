@@ -1,7 +1,7 @@
 {
-	"name": "mizuki",
+	"name": "halei0v0 UI",
 	"type": "module",
-	"version": "9.0",
+	"version": "2.2.2",
 	"scripts": {
 		"sync-content": "node scripts/sync-content.js",
 		"init-content": "node scripts/init-content-repo.js",
@@ -48,6 +48,7 @@
 		"astro-expressive-code": "^0.41.7",
 		"astro-icon": "^1.1.5",
 		"axios": "^1.13.6",
+		"ci-info": "4.4.0",
 		"crypto-js": "^4.2.0",
 		"dayjs": "^1.11.19",
 		"hastscript": "^9.0.1",

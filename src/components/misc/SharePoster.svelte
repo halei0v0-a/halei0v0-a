@@ -407,7 +407,7 @@
 		class="fixed inset-0 z-[9999] flex items-center justify-center p-4 transition-opacity"
 		style="background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);"
 		onclick={closeModal}
-		onkeydown={(e) => { if (e.key === "Escape") closeModal(); }}
+		onkeydown={(e) => { if (e.key === "Escape") {closeModal();} }}
 		role="button"
 		tabindex="-1"
 		aria-label="Close modal"

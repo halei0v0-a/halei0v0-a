@@ -1,24 +1,9 @@
 // 动画测试工具 - 验证yukina风格的侧滑效果
 
 export function testSlideAnimation() {
-	console.log("Testing slide animation effects...");
-
 	// 测试主要动画元素
 	const mainElements = document.querySelectorAll(".transition-main");
 	const animationElements = document.querySelectorAll(".onload-animation");
-
-	console.log(`Found ${mainElements.length} main transition elements`);
-	console.log(`Found ${animationElements.length} onload animation elements`);
-
-	// 检查CSS动画属性
-	mainElements.forEach((el, index) => {
-		const styles = window.getComputedStyle(el);
-		console.log(`Element ${index}:`, {
-			transition: styles.transition,
-			transform: styles.transform,
-			opacity: styles.opacity,
-		});
-	});
 
 	return {
 		mainElements: mainElements.length,
@@ -42,7 +27,6 @@ export function simulatePageTransition() {
 		setTimeout(() => {
 			// 完成动画
 			html.classList.remove("is-animating");
-			console.log("Page transition simulation completed");
 		}, 300);
 	}, 300);
 }

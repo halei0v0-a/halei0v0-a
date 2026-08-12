@@ -9,7 +9,10 @@ import TypewriterText from "@components/atoms/typewriter-text/TypewriterText.ast
 import Image from "@components/atoms/Image/Image.astro";
 import { Icon } from "astro-icon/components";
 import { siteConfig } from "../../config";
-import { BANNER_HEIGHT_EXTEND } from "../../constants/constants";
+import {
+	BANNER_HEIGHT,
+	BANNER_HEIGHT_EXTEND,
+} from "../../constants/constants";
 
 interface Props {
 	// Banner 配置
@@ -27,6 +30,10 @@ interface Props {
 	overlaySubtitle?: string | string[];
 	typewriter?: boolean;
 
+	// 文章页简介覆盖层
+	postTitle?: string;
+	postDescription?: string;
+
 	// 水波纹效果
 	showWave?: boolean;
 }
@@ -38,8 +45,33 @@ const {
 	overlayTitle = siteConfig.banner.homeText?.title,
 	overlaySubtitle = siteConfig.banner.homeText?.subtitle,
 	typewriter = siteConfig.banner.homeText?.typewriter?.enable ?? false,
+	postTitle,
+	postDescription,
 	showWave = siteConfig.banner.waves?.enable ?? true,
 } = Astro.props;
+
+// 根据文字字符宽度估算简介宽度（参考 Firefly 实现），多行时限制最大行宽
+const getBannerDescriptionWidth = (description?: string) => {
+	if (!description) return undefined;
+
+	const textUnits = Array.from(description).reduce((total, character) => {
+		if (/\s/u.test(character)) return total + 0.35;
+		const codePoint = character.codePointAt(0) ?? 0;
+		return total + (codePoint <= 0xff ? 0.55 : 1);
+	}, 0);
+	const maxLineUnits = 52;
+	const lineCount = Math.max(1, Math.ceil(textUnits / maxLineUnits));
+
+	if (lineCount === 1) return undefined;
+
+	const targetLineUnits = Math.min(maxLineUnits, textUnits / (lineCount - 0.5));
+	return `${Math.max(28, targetLineUnits).toFixed(1)}em`;
+};
+
+const bannerDescriptionWidth = getBannerDescriptionWidth(postDescription);
+
+// 是否显示文章页简介覆盖层（仅桌面端 banner 可见区域）
+const showPostOverlay = !!(postTitle || postDescription);
 
 // 标准化图片数组
 const normalizeToArray = (images: string | string[]): string[] =>
@@ -525,6 +557,47 @@ const hasBannerLink = !!siteConfig.banner.credit.url;
 				};
 			})();
 		</script>
+	)}
+
+	<!-- 文章页简介覆盖层（仅桌面端 lg+ 显示，Firefly 风格） -->
+	{showPostOverlay && (
+		<div
+			class="banner-post-meta-overlay absolute left-0 right-0 z-20 hidden lg:flex items-center justify-center pointer-events-none"
+			style={`top: ${BANNER_HEIGHT_EXTEND}vh; height: ${BANNER_HEIGHT}vh`}
+		>
+			<div class="w-4/5 lg:w-3/4 flex flex-col items-center gap-3">
+				{postTitle && (
+					<div class="banner-post-title font-bold text-white leading-tight text-center">
+						{postTitle}
+					</div>
+				)}
+				{postDescription && (
+					<div class="flex flex-col items-center gap-3">
+						<div class="banner-post-description-divider h-px w-12 bg-white/60"></div>
+						<div
+							class="banner-post-description text-left text-white/85"
+							style={bannerDescriptionWidth
+								? `--banner-post-description-width: ${bannerDescriptionWidth}`
+								: undefined}
+						>
+							<Icon
+								is:inline
+								name="material-symbols:format-quote-rounded"
+								class="banner-post-description-quote banner-post-description-quote-start"
+								aria-hidden="true"
+							/>
+							{postDescription}
+							<Icon
+								is:inline
+								name="material-symbols:format-quote-rounded"
+								class="banner-post-description-quote banner-post-description-quote-end"
+								aria-hidden="true"
+							/>
+						</div>
+					</div>
+				)}
+			</div>
+		</div>
 	)}
 
 	<!-- 首页文字覆盖层 -->

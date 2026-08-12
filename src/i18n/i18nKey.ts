@@ -295,6 +295,20 @@ enum I18nKey {
 	siteStatsDaysAgo = "siteStatsDaysAgo",
 	siteStatsDays = "siteStatsDays",
 
+	// 站点信息
+	siteInfo = "siteInfo",
+	siteInfoBuildTime = "siteInfoBuildTime",
+	siteInfoBuildPlatform = "siteInfoBuildPlatform",
+	siteInfoBlogVersion = "siteInfoBlogVersion",
+	siteInfoAstroVersion = "siteInfoAstroVersion",
+	siteInfoNodeVersion = "siteInfoNodeVersion",
+	siteInfoPnpmVersion = "siteInfoPnpmVersion",
+	siteInfoSystem = "siteInfoSystem",
+	siteInfoExpand = "siteInfoExpand",
+	siteInfoCollapse = "siteInfoCollapse",
+	siteInfoDomain = "siteInfoDomain",
+	siteInfoLicense = "siteInfoLicense",
+
 	// 日历组件
 	calendarSunday = "calendarSunday",
 	calendarMonday = "calendarMonday",

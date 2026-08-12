@@ -3,6 +3,8 @@ import { Icon } from "astro-icon/components"
 
 import { musicPlayerConfig, navBarConfig, siteConfig } from "../../../config"
 import { LinkPresets } from "../../../constants/link-presets"
+import I18nKey from "../../../i18n/i18nKey"
+import { i18n } from "../../../i18n/translation"
 import { LinkPreset, type NavBarLink } from "../../../types/config"
 import { url } from "../../../utils/url-utils"
 import LayoutSwitch from "../../control/LayoutSwitch.svelte"
@@ -10,8 +12,6 @@ import ThemeSwitch from "../../control/ThemeSwitch.svelte"
 import DisplaySettings from "../../features/settings/DisplaySettings.svelte"
 import WallpaperSwitch from "../../features/settings/WallpaperSwitch.svelte"
 import MobileTOC from "../../features/toc/MobileTOC.svelte"
-import I18nKey from "../../../i18n/i18nKey"
-import { i18n } from "../../../i18n/translation"
 import DropdownMenu from "./DropdownMenu.astro"
 import NavMenuPanel from "./NavMenuPanel.astro"
 import Search from "./Search.svelte"
@@ -384,7 +384,6 @@ window.loadPagefind = async function() {
         window.pagefind = pagefind;
 
         document.dispatchEvent(new CustomEvent('pagefindready'));
-        console.log('Pagefind loaded and initialized successfully, event dispatched.');
     } catch (error) {
         console.error('Failed to load Pagefind:', error);
         window.pagefind = {
@@ -392,7 +391,6 @@ window.loadPagefind = async function() {
             options: () => Promise.resolve(),
         };
         document.dispatchEvent(new CustomEvent('pagefindloaderror'));
-        console.log('Pagefind load error, event dispatched.');
     }
 };
 </script>}

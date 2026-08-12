@@ -59,6 +59,7 @@ export default tseslint.config(
 			"src/components/misc/Markdown.astro",
 			"src/components/misc/ConfigCarrier.astro",
 			"src/components/organisms/navigation/DropdownMenu.astro",
+			"src/components/organisms/navigation/Navbar.astro",
 			"src/components/widgets/announcement/Announcement.astro",
 			"src/components/widgets/common/WidgetLayout.astro",
 			"src/components/widgets/profile/Profile.astro",
@@ -80,7 +81,13 @@ export default tseslint.config(
 			"no-var": "error",
 			eqeqeq: "warn",
 			curly: "warn",
-			"no-console": "warn",
+			"no-console": [
+				"warn",
+				{
+					// 允许错误/警告/信息级别的日志，仅提示调试用 console.log/debug
+					allow: ["error", "warn", "info"],
+				},
+			],
 			"no-debugger": "warn",
 			"no-useless-assignment": "off",
 			"no-redeclare": "off",

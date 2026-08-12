@@ -28,6 +28,7 @@ interface Props {
 	showMobile?: boolean;
 	showTablet?: boolean;
 	showDesktop?: boolean;
+	isPostPage?: boolean;
 }
 
 const {
@@ -41,6 +42,7 @@ const {
 	showMobile = false,
 	showTablet = true,
 	showDesktop = true,
+	isPostPage = false,
 } = Astro.props;
 
 const componentMap: Record<string, unknown> = {
@@ -89,6 +91,10 @@ function renderComponent(
 ): { Component: any; props: Record<string, unknown> } | null {
 	const ComponentToRender = componentMap[component.type] as any;
 	if (!ComponentToRender) {
+		return null;
+	}
+	// 非文章页面不渲染 hideOnNonPostPage 组件（如目录卡片）
+	if (component.hideOnNonPostPage && !isPostPage) {
 		return null;
 	}
 
