@@ -1,13 +1,12 @@
 <div align="center">
-
-  <img src="https://blog.halei0v0.dpdns.org/_astro/avatar.LShDDjOr_t8kMR.webp" width="150" height="150" alt="Profile Avatar" style="border-radius: 50%; margin-top: 20px; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
+<div style="display: flex; justify-content: center; gap: 24px; margin-bottom: 10px;">
+<img src="https://avatars.githubusercontent.com/u/206404910?v=4" width="150" height="150" alt="Profile Avatar" style="border-radius: 50%; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
+<img src="https://avatars.githubusercontent.com/u/314501755?v=4" width="150" height="150" alt="Profile Avatar" style="border-radius: 50%; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
 
   # Hi, I'm Halei0v0 👋
  <a href="https://git.io/typing-svg">
     <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&duration=3000&pause=500&color=2F80ED&center=true&vCenter=true&width=600&lines=Hello%2C+I'm+Halei0v0!;Frontend+Developer+%26+High+School+Coder;Building+cool+things+with+code;Love+Astro%2C+TypeScript%2C+and+Open+Source;Currently+learning+AI+and+Web+Infra" alt="Typing SVG" />
   </a>
-
-</div>
 
 ## My Blog：
 
@@ -16,12 +15,11 @@
 ## About:
 
 <div>
-  <img src="https://streak-stats.demolab.com/?user=halei0v0" alt="GitHub Streak" />
+    <div style="display: flex; justify-content: center; gap: 12px; margin-bottom: 10px;">
+    <img src="https://streak-stats.demolab.com/?user=halei0v0" alt="GitHub Streak" width="300" height="300" />
+    <img src="https://streak-stats.demolab.com/?user=halei0v0-a" alt="GitHub Streak"width="300" height="300" />
 </div>
 
-<div>
-  <img src="https://streak-stats.demolab.com/?user=halei0v0-a" alt="GitHub Streak" />
-</div>
 
 你好呀！我是**halei0v0**，一个热衷于开源项目和技术实践的开发者✨
 
@@ -42,5 +40,5 @@
 
 ### 联系与交流
 
-如果你对我的项目感兴趣，或是有技术问题想要探讨，欢迎通过 GitHub 主页（https://github.com/halei0v0）找到我，期待和志同道合的开发者一起交流成长！
+如果你对我的项目感兴趣，或是有技术问题想要探讨，欢迎通过 GitHub 导航（https://halei0v0-a.github.io）找到我，期待和志同道合的开发者一起交流成长！
 
