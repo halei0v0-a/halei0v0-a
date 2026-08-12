@@ -19,7 +19,7 @@ export const WIDGET_COMPONENT_MAP = {
 	pio: "../components/widget/Pio.astro",
 	"site-stats": "../components/widgets/site-stats/SiteStats.astro",
 	"site-info": "../components/widgets/site-info/SiteInfo.astro",
-	"dynamic": "../components/widgets/dynamic/Dynamic.astro",
+	dynamic: "../components/widgets/dynamic/Dynamic.astro",
 	calendar: "../components/widgets/calendar/Calendar.astro",
 	custom: null,
 } as const;
