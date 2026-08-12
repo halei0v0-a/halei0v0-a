@@ -425,7 +425,10 @@ export class SwupHooksManager {
 		setTimeout(() => {
 			if (
 				document.getElementById("tcomment") ||
-				document.getElementById("giscus-container")
+				document.getElementById("giscus-container") ||
+				document.getElementById("waline") ||
+				document.getElementById("artalk") ||
+				document.getElementById("disqus_thread")
 			) {
 				const pageLoadedEvent = new CustomEvent("mizuki:page:loaded", {
 					detail: {

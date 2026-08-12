@@ -5,8 +5,12 @@ interface Props {
 	path: string;
 }
 
+const twikooConfig = commentConfig.twikoo ?? { envId: "" };
+const jsUrl =
+	twikooConfig.jsUrl || "/assets/js/twikoo.all.min.js";
+const cssUrl = twikooConfig.cssUrl;
 const config = {
-	...commentConfig.twikoo,
+	...twikooConfig,
 	el: "#tcomment",
 	path: Astro.props.path,
 };
@@ -16,16 +20,22 @@ const config = {
 	<div id="tcomment"></div>
 </div>
 
-<script is:inline define:vars={{ config }}>
+{cssUrl && <link rel="stylesheet" href={cssUrl} />}
+
+<script is:inline define:vars={{ config, jsUrl }}>
 	(function () {
 		const TWIKOO_CONTAINER_ID = "twikoo-container";
-		const TWIKOO_SCRIPT_URL = "/assets/js/twikoo.all.min.js";
+		const TWIKOO_SCRIPT_URL = jsUrl;
 		const ROOT_MARGIN = "200px";
 
 		let observer = null;
 		let twikooLoaded = false;
 
 		function getCurrentPath() {
+			const requestedPath = new URLSearchParams(window.location.search).get(
+				"path",
+			);
+			if (requestedPath) {return requestedPath;}
 			const pathname = window.location.pathname;
 			return pathname.endsWith("/") && pathname.length > 1
 				? pathname.slice(0, -1)

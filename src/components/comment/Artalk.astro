@@ -1,0 +1,89 @@
+---
+import { commentConfig, siteConfig } from "@/config";
+
+interface Props {
+	path: string;
+}
+
+const config = {
+	...commentConfig.artalk,
+	el: "#artalk",
+	site: siteConfig.title,
+	pageKey: Astro.props.path,
+	dark: "html.dark",
+	pageTitle: "",
+	...(commentConfig.artalk?.visitorCount ? { pageview: true } : {}),
+};
+---
+<!-- Artalk -->
+<div class="relative w-full">
+    <!-- 挂载点 -->
+    <div id="artalk" style="--at-color-main: var(--primary); --at-color-bg: var(--card-bg); --at-color-border: var(--line-divider);"></div>
+
+    <!-- 引入 Artalk 样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/artalk/dist/Artalk.css"/>
+
+    <!-- 脚本逻辑 -->
+    <script type="module" is:inline define:vars={{config}}>
+        let artalkInstance = null;
+        let themeObserver = null;
+
+        function getCurrentPageKey() {
+            const requestedPath = new URLSearchParams(window.location.search).get("path");
+            if (requestedPath) return requestedPath;
+            const pathname = window.location.pathname;
+            return pathname.endsWith("/") && pathname.length > 1
+                ? pathname.slice(0, -1)
+                : pathname;
+        }
+
+        async function initArtalk() {
+            const container = document.getElementById("artalk");
+            if (!container) return;
+            try {
+                const module = await import('https://unpkg.com/artalk/dist/Artalk.mjs');
+                const Artalk = module.default || module;
+
+                if (artalkInstance) {
+                    try { artalkInstance.destroy(); } catch (e) { /* ignore */ }
+                    artalkInstance = null;
+                }
+                if (themeObserver) {
+                    themeObserver.disconnect();
+                    themeObserver = null;
+                }
+
+                container.innerHTML = "";
+                const effectiveConfig = { ...config, pageKey: getCurrentPageKey() };
+                artalkInstance = Artalk.init(effectiveConfig);
+
+                // 深色模式
+                function updateTheme() {
+                    const isDark = document.documentElement.classList.contains('dark');
+                    artalkInstance.setDarkMode(isDark);
+                }
+
+                updateTheme();
+
+                themeObserver = new MutationObserver((_mutations) => {
+                    updateTheme();
+                });
+
+                themeObserver.observe(document.documentElement, {
+                    attributes: true,
+                    attributeFilter: ['class'],
+                });
+            } catch (error) {
+                console.error("[Artalk] Failed to initialize:", error);
+            }
+        }
+
+        document.addEventListener("mizuki:page:loaded", initArtalk);
+
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initArtalk);
+        } else {
+            initArtalk();
+        }
+    </script>
+</div>

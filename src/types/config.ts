@@ -282,9 +282,46 @@ export interface PermalinkConfig {
 
 export interface CommentConfig {
 	enable: boolean; // 是否启用评论功能
-	system?: "twikoo" | "giscus"; // 评论系统选择
+	type?: "none" | "twikoo" | "waline" | "giscus" | "disqus" | "artalk"; // 评论系统选择
+	system?: "twikoo" | "giscus"; // 兼容旧配置的评论系统选择
 	twikoo?: TwikooConfig;
+	waline?: WalineConfig;
+	artalk?: ArtalkConfig;
 	giscus?: GiscusConfig;
+	disqus?: DisqusConfig;
+}
+
+export interface TwikooConfig {
+	envId: string;
+	region?: string;
+	lang?: string;
+	visitorCount?: boolean;
+	/**
+	 * Twikoo JS 文件地址，支持 CDN 链接
+	 */
+	jsUrl?: string;
+	/**
+	 * Twikoo 自定义 CSS 文件地址，为空则不加载
+	 */
+	cssUrl?: string;
+}
+
+export interface WalineConfig {
+	serverURL: string;
+	lang?: string;
+	emoji: string[];
+	login?: "enable" | "force" | "disable";
+	visitorCount?: boolean;
+}
+
+export interface ArtalkConfig {
+	server: string;
+	locale?: string;
+	visitorCount?: boolean;
+}
+
+export interface DisqusConfig {
+	shortname: string;
 }
 
 export interface GiscusConfig {
@@ -300,12 +337,6 @@ export interface GiscusConfig {
 	theme: string;
 	lang: string;
 	loading: string;
-}
-
-interface TwikooConfig {
-	envId: string;
-	region?: string;
-	lang?: string;
 }
 
 export type LIGHT_DARK_MODE = typeof LIGHT_MODE | typeof DARK_MODE;

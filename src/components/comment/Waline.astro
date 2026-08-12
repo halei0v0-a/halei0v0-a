@@ -1,0 +1,58 @@
+---
+import { commentConfig } from "@/config";
+
+interface Props {
+	path: string;
+}
+
+const config = {
+	...commentConfig.waline,
+	el: "#waline",
+	path: Astro.props.path,
+	dark: "html.dark",
+	wordLimit: ["2", "300"],
+	...(commentConfig.waline?.visitorCount ? { pageview: true } : {}),
+};
+---
+<!-- Waline -->
+<div class="relative w-full">
+  <div id="waline"></div>
+  <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+  <script type="module" is:inline define:vars={{ config }}>
+    let walineInstance = null;
+
+    function getCurrentPath() {
+      const requestedPath = new URLSearchParams(window.location.search).get("path");
+      if (requestedPath) return requestedPath;
+      const pathname = window.location.pathname;
+      return pathname.endsWith("/") && pathname.length > 1
+        ? pathname.slice(0, -1)
+        : pathname;
+    }
+
+    async function initWaline() {
+      const container = document.getElementById("waline");
+      if (!container) return;
+      try {
+        const { init } = await import('https://unpkg.com/@waline/client@v3/dist/waline.js');
+        if (walineInstance) {
+          try { walineInstance.destroy(); } catch (e) { /* ignore */ }
+          walineInstance = null;
+        }
+        container.innerHTML = "";
+        const effectiveConfig = { ...config, path: getCurrentPath() };
+        walineInstance = init(effectiveConfig);
+      } catch (error) {
+        console.error("[Waline] Failed to initialize:", error);
+      }
+    }
+
+    document.addEventListener("mizuki:page:loaded", initWaline);
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initWaline);
+    } else {
+      initWaline();
+    }
+  </script>
+</div>

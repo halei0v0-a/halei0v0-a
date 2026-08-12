@@ -1,0 +1,85 @@
+---
+import { commentConfig } from "@/config";
+
+interface Props {
+	identifier: string;
+	url: string;
+	title: string;
+}
+
+const { identifier, url, title } = Astro.props;
+
+if (!commentConfig?.disqus) {
+	throw new Error("Disqus comments are not configured");
+}
+const shortname = commentConfig.disqus.shortname;
+---
+
+<div id="disqus_thread"></div>
+
+<script is:inline define:vars={{ shortname, identifier, url, title }}>
+  function getCurrentPath() {
+    const requestedPath = new URLSearchParams(window.location.search).get("path");
+    if (requestedPath) return requestedPath;
+    const pathname = window.location.pathname;
+    return pathname.endsWith("/") && pathname.length > 1
+      ? pathname.slice(0, -1)
+      : pathname;
+  }
+
+  function setupDisqusConfig() {
+    let effectiveIdentifier = identifier;
+    let effectiveUrl = url;
+    const requestedPath = getCurrentPath();
+    if (requestedPath) {
+      effectiveIdentifier = requestedPath.replace(/^\/+|\/+$/g, "");
+      effectiveUrl = new URL(requestedPath, window.location.origin).href;
+    }
+    // @ts-ignore
+    window.disqus_config = function () {
+      this.page.url = effectiveUrl;
+      this.page.identifier = effectiveIdentifier;
+      this.page.title = title;
+    };
+  }
+
+  function loadDisqusEmbed() {
+    if (document.getElementById("disqus-script-loaded")) {
+      return;
+    }
+    const s = document.createElement("script");
+    s.id = "disqus-script-loaded";
+    s.src = "https://" + shortname + ".disqus.com/embed.js";
+    s.setAttribute("data-timestamp", new Date().toString());
+    (document.head || document.body).appendChild(s);
+  }
+
+  function initDisqus() {
+    const container = document.getElementById("disqus_thread");
+    if (!container) return;
+
+    setupDisqusConfig();
+
+    // @ts-ignore
+    if (window.DISQUS && typeof window.DISQUS.reset === "function") {
+      // @ts-ignore
+      window.DISQUS.reset({
+        reload: true,
+        config: function () {
+          setupDisqusConfig();
+        },
+      });
+    } else {
+      loadDisqusEmbed();
+    }
+  }
+
+  document.addEventListener("mizuki:page:loaded", initDisqus);
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initDisqus);
+  } else {
+    initDisqus();
+  }
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
