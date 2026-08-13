@@ -15,13 +15,13 @@ draft: false
 
 注册地址：[https://linuxone.cloud.marist.edu/#/register?flag=VM](https://linuxone.cloud.marist.edu/#/register?flag=VM)
 
-:::nite[注意]
+:::note[注意]
 
 注册完成后创建服务器大概有两个月左右的有效时间
 
 :::
 
-:::nite[注意]
+:::note[注意]
 
 不要在这个服务器安装1panel等服务器运维面板，我就是手闲，服务器强制关机，账号登不上去，IP无法自动注册账户需审核(ˉ▽ˉ；)...
 
@@ -41,7 +41,7 @@ IP质量不高：148.100.76.62
 
 如：`halei.pem`
 
-将文件放在`C:\用户\{你的用户名}\\.ssh`目录下
+将文件放在`C:\用户\{你的用户名}\.ssh`目录下
 
 win+R输入cmd打开命令行
 
