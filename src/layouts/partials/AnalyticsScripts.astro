@@ -18,6 +18,7 @@ interface Props {
 		umami?: {
 			websiteId: string;
 			scriptUrl?: string;
+			shareUrl?: string;
 		};
 	};
 }
@@ -32,6 +33,7 @@ const clarityEnable =
 
 const umami = thirdPartyAnalytics.umami;
 const umamiEnable = thirdPartyAnalytics.enable && umami?.websiteId;
+const umamiShareUrl = umami?.shareUrl || "";
 ---
 
 <!-- Umami Analytics - 延迟加载优化 -->
@@ -44,6 +46,120 @@ const umamiEnable = thirdPartyAnalytics.enable && umami?.websiteId;
 			src={umami.scriptUrl || "https://cloud.umami.is/script.js"}
 			data-website-id={umami.websiteId}
 		></script>
+	)
+}
+
+<!-- Umami 统计数据显示（读取分享数据，供侧栏/文章浏览量展示） -->
+{
+	umamiEnable && umamiShareUrl && (
+		<script
+			is:inline
+			data-swup-ignore-script
+			define:vars={{ umamiShareUrl }}
+		>
+			(function () {
+				if (window.oddmisc) {
+					return;
+				}
+
+				let shareData = null;
+				let sharePromise = null;
+				const cache = new Map();
+
+				function parseShareUrl(shareUrl) {
+					const url = new URL(shareUrl);
+					const segments = url.pathname.split("/");
+					const shareIndex = segments.indexOf("share");
+					if (shareIndex === -1 || shareIndex === segments.length - 1) {
+						throw new Error("Invalid share URL");
+					}
+					const shareId = segments[shareIndex + 1];
+					const apiBase =
+						url.protocol +
+						"//" +
+						url.host +
+						segments.slice(0, shareIndex).join("/") +
+						"/api";
+					return { apiBase, shareId };
+				}
+
+				function getShareData(apiBase, shareId) {
+					if (shareData) {
+						return Promise.resolve(shareData);
+					}
+					if (sharePromise) {
+						return sharePromise;
+					}
+					sharePromise = fetch(apiBase + "/share/" + shareId)
+						.then((res) => {
+							if (!res.ok) {
+								sharePromise = null;
+								throw new Error("Share data fetch failed: " + res.status);
+							}
+							return res.json();
+						})
+						.then((data) => {
+							shareData = data;
+							return data;
+						});
+					return sharePromise;
+				}
+
+				async function getStats(path) {
+					const key = path || "site";
+					if (cache.has(key)) {
+						return Promise.resolve({ ...cache.get(key), _fromCache: true });
+					}
+
+					const { apiBase, shareId } = parseShareUrl(umamiShareUrl);
+					const { websiteId, token } = await getShareData(apiBase, shareId);
+					const params = new URLSearchParams({
+						startAt: "0",
+						endAt: Date.now().toString(),
+					});
+					if (path) {
+						params.set("path", "eq." + path);
+					}
+
+					const res = await fetch(
+						apiBase + "/websites/" + websiteId + "/stats?" + params.toString(),
+						{
+							headers: {
+								"x-umami-share-token": token,
+								"x-umami-share-context": "1",
+							},
+						},
+					);
+					if (!res.ok) {
+						throw new Error("Stats fetch failed: " + res.status);
+					}
+					const data = await res.json();
+					const result = {
+						pageviews:
+							(data.pageviews && data.pageviews.value != null)
+								? data.pageviews.value
+								: (data.pageviews || 0),
+						visitors:
+							(data.visitors && data.visitors.value != null)
+								? data.visitors.value
+								: (data.visitors || 0),
+						visits:
+							(data.visits && data.visits.value != null)
+								? data.visits.value
+								: (data.visits || 0),
+					};
+					cache.set(key, result);
+					return result;
+				}
+
+				window.oddmisc = {
+					getStats: (path) => getStats(path),
+					getSiteStats: () => getStats(),
+					getPageStats: (path) => getStats(path),
+					clearCache: () => cache.clear(),
+				};
+			})();
+		</script>
 	)
 }
 

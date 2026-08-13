@@ -13,6 +13,7 @@
 	SakuraConfig,
 	ShareConfig,
 	SidebarLayoutConfig,
+	ThirdPartyAnalyticsConfig,
 	SiteConfig,
 } from "./types/config";
 import { LinkPreset } from "./types/config";
@@ -271,8 +272,13 @@ export const siteConfig: SiteConfig = {
 		umami: {
 			websiteId: "b533a243-f566-4047-9393-045c4b4ab045",
 			scriptUrl: "https://cloud.umami.is/script.js",
+			shareUrl: "https://cloud.umami.is/analytics/us/share/gOmjorBaCJKeWU5r",
 		},
 	},
+};
+export const thirdPartyAnalyticsConfig: ThirdPartyAnalyticsConfig = {
+	...siteConfig.thirdPartyAnalytics,
+	enable: siteConfig.thirdPartyAnalytics?.enable ?? false,
 };
 export const fullscreenWallpaperConfig: FullscreenWallpaperConfig = {
 	src: {
@@ -623,6 +629,16 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			animationDelay: 300,
 		},
 		{
+			// 组件类型：Umami 访问统计组件
+			type: "umami-stats",
+			// 组件位置
+			position: "top",
+			// CSS 类名
+			class: "onload-animation",
+			// 动画延迟时间
+			animationDelay: 350,
+		},
+		{
 			// 组件类型：日历组件(移动端不显示)
 			type: "calendar",
 			// 组件位置
@@ -649,7 +665,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 	// 侧栏组件布局配置
 	components: {
 		left: ["profile", "announcement", "categories", "tags"],
-		right: ["dynamic", "site-stats", "site-info", "calendar", "card-toc"],
+		right: ["dynamic", "site-stats", "umami-stats", "site-info", "calendar", "card-toc"],
 		drawer: ["profile", "announcement", "categories", "tags"],
 	},
 

@@ -301,6 +301,12 @@ enum I18nKey {
 	siteStatsDaysAgo = "siteStatsDaysAgo",
 	siteStatsDays = "siteStatsDays",
 
+	// Umami 访问统计
+	umamiStats = "umamiStats",
+	umamiStatsPageviews = "umamiStatsPageviews",
+	umamiStatsVisits = "umamiStatsVisits",
+	umamiStatsVisitors = "umamiStatsVisitors",
+
 	// 站点信息
 	siteInfo = "siteInfo",
 	siteInfoBuildTime = "siteInfoBuildTime",

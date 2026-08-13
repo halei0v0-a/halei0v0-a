@@ -311,6 +311,11 @@ export const zh_CN: Translation = {
 	[Key.siteStatsDaysAgo]: "{days} 天前",
 	[Key.siteStatsDays]: "{days} 天",
 
+	[Key.umamiStats]: "访问统计",
+	[Key.umamiStatsPageviews]: "总浏览量",
+	[Key.umamiStatsVisits]: "总访问量",
+	[Key.umamiStatsVisitors]: "总访客数",
+
 	// 站点信息
 	[Key.siteInfo]: "站点信息",
 	[Key.siteInfoBuildTime]: "构建时间",

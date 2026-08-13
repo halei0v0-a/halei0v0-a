@@ -313,6 +313,11 @@ export const zh_TW: Translation = {
 	[Key.siteStatsDaysAgo]: "{days} 天前",
 	[Key.siteStatsDays]: "{days} 天",
 
+	[Key.umamiStats]: "訪問統計",
+	[Key.umamiStatsPageviews]: "總瀏覽量",
+	[Key.umamiStatsVisits]: "總訪問量",
+	[Key.umamiStatsVisitors]: "總訪客人數",
+
 	// 站點資訊
 	[Key.siteInfo]: "站點資訊",
 	[Key.siteInfoBuildTime]: "構建時間",

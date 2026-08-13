@@ -325,6 +325,11 @@ export const en: Translation = {
 	[Key.siteStatsDaysAgo]: "{days} days ago",
 	[Key.siteStatsDays]: "{days} days",
 
+	[Key.umamiStats]: "Traffic Stats",
+	[Key.umamiStatsPageviews]: "Pageviews",
+	[Key.umamiStatsVisits]: "Visits",
+	[Key.umamiStatsVisitors]: "Visitors",
+
 	// Site Info
 	[Key.siteInfo]: "Site Info",
 	[Key.siteInfoBuildTime]: "Build Time",

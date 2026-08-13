@@ -1,0 +1,173 @@
+---
+import { thirdPartyAnalyticsConfig } from "../../../config";
+import I18nKey from "../../../i18n/i18nKey";
+import { i18n } from "../../../i18n/translation";
+import WidgetLayout from "../common/WidgetLayout.astro";
+
+interface Props {
+	class?: string;
+	style?: string;
+}
+
+const { class: className, style } = Astro.props;
+
+const umami = thirdPartyAnalyticsConfig.enable
+	? thirdPartyAnalyticsConfig.umami
+	: undefined;
+const shareUrl = umami?.shareUrl || "";
+---
+
+<WidgetLayout
+	name={i18n(I18nKey.umamiStats)}
+	id="umami-stats"
+	class={className}
+	style={style}
+>
+	<a
+		id="umami-link"
+		target="_blank"
+		rel="noopener noreferrer"
+		class="block"
+		href={shareUrl}
+	>
+		<div class="text-center py-2">
+			<div
+				class="text-3xl font-bold text-neutral-900 dark:text-neutral-100"
+				id="umami-total-pageviews"
+			>
+				-
+			</div>
+			<div class="text-sm text-neutral-500 dark:text-neutral-400">
+				{i18n(I18nKey.umamiStatsPageviews)}
+			</div>
+		</div>
+		<div class="grid grid-cols-2 divide-x divide-neutral-200 dark:divide-neutral-700 text-center pt-2">
+			<div class="px-2">
+				<div
+					class="text-xl font-bold text-neutral-900 dark:text-neutral-100"
+					id="umami-total-visits"
+				>
+					-
+				</div>
+				<div class="text-sm text-neutral-500 dark:text-neutral-400">
+					{i18n(I18nKey.umamiStatsVisits)}
+				</div>
+			</div>
+			<div class="px-2">
+				<div
+					class="text-xl font-bold text-neutral-900 dark:text-neutral-100"
+					id="umami-total-visitors"
+				>
+					-
+				</div>
+				<div class="text-sm text-neutral-500 dark:text-neutral-400">
+					{i18n(I18nKey.umamiStatsVisitors)}
+				</div>
+			</div>
+		</div>
+	</a>
+</WidgetLayout>
+
+<script is:inline>
+	(function () {
+		const pageviewsEl = document.getElementById("umami-total-pageviews");
+		const visitsEl = document.getElementById("umami-total-visits");
+		const visitorsEl = document.getElementById("umami-total-visitors");
+		if (!pageviewsEl || !visitsEl || !visitorsEl) {
+			return;
+		}
+
+		let loaded = false;
+
+		function formatNumber(n) {
+			if (n >= 1000000) {
+				return (n / 1000000).toFixed(1) + "M";
+			}
+			if (n >= 1000) {
+				return (n / 1000).toFixed(1) + "K";
+			}
+			return Math.round(n).toString();
+		}
+
+		function countUp(el, target) {
+			const duration = 1200;
+			const start = performance.now();
+
+			function easeOutCubic(t) {
+				return 1 - Math.pow(1 - t, 3);
+			}
+
+			function step(now) {
+				const progress = Math.min((now - start) / duration, 1);
+				el.textContent = formatNumber(target * easeOutCubic(progress));
+				if (progress < 1) {
+					requestAnimationFrame(step);
+				}
+			}
+			requestAnimationFrame(step);
+		}
+
+		async function loadStats() {
+			if (loaded || !window.oddmisc) {
+				return;
+			}
+			loaded = true;
+			try {
+				const stats = await window.oddmisc.getSiteStats();
+				countUp(pageviewsEl, stats.pageviews);
+				countUp(visitsEl, stats.visits);
+				countUp(visitorsEl, stats.visitors);
+			} catch (e) {
+				loaded = false;
+			}
+		}
+
+		// 懒加载：卡片进入视口时才请求数据
+		if ("IntersectionObserver" in window) {
+			const observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (entry.isIntersecting) {
+							loadStats();
+							observer.disconnect();
+						}
+					});
+				},
+				{ threshold: 0.1 },
+			);
+			const target = document.getElementById("umami-stats");
+			if (target) {
+				observer.observe(target);
+			} else {
+				loadStats();
+			}
+		} else {
+			loadStats();
+		}
+
+		// swup 页面切换后重新监听
+		window.swup?.hooks.on("page:view", () => {
+			loaded = false;
+			pageviewsEl.textContent = "-";
+			visitsEl.textContent = "-";
+			visitorsEl.textContent = "-";
+			const observer2 = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (entry.isIntersecting) {
+							loadStats();
+							observer2.disconnect();
+						}
+					});
+				},
+				{ threshold: 0.1 },
+			);
+			const target2 = document.getElementById("umami-stats");
+			if (target2) {
+				observer2.observe(target2);
+			} else {
+				loadStats();
+			}
+		});
+	})();
+</script>

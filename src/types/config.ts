@@ -418,6 +418,7 @@ export type WidgetComponentType =
 	| "music-sidebar"
 	| "pio" // 添加 pio 组件类型
 	| "site-stats" // 站点统计组件
+	| "umami-stats" // Umami 访问统计组件
 	| "site-info" // 站点信息组件
 	| "dynamic" // 最新动态组件
 	| "calendar" // 日历组件
@@ -576,5 +577,6 @@ export interface ThirdPartyAnalyticsConfig {
 	umami?: {
 		websiteId: string; // Umami 站点 ID
 		scriptUrl?: string; // Umami 脚本地址，默认 https://cloud.umami.is/script.js
+		shareUrl?: string; // Umami 分享链接 URL（用于读取统计数据展示在页面上）
 	};
 }

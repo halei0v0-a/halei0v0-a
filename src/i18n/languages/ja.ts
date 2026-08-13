@@ -328,6 +328,11 @@ export const ja: Translation = {
 	[Key.siteStatsDaysAgo]: "{days}日前",
 	[Key.siteStatsDays]: "{days}日",
 
+	[Key.umamiStats]: "アクセス統計",
+	[Key.umamiStatsPageviews]: "ページビュー",
+	[Key.umamiStatsVisits]: "訪問数",
+	[Key.umamiStatsVisitors]: "訪問者数",
+
 	// サイト情報
 	[Key.siteInfo]: "サイト情報",
 	[Key.siteInfoBuildTime]: "ビルド日時",
