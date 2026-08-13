@@ -13,40 +13,55 @@ export interface FriendItem {
 // 友情链接数据
 export const friendsData: FriendItem[] = [
 	{
-		id: 1,
-		title: "Astro",
-		imgurl: "https://avatars.githubusercontent.com/u/44914786?s=48&v=4",
-		desc: "The web framework for content-driven websites. ⭐️ Star to support our work!",
-		siteurl: "https://github.com/withastro/astro",
-		tags: ["Framework"],
+		"id": 1,
+		"title": "Astro",
+		"imgurl": "https://avatars.githubusercontent.com/u/44914786?s=48&v=4",
+		"desc": "The web framework for content-driven websites. ⭐️ Star to support our work!",
+		"siteurl": "https://github.com/withastro/astro",
+		"tags": [
+			"Framework",
+		]
 	},
 	{
-		id: 2,
-		title: "Mizuki Docs",
-		imgurl:
-			"http://q.qlogo.cn/headimg_dl?dst_uin=3231515355&spec=640&img_type=jpg",
-		desc: "Mizuki User Manual",
-		siteurl: "https://docs.mizuki.mysqil.com",
-		tags: ["Docs"],
+		"id": 2,
+		"title": "Mizuki Docs",
+		"imgurl": "http://q.qlogo.cn/headimg_dl?dst_uin=3231515355&spec=640&img_type=jpg",
+		"desc": "Mizuki User Manual",
+		"siteurl": "https://docs.mizuki.mysqil.com",
+		"tags": [
+			"Docs",
+		]
 	},
 	{
-		id: 3,
-		title: "halei0v0's blog",
-		imgurl:
-			"https://avatars.githubusercontent.com/u/206404910?v=4",
-		desc: "This  blog ornered by halei, sharing some front-end technology and life bits.",
-		siteurl: "https://halei0v0.github.io/blog",
-		tags: ["Blog"],
+		"id": 3,
+		"title": "halei0v0's blog",
+		"imgurl": "https://avatars.githubusercontent.com/u/206404910?v=4",
+		"desc": "This  blog ornered by halei, sharing some front-end technology and life bits.",
+		"siteurl": "https://halei0v0.github.io/blog",
+		"tags": [
+			"Blog",
+		]
 	},
 	{
-		id: 4,
-		title: "THW's Blog",
-		imgurl:
-			"https://image.tianhw.top/avatar.webp",
-		desc: "前途似海，来日方长",
-		siteurl: "https://blog.tianhw.top",
-		tags: ["Blog"],
+		"id": 4,
+		"title": "THW's Blog",
+		"imgurl": "https://image.tianhw.top/avatar.webp",
+		"desc": "前途似海，来日方长",
+		"siteurl": "https://blog.tianhw.top",
+		"tags": [
+			"Blog",
+		]
 	},
+	{
+		"title": "Firefly",
+		"imgurl": "https://firefly.cuteleaf.cn/_astro/avatar.BcAu2wMi_yT6PR.webp",
+		"desc": "流萤博客主题",
+		"siteurl": "https://firefly.cuteleaf.cn/",
+		"tags": [
+			"Blog",
+		],
+		"id": 5,
+	}
 ];
 
 // 获取所有友情链接数据

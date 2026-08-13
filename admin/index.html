@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>博客管理后台</title>
+<style>
+	:root {
+		--bg: #f3f5f9;
+		--card: #ffffff;
+		--card-2: #f8fafc;
+		--border: #e2e8f0;
+		--text: #0f172a;
+		--text-2: #64748b;
+		--text-3: #94a3b8;
+		--primary: #4f46e5;
+		--primary-2: #6366f1;
+		--primary-soft: #eef2ff;
+		--danger: #dc2626;
+		--danger-soft: #fef2f2;
+		--ok: #059669;
+		--ok-soft: #ecfdf5;
+		--warn: #d97706;
+		--shadow: 0 1px 3px rgba(15, 23, 42, .06), 0 4px 14px rgba(15, 23, 42, .05);
+		--radius: 12px;
+		--header-bg: linear-gradient(120deg, #4f46e5, #7c3aed);
+	}
+	[data-theme="dark"] {
+		--bg: #0f172a;
+		--card: #1e293b;
+		--card-2: #172033;
+		--border: #334155;
+		--text: #e2e8f0;
+		--text-2: #94a3b8;
+		--text-3: #64748b;
+		--primary: #818cf8;
+		--primary-2: #a5b4fc;
+		--primary-soft: rgba(99, 102, 241, .15);
+		--danger: #f87171;
+		--danger-soft: rgba(220, 38, 38, .12);
+		--ok: #34d399;
+		--ok-soft: rgba(16, 185, 129, .12);
+		--warn: #fbbf24;
+		--shadow: 0 1px 3px rgba(0, 0, 0, .4);
+	}
+	* { box-sizing: border-box; margin: 0; padding: 0; }
+	body {
+		font-family: -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+		background: var(--bg);
+		color: var(--text);
+		font-size: 14px;
+		transition: background .2s, color .2s;
+	}
+	svg { flex-shrink: 0; }
+	header {
+		background: var(--header-bg);
+		padding: 0 28px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		position: sticky;
+		top: 0;
+		z-index: 20;
+		box-shadow: var(--shadow);
+		height: 56px;
+	}
+	.brand { display: flex; align-items: center; gap: 10px; color: #fff; }
+	.brand .logo {
+		width: 30px; height: 30px; border-radius: 8px;
+		display: flex; align-items: center; justify-content: center;
+		overflow: hidden;
+	}
+	.brand .logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+	.brand h1 { font-size: 16px; font-weight: 600; letter-spacing: .3px; }
+	.brand .sub { font-size: 11px; opacity: .7; margin-left: 2px; }
+	header .actions { display: flex; gap: 8px; align-items: center; }
+	button {
+		padding: 7px 14px;
+		border: 1px solid var(--border);
+		border-radius: 9px;
+		background: var(--card);
+		color: var(--text);
+		cursor: pointer;
+		font-size: 13px;
+		transition: all .15s;
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		line-height: 1.4;
+	}
+	button:hover { border-color: var(--primary); color: var(--primary); }
+	button.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+	button.primary:hover { background: var(--primary-2); color: #fff; border-color: var(--primary-2); }
+	button.ghost { background: transparent; border-color: transparent; color: var(--text-2); }
+	button.ghost:hover { color: var(--primary); border-color: transparent; background: var(--primary-soft); }
+	button.danger { color: var(--danger); border-color: var(--danger); }
+	button.danger:hover { background: var(--danger); color: #fff; }
+	button:disabled { opacity: .5; cursor: not-allowed; }
+	button.header-btn {
+		background: rgba(255,255,255,.14);
+		border-color: rgba(255,255,255,.25);
+		color: #fff;
+		padding: 6px 13px;
+	}
+	button.header-btn:hover { background: rgba(255,255,255,.24); color: #fff; }
+	main { padding: 22px 28px; max-width: 1024px; margin: 0 auto; }
+	.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+	.tab {
+		padding: 10px 18px;
+		border: none;
+		border-radius: 9px 9px 0 0;
+		background: transparent;
+		font-size: 14px;
+		border-bottom: 2px solid transparent;
+		color: var(--text-2);
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+	}
+	.tab.active { border-bottom-color: var(--primary); color: var(--primary); font-weight: 600; }
+	.tab:hover { color: var(--primary); }
+	.card {
+		background: var(--card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		padding: 16px;
+		margin-bottom: 12px;
+		box-shadow: var(--shadow);
+	}
+	.switch-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		padding: 10px 0;
+		border-bottom: 1px dashed var(--border);
+	}
+	.switch-row:last-child { border-bottom: none; }
+	.switch-info { flex: 1; min-width: 0; }
+	.switch-path { font-family: Consolas, monospace; font-size: 12px; color: var(--text-2); word-break: break-all; }
+	.switch-comment { font-size: 13px; margin-top: 2px; }
+	.switch-value { font-family: Consolas, monospace; font-weight: 600; font-size: 13px; min-width: 34px; text-align: right; }
+	.switch-value.on { color: var(--ok); }
+	.switch-value.off { color: var(--text-3); }
+	.toggle {
+		position: relative;
+		width: 44px;
+		height: 24px;
+		border-radius: 12px;
+		background: var(--border);
+		cursor: pointer;
+		transition: background .2s;
+		flex-shrink: 0;
+		border: none;
+		padding: 0;
+	}
+	.toggle::after {
+		content: "";
+		position: absolute;
+		top: 2px;
+		left: 2px;
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		background: #fff;
+		transition: transform .2s;
+		box-shadow: 0 1px 3px rgba(0,0,0,.25);
+	}
+	.toggle.on { background: var(--primary); }
+	.toggle.on::after { transform: translateX(20px); }
+	.group-title {
+		font-size: 11px;
+		font-weight: 700;
+		color: var(--text-3);
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		margin: 20px 0 8px;
+		padding-left: 4px;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.badge {
+		display: inline-flex;
+		align-items: center;
+		padding: 2px 9px;
+		border-radius: 999px;
+		font-size: 11px;
+		background: var(--primary-soft);
+		color: var(--primary);
+		font-weight: 600;
+	}
+	.data-file-card { cursor: default; transition: border-color .15s, box-shadow .15s; }
+	.data-file-card:hover { border-color: var(--primary); box-shadow: 0 2px 10px rgba(79, 70, 229, .12); }
+	.data-file-card .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+	.data-file-card .name-area { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+	.data-file-card .file-icon {
+		width: 36px; height: 36px; border-radius: 9px;
+		background: var(--primary-soft); color: var(--primary);
+		display: flex; align-items: center; justify-content: center;
+	}
+	.data-file-card .title { font-weight: 600; font-size: 15px; }
+	.data-file-card .sub { color: var(--text-2); font-size: 12px; margin-top: 2px; font-family: Consolas, monospace; }
+	.data-file-card .btns { display: flex; gap: 8px; }
+	.data-file-card .btns button { padding: 5px 12px; font-size: 12px; }
+	.data-file-card .btns button.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+	.data-file-card .btns button.primary:hover { opacity: .9; }
+	textarea {
+		width: 100%;
+		min-height: 320px;
+		border: 1px solid var(--border);
+		border-radius: 9px;
+		padding: 12px;
+		font-family: Consolas, monospace;
+		font-size: 13px;
+		line-height: 1.6;
+		resize: vertical;
+		background: var(--card-2);
+		color: var(--text);
+	}
+	textarea:focus { outline: 2px solid var(--primary); border-color: transparent; }
+	.form-group { margin-bottom: 14px; }
+	.form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+	.form-group label .req { color: var(--danger); margin-left: 2px; }
+	.form-group input[type="text"],
+	.form-group input[type="url"],
+	.form-group input[type="number"],
+	.form-group input[type="date"],
+	.form-group select {
+		width: 100%;
+		padding: 8px 11px;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		font-size: 13px;
+		font-family: inherit;
+		background: var(--card-2);
+		color: var(--text);
+	}
+	.form-group input:focus, .form-group select:focus { outline: 2px solid var(--primary); border-color: transparent; }
+	.form-group .hint { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+	.form-group.boolean-field { display: flex; align-items: center; gap: 8px; }
+	.form-group.boolean-field label { margin-bottom: 0; }
+	.toast {
+		position: fixed;
+		bottom: 24px;
+		left: 50%;
+		transform: translateX(-50%) translateY(100px);
+		background: var(--text);
+		color: var(--bg);
+		padding: 10px 20px;
+		border-radius: 10px;
+		font-size: 13px;
+		opacity: 0;
+		transition: all .3s;
+		z-index: 100;
+		box-shadow: 0 8px 24px rgba(0,0,0,.25);
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+	.toast.ok { background: var(--ok); color: #fff; }
+	.toast.err { background: var(--danger); color: #fff; }
+	.log-box {
+		background: #0b1220;
+		color: #cbd5e1;
+		font-family: Consolas, monospace;
+		font-size: 12px;
+		padding: 14px;
+		border-radius: 10px;
+		max-height: 320px;
+		overflow: auto;
+		white-space: pre-wrap;
+		word-break: break-all;
+		display: none;
+		margin-top: 12px;
+		line-height: 1.55;
+	}
+	.log-box.open { display: block; }
+	.back { margin-bottom: 12px; }
+	.hidden { display: none !important; }
+	.spinner {
+		display: inline-block;
+		width: 14px;
+		height: 14px;
+		border: 2px solid rgba(255,255,255,.35);
+		border-top-color: #fff;
+		border-radius: 50%;
+		animation: spin .8s linear infinite;
+		vertical-align: -2px;
+	}
+	.spinner.dark { border-color: var(--border); border-top-color: var(--primary); }
+	@keyframes spin { to { transform: rotate(360deg); } }
+	/* 搜索框 */
+	.search-wrap { position: relative; margin-bottom: 14px; }
+	.search-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-3); }
+	.search-wrap input {
+		width: 100%;
+		padding: 9px 12px 9px 36px;
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		font-size: 13px;
+		background: var(--card);
+		color: var(--text);
+	}
+	.search-wrap input:focus { outline: 2px solid var(--primary); border-color: transparent; }
+	/* 首页功能卡片 */
+	.home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+	.home-card {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		text-align: left;
+		padding: 22px 20px;
+		background: var(--card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		box-shadow: var(--shadow);
+		cursor: pointer;
+		transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+	}
+	.home-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 12px 30px rgba(0,0,0,.18); }
+	.home-card:active { transform: translateY(-1px); }
+	.home-ic {
+		flex: none;
+		width: 56px;
+		height: 56px;
+		border-radius: 14px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--primary-soft);
+		color: var(--primary);
+	}
+	.home-info { flex: 1; min-width: 0; }
+	.home-title { font-size: 16px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+	.home-desc { font-size: 12.5px; color: var(--text-2); margin-top: 5px; line-height: 1.55; }
+	.home-arrow { flex: none; color: var(--text-3); transition: transform .15s ease, color .15s ease; }
+	.home-card:hover .home-arrow { transform: translateX(3px); color: var(--primary); }
+	@media (max-width: 640px) { .home-grid { grid-template-columns: 1fr; } }
+	/* 状态栏 */
+	.status-bar {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		flex-wrap: wrap;
+		font-size: 12px;
+		color: var(--text-2);
+		padding: 0 4px 14px;
+	}
+	.status-bar .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+	.dot.idle { background: var(--text-3); }
+	.dot.run { background: var(--ok); }
+	.dot.build { background: var(--warn); animation: pulse 1.2s infinite; }
+	@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+	.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 18px; }
+	.stat-card {
+		background: var(--card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		padding: 14px 16px;
+		box-shadow: var(--shadow);
+	}
+	.stat-card .num { font-size: 22px; font-weight: 700; color: var(--primary); font-family: Consolas, monospace; }
+	.stat-card .lbl { font-size: 12px; color: var(--text-2); margin-top: 3px; }
+	.stat-card .ic { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--primary-soft); color: var(--primary); margin-bottom: 8px; }
+	/* 条目列表（删除模式） */
+	.item-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 10px;
+		padding: 8px 4px;
+		border-bottom: 1px dashed var(--border);
+		font-size: 13px;
+	}
+	.item-row:last-child { border-bottom: none; }
+	.item-row .name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	.item-row .meta { color: var(--text-3); font-size: 11px; font-family: Consolas, monospace; margin-left: 8px; }
+	.item-row .del-btn { color: var(--danger); background: var(--danger-soft); border-color: transparent; padding: 3px 10px; font-size: 12px; }
+	.item-row .del-btn:hover { background: var(--danger); color: #fff; }
+	.del-group-title { font-size: 12px; font-weight: 700; color: var(--text-2); margin: 14px 0 6px; }
+	.modal-mask {
+		position: fixed; inset: 0; background: rgba(15,23,42,.5); z-index: 50;
+		display: flex; align-items: center; justify-content: center;
+	}
+	.modal {
+		background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+		padding: 22px; width: 92%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,.3);
+	}
+	.modal h3 { font-size: 15px; margin-bottom: 10px; }
+	.modal p { font-size: 13px; color: var(--text-2); margin-bottom: 18px; line-height: 1.6; }
+	.modal .modal-btns { display: flex; justify-content: flex-end; gap: 10px; }
+	.split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+	@media (max-width: 640px) { .split { grid-template-columns: 1fr; } main { padding: 16px; } }
+</style>
+</head>
+<body>
+
+<header>
+	<div class="brand">
+		<div class="logo">
+			<img src="/logo.png" alt="logo">
+		</div>
+		<div>
+			<h1>博客管理后台</h1>
+			<div class="sub" id="header-project"></div>
+		</div>
+	</div>
+	<div class="actions">
+		<button class="header-btn" id="btn-theme" onclick="toggleTheme()" title="切换主题">
+			<svg id="theme-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+			<span id="theme-label">深色</span>
+		</button>
+		<button class="header-btn" id="btn-refresh" onclick="refreshAll()" title="刷新全部数据">
+			<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg>
+			<span>刷新</span>
+		</button>
+	</div>
+</header>
+
+<main>
+	<!-- 首页：功能卡片 -->
+	<div id="home-view">
+		<div class="status-bar" id="home-status"></div>
+		<div class="stats-row" id="home-stats"></div>
+		<div class="home-grid">
+			<button class="home-card" onclick="showTab('switches')">
+				<div class="home-ic">
+					<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="5" width="22" height="14" rx="7"/><circle cx="16" cy="12" r="3"/></svg>
+				</div>
+				<div class="home-info">
+					<div class="home-title">开关管理 <span class="badge" id="badge-switches">-</span></div>
+					<div class="home-desc">控制主题、横幅、侧栏等全部功能开关，实时生效</div>
+				</div>
+				<svg class="home-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+			</button>
+			<button class="home-card" onclick="showTab('data')">
+				<div class="home-ic">
+					<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+				</div>
+				<div class="home-info">
+					<div class="home-title">数据管理 <span class="badge" id="badge-data">-</span></div>
+					<div class="home-desc">友情链接、项目、技能、番剧、设备、日记等数据增删改</div>
+				</div>
+				<svg class="home-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+			</button>
+			<button class="home-card" onclick="showTab('build')">
+				<div class="home-ic">
+					<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+				</div>
+				<div class="home-info">
+					<div class="home-title">构建部署 <span class="badge" id="badge-build">-</span></div>
+					<div class="home-desc">一键构建站点、本地 dev 预览、构建日志与统计</div>
+				</div>
+				<svg class="home-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+			</button>
+			<button class="home-card" onclick="showTab('values')">
+				<div class="home-ic">
+					<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+				</div>
+				<div class="home-info">
+					<div class="home-title">内容配置 <span class="badge" id="badge-values">-</span></div>
+					<div class="home-desc">站点名称、个人资料、公告、评论服务、导航栏等文案与链接</div>
+				</div>
+				<svg class="home-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+			</button>
+		</div>
+		<div class="card" style="margin-top:16px;">
+			<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+				<h3 style="font-size:15px;">最近构建</h3>
+				<span style="font-size:12px;color:var(--text-3);">最近 10 次</span>
+			</div>
+			<div id="home-builds"></div>
+		</div>
+	</div>
+
+	<div class="tabs">
+		<button class="tab" data-tab="home" onclick="goHome()">
+			<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+			首页
+		</button>
+		<button class="tab" data-tab="switches" onclick="showTab('switches')">
+			<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="5" width="22" height="14" rx="7"/><circle cx="16" cy="12" r="3"/></svg>
+			开关管理
+		</button>
+		<button class="tab active" data-tab="data" onclick="showTab('data')">
+			<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+			数据管理
+		</button>
+		<button class="tab" data-tab="build" onclick="showTab('build')">
+			<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+			构建部署
+		</button>
+		<button class="tab" data-tab="values" onclick="showTab('values')">
+			<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+			内容配置
+		</button>
+	</div>
+
+	<!-- 开关管理 -->
+	<section id="tab-switches" class="hidden">
+		<div class="status-bar" id="switch-status"></div>
+		<div class="search-wrap">
+			<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+			<input type="text" id="switch-search" placeholder="搜索开关（名称 / 路径 / 注释）..." oninput="filterSwitches()">
+		</div>
+		<div id="switch-list"></div>
+	</section>
+
+	<!-- 数据管理 -->
+	<section id="tab-data">
+		<div class="status-bar" id="data-status"></div>
+		<div id="data-file-list"></div>
+		<div id="data-editor" class="hidden">
+			<div class="back"><button onclick="backToDataList()">← 返回数据列表</button></div>
+			<div class="card">
+				<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+					<h3 id="data-editor-title" style="font-size:15px;"></h3>
+					<div style="display:flex;gap:8px;">
+						<button onclick="openItemManager()">条目管理</button>
+						<button class="primary" onclick="saveData()">保存</button>
+					</div>
+				</div>
+				<textarea id="data-editor-text"></textarea>
+				<div style="font-size:12px;color:var(--text-3);margin-top:8px;">
+					以 JSON 格式编辑，保存后自动备份并转换回 TypeScript 写入 src/data/ 对应文件。
+				</div>
+			</div>
+		</div>
+		<div id="data-form" class="hidden">
+			<div class="back"><button onclick="backToDataList()">← 返回数据列表</button></div>
+			<div class="card">
+				<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+					<h3 id="data-form-title" style="font-size:15px;"></h3>
+					<button class="primary" id="btn-add-submit" onclick="submitAddForm()">添加</button>
+				</div>
+				<div id="data-form-fields"></div>
+			</div>
+		</div>
+		<div id="data-manager" class="hidden">
+			<div class="back"><button onclick="backToDataList()">← 返回数据列表</button></div>
+			<div class="card">
+				<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+					<h3 id="data-manager-title" style="font-size:15px;"></h3>
+					<button class="primary" onclick="backToDataList()">完成</button>
+				</div>
+				<div id="data-manager-list"></div>
+			</div>
+		</div>
+	</section>
+
+	<!-- 构建部署 -->
+	<section id="tab-build" class="hidden">
+		<div class="stats-row" id="build-stats"></div>
+		<div class="card">
+			<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+				<h3 style="font-size:15px;">构建</h3>
+				<button class="primary" id="btn-build" onclick="runBuild()">开始构建</button>
+			</div>
+			<p style="font-size:12px;color:var(--text-2);margin-bottom:10px;">
+				执行 <code style="font-family:Consolas">pnpm build</code> 生成静态站点到 dist/ 目录。构建期间请勿修改数据。
+			</p>
+			<div id="build-log" class="log-box"></div>
+		</div>
+		<div class="card">
+			<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+				<h3 style="font-size:15px;">构建历史</h3>
+				<span style="font-size:12px;color:var(--text-3);">最近 10 次</span>
+			</div>
+			<div id="build-history"></div>
+		</div>
+		<div class="card">
+			<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+				<h3 style="font-size:15px;">本地预览 (dev server)</h3>
+				<div style="display:flex;gap:8px;">
+					<button id="btn-dev" class="primary" onclick="toggleDev()">启动</button>
+				</div>
+			</div>
+			<p style="font-size:12px;color:var(--text-2);margin-bottom:10px;">
+				启动 <code style="font-family:Consolas">pnpm dev</code> 开发服务器，修改代码后自动热更新。
+			</p>
+			<div id="dev-status-line" style="font-size:13px;margin-bottom:10px;"></div>
+			<div id="dev-log" class="log-box"></div>
+		</div>
+	</section>
+<!-- 内容配置 -->
+	<section id="tab-values" class="hidden">
+		<div class="status-bar" id="values-status"></div>
+		<div class="search-wrap">
+			<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+			<input type="text" id="values-search" placeholder="搜索配置项（名称 / 路径 / 当前值）..." oninput="filterValues()">
+		</div>
+		<div id="values-list"></div>
+	</section>
+</main>
+
+<div id="toast" class="toast"></div>
+<div id="modal-mask" class="modal-mask hidden">
+	<div class="modal">
+		<h3 id="modal-title"></h3>
+		<p id="modal-text"></p>
+		<div class="modal-btns">
+			<button id="modal-cancel" onclick="closeModal()">取消</button>
+			<button class="danger" id="modal-confirm">删除</button>
+		</div>
+	</div>
+</div>
+
+<script>
+let switchesCache = [];
+let schemasCache = null;
+let currentDataFile = null;
+let currentFormFile = null;
+let currentFormSchema = null;
+let currentManagerFile = null;
+let pendingDelete = null;
+let devRunning = false;
+
+// ============ 主题 ============
+function toggleTheme() {
+	const cur = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+	document.documentElement.setAttribute("data-theme", cur);
+	localStorage.setItem("admin-theme", cur);
+	updateThemeIcon();
+}
+function updateThemeIcon() {
+	const dark = document.documentElement.getAttribute("data-theme") === "dark";
+	document.getElementById("theme-label").textContent = dark ? "浅色" : "深色";
+}
+(function initTheme() {
+	const saved = localStorage.getItem("admin-theme");
+	if (saved === "dark") document.documentElement.setAttribute("data-theme", "dark");
+})();
+
+// ============ Toast ============
+let toastTimer = null;
+function toast(msg, type = "") {
+	const el = document.getElementById("toast");
+	el.textContent = msg;
+	el.className = "toast show " + type;
+	clearTimeout(toastTimer);
+	toastTimer = setTimeout(() => (el.className = "toast"), 2800);
+}
+
+// ============ Tabs ============
+function goHome() {
+	document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+	document.getElementById("home-view").classList.remove("hidden");
+	document.querySelector(".tabs").classList.add("hidden");
+	document.querySelectorAll("main > section").forEach((s) => s.classList.add("hidden"));
+	loadHomeStatus();
+}
+
+function showTab(name) {
+	document.getElementById("home-view").classList.add("hidden");
+	document.querySelector(".tabs").classList.remove("hidden");
+	document.querySelectorAll(".tab").forEach((t) =>
+		t.classList.toggle("active", t.dataset.tab === name),
+	);
+	document.getElementById("tab-switches").classList.toggle("hidden", name !== "switches");
+	document.getElementById("tab-data").classList.toggle("hidden", name !== "data");
+	document.getElementById("tab-build").classList.toggle("hidden", name !== "build");
+	document.getElementById("tab-values").classList.toggle("hidden", name !== "values");
+	if (name === "data") loadDataFiles();
+	if (name === "build") refreshStatus();
+	if (name === "values") loadValues();
+}
+
+// 首页状态栏与卡片徽标
+function fmtBytes(n) {
+	if (n >= 1048576) return (n / 1048576).toFixed(1) + " MB";
+	if (n >= 1024) return (n / 1024).toFixed(1) + " KB";
+	return n + " B";
+}
+function fmtTime(iso) {
+	if (!iso) return "-";
+	const d = new Date(iso);
+	const p = (x) => String(x).padStart(2, "0");
+	return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function renderBuildHistory(history) {
+	if (!history || !history.length) {
+		return '<div style="font-size:13px;color:var(--text-3);padding:6px 0;">暂无构建记录，点击"开始构建"后记录将保存在这里</div>';
+	}
+	return history
+		.map(
+			(h) => `
+		<div class="item-row">
+			<span class="dot ${h.ok ? "run" : ""}" style="background:${h.ok ? "var(--ok)" : "var(--danger)"};flex:none;"></span>
+			<span class="name">${h.ok ? "构建成功" : "构建失败 (exit " + h.exitCode + ")"}</span>
+			<span class="meta">${fmtTime(h.time)} · 耗时 ${(h.durationMs / 1000).toFixed(1)}s</span>
+		</div>`,
+		)
+		.join("");
+}
+
+async function loadHomeStatus() {
+	const st = document.getElementById("home-status");
+	st.innerHTML = '<span style="color:var(--text-3);">加载中...</span>';
+	try {
+		const res = await fetch("/api/status");
+		const data = await res.json();
+		if (!data.ok) return;
+		st.innerHTML = `<span><span class="dot idle"></span>${data.project}</span>
+			<span><span class="dot ${data.buildRunning ? "build" : "idle"}"></span>${data.buildRunning ? "构建中" : "构建空闲"}</span>
+			<span><span class="dot ${data.dev.running ? "run" : "idle"}"></span>${data.dev.running ? `dev 运行中 <a href="${data.dev.url}" target="_blank" style="color:var(--ok);font-weight:600;">${data.dev.url}</a>` : "dev 未启动"}</span>
+			<span><span class="dot idle"></span>自动备份 ${data.backupCount} 份</span>`;
+		document.getElementById("home-stats").innerHTML = `
+			<div class="stat-card"><div class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div class="num">${data.days ?? "-"}</div><div class="lbl">站点运行天数</div></div>
+			<div class="stat-card"><div class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div><div class="num">${data.dataItemTotal}</div><div class="lbl">数据条目总数</div></div>
+			<div class="stat-card"><div class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="5" width="22" height="14" rx="7"/><circle cx="16" cy="12" r="3"/></svg></div><div class="num">${data.onSwitchCount}<span style="font-size:12px;color:var(--text-3);">/${data.switchCount}</span></div><div class="lbl">已开启的开关</div></div>
+			<div class="stat-card"><div class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg></div><div class="num">${data.distSize ? fmtBytes(data.distSize) : "-"}</div><div class="lbl">构建产物体积</div></div>`;
+		document.getElementById("home-builds").innerHTML = renderBuildHistory(data.buildHistory);
+	} catch (e) {
+		st.innerHTML = '<span style="color:var(--danger);">状态获取失败</span>';
+	}
+}
+
+// ============ 状态 ============
+async function refreshStatus() {
+	try {
+		const res = await fetch("/api/status");
+		const data = await res.json();
+		if (!data.ok) return;
+		document.getElementById("header-project").textContent = data.project;
+		const st = document.getElementById("switch-status");
+		st.innerHTML = `<span><span class="dot idle"></span>开关 ${data.switchCount} 个</span>
+			<span><span class="dot ${data.buildRunning ? "build" : "idle"}"></span>${data.buildRunning ? "构建中" : "构建空闲"}</span>
+			<span><span class="dot ${data.dev.running ? "run" : "idle"}"></span>${data.dev.running ? "dev 运行中 " + data.dev.url : "dev 未启动"}</span>`;
+		const ds = document.getElementById("data-status");
+		ds.innerHTML = `<span><span class="dot idle"></span>数据文件 ${data.dataFiles} 个</span>
+			<span><span class="dot idle"></span>自动备份 ${data.backupCount} 份</span>
+			<span>${data.root}</span>`;
+		devRunning = data.dev.running;
+		const bb = document.getElementById("badge-build");
+		if (bb) bb.textContent = data.buildRunning ? "构建中" : data.dev.running ? "dev" : "就绪";
+		const btnDev = document.getElementById("btn-dev");
+		if (btnDev) {
+			btnDev.textContent = data.dev.running ? "停止" : "启动";
+			btnDev.className = data.dev.running ? "" : "primary";
+		}
+		document.getElementById("dev-status-line").innerHTML = data.dev.running
+			? `<a href="${data.dev.url}" target="_blank" style="color:var(--ok);font-weight:600;">${data.dev.url}</a> <span style="color:var(--text-2);font-size:12px;">预览服务运行中</span>`
+			: '<span style="color:var(--text-3);font-size:12px;">未启动</span>';
+		document.getElementById("build-history").innerHTML = renderBuildHistory(data.buildHistory);
+		const st2 = document.getElementById("build-stats");
+		if (st2) {
+			st2.innerHTML = `
+				<div class="stat-card"><div class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div><div class="num">${data.dataFiles}</div><div class="lbl">数据文件</div></div>
+				<div class="stat-card"><div class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="5" width="22" height="14" rx="7"/><circle cx="16" cy="12" r="3"/></svg></div><div class="num">${data.switchCount}</div><div class="lbl">配置开关</div></div>
+				<div class="stat-card"><div class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg></div><div class="num">${data.backupCount}</div><div class="lbl">自动备份</div></div>
+				<div class="stat-card"><div class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div class="num" id="stat-build-state">${data.buildRunning ? "进行中" : "空闲"}</div><div class="lbl">构建状态</div></div>`;
+		}
+	} catch (e) { /* 忽略 */ }
+}
+
+function refreshAll() {
+	loadSwitches();
+	loadDataFiles();
+	refreshStatus();
+	loadHomeStatus();
+	toast("已刷新");
+}
+
+// ============ 开关管理 ============
+async function loadSwitches() {
+	const list = document.getElementById("switch-list");
+	list.innerHTML = '<div class="card">加载中...</div>';
+	try {
+		const res = await fetch("/api/switches");
+		const data = await res.json();
+		if (!data.ok) throw new Error(data.error);
+		switchesCache = data.switches;
+		const b = document.getElementById("badge-switches");
+		if (b) b.textContent = data.switches.length;
+		document.getElementById("switch-search").value = "";
+		renderSwitches();
+	} catch (e) {
+		list.innerHTML = `<div class="card">加载失败: ${e.message}</div>`;
+	}
+}
+
+function renderSwitches() {
+	const list = document.getElementById("switch-list");
+	const q = (document.getElementById("switch-search").value || "").trim().toLowerCase();
+	const filtered = q
+		? switchesCache.filter(
+				(s) =>
+					s.path.toLowerCase().includes(q) ||
+					s.key.toLowerCase().includes(q) ||
+					(s.comment || "").toLowerCase().includes(q),
+			)
+		: switchesCache;
+
+	const groups = {};
+	for (const s of filtered) {
+		const top = s.path.split(".")[0];
+		(groups[top] ||= []).push(s);
+	}
+	const total = switchesCache.length;
+	let html = `<div class="group-title">${filtered.length === total ? `全部开关` : `匹配 ${filtered.length} / ${total}`} <span class="badge">${filtered.length}</span></div>`;
+	for (const [top, items] of Object.entries(groups)) {
+		const on = items.filter((s) => s.value).length;
+		html += `<div class="group-title">${top} <span class="badge">${on}/${items.length}</span></div>`;
+		html += '<div class="card">';
+		for (const s of items) {
+			html += `
+				<div class="switch-row">
+					<div class="switch-info">
+						<div class="switch-path">${s.path}</div>
+						${s.comment ? `<div class="switch-comment">${s.comment}</div>` : ""}
+					</div>
+					<div class="switch-value ${s.value ? "on" : "off"}">${s.value ? "ON" : "OFF"}</div>
+					<button class="toggle ${s.value ? "on" : ""}" data-file="${s.file}" data-line="${s.line}" data-path="${s.path}" onclick="toggleSwitch(this)" title="${s.path}"></button>
+				</div>`;
+		}
+		html += "</div>";
+	}
+	list.innerHTML = html || '<div class="card">无匹配的开关</div>';
+}
+
+function filterSwitches() {
+	if (!switchesCache.length) return;
+	renderSwitches();
+}
+
+async function toggleSwitch(btn) {
+	const file = btn.dataset.file;
+	const line = parseInt(btn.dataset.line);
+	const path = btn.dataset.path;
+	const current = switchesCache.find(
+		(s) => s.file === file && s.line === line && s.path === path,
+	);
+	if (!current) return;
+	const newValue = !current.value;
+	btn.disabled = true;
+	try {
+		const res = await fetch("/api/switches", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ file, line, value: newValue }),
+		});
+		const data = await res.json();
+		if (!data.ok) throw new Error(data.error);
+		current.value = newValue;
+		btn.classList.toggle("on", newValue);
+		const valEl = btn.closest(".switch-row").querySelector(".switch-value");
+		valEl.textContent = newValue ? "ON" : "OFF";
+		valEl.className = "switch-value " + (newValue ? "on" : "off");
+		toast(path + " → " + (newValue ? "开启" : "关闭"), "ok");
+	} catch (e) {
+		toast("修改失败: " + e.message, "err");
+	} finally {
+		btn.disabled = false;
+	}
+}
+
+// ============ 数据管理 ============
+async function loadDataFiles() {
+	const list = document.getElementById("data-file-list");
+	list.innerHTML = '<div class="card">加载中...</div>';
+	try {
+		if (!schemasCache) {
+			const res = await fetch("/api/data/schema");
+			schemasCache = (await res.json()).files;
+		}
+		// 各文件条目数
+		const counts = {};
+		for (const f of schemasCache) {
+			try {
+				const r = await fetch("/api/data?file=" + encodeURIComponent(f.file));
+				const d = await r.json();
+				if (d.ok) counts[f.file] = Array.isArray(d.value) ? d.value.length : Object.keys(d.value).length;
+			} catch (e) { /* 忽略 */ }
+		}
+		const b = document.getElementById("badge-data");
+		if (b) b.textContent = schemasCache.length;
+		list.innerHTML = schemasCache.map((f) => {			const canAdd = !!f.schema;
+			const n = counts[f.file] ?? "?";
+			return `
+				<div class="card data-file-card">
+					<div class="row">
+						<div class="name-area" onclick="openDataEditor('${f.file}')">
+							<div class="file-icon">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+							</div>
+							<div style="flex:1;min-width:0;">
+								<div class="title">${f.title} <span class="badge">${n}</span></div>
+								<div class="sub">${f.file} → ${f.exportName}</div>
+							</div>
+						</div>
+						<div class="btns">
+							${canAdd ? `<button class="primary" onclick="openAddForm('${f.file}')">＋ 添加</button>` : ""}
+							<button onclick="openDataEditor('${f.file}')">编辑</button>
+						</div>
+					</div>
+				</div>`;
+		}).join("");
+	} catch (e) {
+		list.innerHTML = `<div class="card">加载失败: ${e.message}</div>`;
+	}
+}
+
+async function openDataEditor(file) {
+	currentDataFile = file;
+	document.getElementById("data-file-list").classList.add("hidden");
+	document.getElementById("data-form").classList.add("hidden");
+	document.getElementById("data-manager").classList.add("hidden");
+	const editor = document.getElementById("data-editor");
+	editor.classList.remove("hidden");
+	const title = document.getElementById("data-editor-title");
+	const text = document.getElementById("data-editor-text");
+	title.textContent = "编辑 " + file;
+	text.value = "";
+	try {
+		const res = await fetch("/api/data?file=" + encodeURIComponent(file));
+		const data = await res.json();
+		if (!data.ok) throw new Error(data.error);
+		title.textContent = schemasCache.find((f) => f.file === file)?.title + "（" + file + "）";
+		text.value = JSON.stringify(data.value, null, 2);
+	} catch (e) {
+		title.textContent = "加载失败";
+		toast(e.message, "err");
+	}
+}
+
+async function saveData() {
+	if (!currentDataFile) return;
+	const text = document.getElementById("data-editor-text").value;
+	let parsed;
+	try {
+		parsed = JSON.parse(text);
+	} catch (e) {
+		toast("JSON 格式错误: " + e.message, "err");
+		return;
+	}
+	const btn = document.querySelector('#data-editor button.primary');
+	btn.disabled = true;
+	try {
+		const res = await fetch("/api/data", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ file: currentDataFile, value: parsed }),
+		});
+		const data = await res.json();
+		if (!data.ok) throw new Error(data.error);
+		toast("保存成功，已自动备份原文件", "ok");
+	} catch (e) {
+		toast("保存失败: " + e.message, "err");
+	} finally {
+		btn.disabled = false;
+	}
+}
+
+// ---- 添加表单 ----
+function openAddForm(file) {
+	const schema = schemasCache.find((f) => f.file === file)?.schema;
+	if (!schema) {
+		toast("该数据不支持表单添加", "err");
+		return;
+	}
+	currentFormFile = file;
+	currentFormSchema = schema;
+	document.getElementById("data-file-list").classList.add("hidden");
+	document.getElementById("data-editor").classList.add("hidden");
+	document.getElementById("data-manager").classList.add("hidden");
+	const form = document.getElementById("data-form");
+	form.classList.remove("hidden");
+	document.getElementById("data-form-title").textContent =
+		"添加" + schemasCache.find((f) => f.file === file).title;
+
+	let html = "";
+	if (schema.kind === "map") {
+		html += `
+			<div class="form-group">
+				<label>设备类别<span class="req">*</span></label>
+				<select id="form-device-category" onchange="onDeviceCategoryChange()"></select>
+				<div class="hint">选择已有类别，或选择"新建类别"后填写新类别名称</div>
+			</div>
+			<div class="form-group hidden" id="form-device-newcat">
+				<label>新类别名称<span class="req">*</span></label>
+				<input type="text" id="form-device-newcat-input" placeholder="如 电脑配件 / 外设">
+			</div>`;
+	}
+	for (const f of schema.fields) {
+		const req = f.required ? '<span class="req">*</span>' : "";
+		const id = "form-" + f.key.replace(/\./g, "-");
+		let control = "";
+		switch (f.type) {
+			case "textarea":
+				control = `<textarea id="${id}" style="min-height:${f.key === "description" ? "100" : "70"}px;" placeholder="${f.placeholder || ""}"></textarea>`;
+				break;
+			case "number":
+				control = `<input type="number" id="${id}" placeholder="${f.placeholder || ""}">`;
+				break;
+			case "date":
+				control = `<input type="date" id="${id}">`;
+				break;
+			case "boolean":
+				control = `<input type="checkbox" id="${id}" style="width:18px;height:18px;accent-color:var(--primary);">`;
+				break;
+			case "select":
+				control = `<select id="${id}">${f.options.map((o) => `<option value="${o}">${o}</option>`).join("")}</select>`;
+				break;
+			case "url":
+				control = `<input type="url" id="${id}" placeholder="${f.placeholder || ""}">`;
+				break;
+			default:
+				control = `<input type="text" id="${id}" placeholder="${f.placeholder || ""}">`;
+		}
+		if (f.type === "boolean") {
+			html += `<div class="form-group boolean-field"><input type="checkbox" id="${id}"><label for="${id}">${f.label}</label></div>`;
+		} else {
+			html += `<div class="form-group"><label>${f.label}${req}</label>${control}${f.placeholder && f.type !== "textarea" ? `<div class="hint">${f.placeholder}</div>` : ""}</div>`;
+		}
+	}
+	document.getElementById("data-form-fields").innerHTML = html;
+
+	if (schema.kind === "map") {
+		loadDeviceCategories();
+	}
+}
+
+async function loadDeviceCategories() {
+	try {
+		const res = await fetch("/api/data?file=devices.ts");
+		const data = await res.json();
+		const sel = document.getElementById("form-device-category");
+		const keys = data.ok ? Object.keys(data.value) : [];
+		sel.innerHTML =
+			keys.map((k) => `<option value="${k}">${k}（${data.value[k].length} 项）</option>`).join("") +
+			`<option value="__new__">＋ 新建类别...</option>`;
+	} catch (e) {
+		toast("加载类别失败: " + e.message, "err");
+	}
+}
+
+function onDeviceCategoryChange() {
+	const v = document.getElementById("form-device-category").value;
+	document.getElementById("form-device-newcat").classList.toggle("hidden", v !== "__new__");
+}
+
+async function submitAddForm() {
+	if (!currentFormSchema) return;
+	const schema = currentFormSchema;
+	const fields = {};
+	for (const f of schema.fields) {
+		const el = document.getElementById("form-" + f.key.replace(/\./g, "-"));
+		if (!el) continue;
+		fields[f.key] = f.type === "boolean" ? el.checked : el.value;
+	}
+	let categoryName = null;
+	if (schema.kind === "map") {
+		const sel = document.getElementById("form-device-category");
+		categoryName = sel.value === "__new__"
+			? document.getElementById("form-device-newcat-input").value.trim()
+			: sel.value;
+	}
+	const btn = document.getElementById("btn-add-submit");
+	btn.disabled = true;
+	btn.innerHTML = '<span class="spinner"></span>添加中';
+	try {
+		const res = await fetch("/api/data/add", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ file: currentFormFile, categoryName, fields }),
+		});
+		const data = await res.json();
+		if (!data.ok) throw new Error(data.error);
+		toast("添加成功，已写入 " + currentFormFile, "ok");
+		backToDataList();
+	} catch (e) {
+		toast("添加失败: " + e.message, "err");
+	} finally {
+		btn.disabled = false;
+		btn.innerHTML = "添加";
+	}
+}
+
+// ---- 条目管理（删除） ----
+async function openItemManager() {
+	const file = currentDataFile;
+	currentManagerFile = file;
+	document.getElementById("data-editor").classList.add("hidden");
+	document.getElementById("data-manager").classList.remove("hidden");
+	const title = document.getElementById("data-manager-title");
+	title.textContent = "条目管理 - " + schemasCache.find((f) => f.file === file)?.title;
+	const listEl = document.getElementById("data-manager-list");
+	listEl.innerHTML = '<div class="card">加载中...</div>';
+	try {
+		const res = await fetch("/api/data?file=" + encodeURIComponent(file));
+		const data = await res.json();
+		if (!data.ok) throw new Error(data.error);
+		const schema = schemasCache.find((f) => f.file === file)?.schema;
+		const labelKey = (f) => {
+			if (f.key === "name" || f.key === "title" || f.key === "content") return f.key;
+			return null;
+		};
+		const nameField = schema?.fields.map((f) => f.key).find((k) => ["name", "title", "content", "id"].includes(k)) || "id";
+		let html = "";
+		if (schema?.kind === "map") {
+			for (const [cat, items] of Object.entries(data.value)) {
+				html += `<div class="del-group-title">${cat}（${items.length}）</div>`;
+				items.forEach((it, idx) => {
+					const name = it[nameField] || it.specs || idx;
+					html += itemRowHtml(file, cat, idx, name, it);
+				});
+			}
+		} else {
+			data.value.forEach((it, idx) => {
+				const name = it[nameField] || idx;
+				html += itemRowHtml(file, null, idx, name, it);
+			});
+		}
+		listEl.innerHTML = html || '<div class="card">无数据条目</div>';
+	} catch (e) {
+		listEl.innerHTML = `<div class="card">加载失败: ${e.message}</div>`;
+	}
+}
+
+function itemRowHtml(file, cat, idx, name, item) {
+	const meta = JSON.stringify(item).length > 0 ? JSON.stringify(item).slice(0, 60) : "";
+	return `<div class="item-row">
+		<div style="flex:1;min-width:0;">
+			<span class="name">${name}</span>
+			<span class="meta">${meta}...</span>
+		</div>
+		<button class="del-btn" onclick="confirmDelete('${file}', '${cat || ""}', ${idx}, '${String(name).replace(/'/g, "\\'").slice(0, 30)}')">删除</button>
+	</div>`;
+}
+
+function confirmDelete(file, cat, idx, name) {
+	pendingDelete = { file, cat, idx };
+	document.getElementById("modal-title").textContent = "删除条目";
+	document.getElementById("modal-text").textContent = `确定删除「${name}」吗？此操作会修改 ${file}，原文件会自动备份。`;
+	document.getElementById("modal-mask").classList.remove("hidden");
+}
+
+function closeModal() {
+	pendingDelete = null;
+	document.getElementById("modal-mask").classList.add("hidden");
+}
+
+async function doDelete() {
+	if (!pendingDelete) return;
+	const { file, cat, idx } = pendingDelete;
+	const btn = document.getElementById("modal-confirm");
+	btn.disabled = true;
+	try {
+		const res = await fetch("/api/data/delete", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ file, index: idx, categoryName: cat || undefined }),
+		});
+		const data = await res.json();
+		if (!data.ok) throw new Error(data.error);
+		toast("已删除，原文件已备份", "ok");
+		closeModal();
+		openItemManager();
+	} catch (e) {
+		toast("删除失败: " + e.message, "err");
+	} finally {
+		btn.disabled = false;
+	}
+}
+
+function backToDataList() {
+	currentDataFile = null;
+	currentFormFile = null;
+	currentFormSchema = null;
+	currentManagerFile = null;
+	document.getElementById("data-file-list").classList.remove("hidden");
+	document.getElementById("data-editor").classList.add("hidden");
+	document.getElementById("data-form").classList.add("hidden");
+	document.getElementById("data-manager").classList.add("hidden");
+	loadDataFiles();
+}
+
+// ============ 链接配置 ============
+let valuesCache = [];
+
+async function loadValues() {
+	const list = document.getElementById("values-list");
+	list.innerHTML = '<div class="card">加载中...</div>';
+	try {
+		const res = await fetch("/api/values");
+		const data = await res.json();
+		if (!data.ok) throw new Error(data.error);
+		valuesCache = data.values;
+		const b = document.getElementById("badge-values");
+		if (b) b.textContent = data.values.length;
+		renderValues();
+	} catch (e) {
+		list.innerHTML = `<div class="card">加载失败: ${e.message}</div>`;
+	}
+}
+
+function renderValues() {
+	const list = document.getElementById("values-list");
+	const q = (document.getElementById("values-search").value || "").trim().toLowerCase();
+	const cache = q
+		? valuesCache.filter(
+				(v) =>
+					v.label.toLowerCase().includes(q) ||
+					v.path.toLowerCase().includes(q) ||
+					String(v.value).toLowerCase().includes(q) ||
+					v.group.toLowerCase().includes(q),
+			)
+		: valuesCache;
+	const groups = {};
+	for (const v of cache) {
+		(groups[v.group] ||= []).push(v);
+	}
+	let html = "";
+	for (const [group, items] of Object.entries(groups)) {
+		html += `<div class="group-title">${group} <span class="badge">${items.length}</span></div>`;
+		html += '<div class="card">';
+		for (const v of items) {
+			if (v.type === "textarea") {
+				html += `
+				<div class="switch-row" style="flex-direction:column;align-items:stretch;gap:8px;">
+					<div>
+						<div style="font-weight:600;font-size:13px;">${v.label}</div>
+						<div class="switch-path" style="margin-top:2px;">${v.path}</div>
+						${v.hint ? `<div style="font-size:12px;color:var(--text-3);margin-top:2px;">${v.hint}</div>` : ""}
+					</div>
+					<textarea id="val-${v.file}-${v.line}" rows="3"
+						style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:Consolas,monospace;background:var(--card-2);color:var(--text);resize:vertical;"
+						onchange="this.dataset.dirty='1'">${escapeHtml(v.value)}</textarea>
+					<div style="text-align:right;">
+						<button id="btn-val-${v.file}-${v.line}" onclick="saveValue('${v.file}', ${v.line}, '${v.key}')">保存</button>
+					</div>
+				</div>`;
+			} else {
+				html += `
+				<div class="switch-row">
+					<div style="flex:1;min-width:0;">
+						<div style="font-weight:600;font-size:13px;">${v.label}</div>
+						<div class="switch-path" style="margin-top:2px;">${v.path}</div>
+						${v.hint ? `<div style="font-size:12px;color:var(--text-3);margin-top:2px;">${v.hint}</div>` : ""}
+					</div>
+					<input type="text" id="val-${v.file}-${v.line}" value="${escapeHtml(v.value)}"
+						style="flex:1.2;min-width:140px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:Consolas,monospace;background:var(--card-2);color:var(--text);"
+						onchange="this.dataset.dirty='1'">
+					<button id="btn-val-${v.file}-${v.line}" onclick="saveValue('${v.file}', ${v.line}, '${v.key}')">保存</button>
+				</div>`;
+			}
+		}
+		html += "</div>";
+	}
+	list.innerHTML = html || '<div class="card">无可用配置项</div>';
+	const status = document.getElementById("values-status");
+	status.innerHTML =
+		q
+			? `<span><span class="dot idle"></span>匹配 ${cache.length} / ${valuesCache.length} 项</span>`
+			: `<span><span class="dot idle"></span>${valuesCache.length} 项可配置内容</span>`;
+	status.insertAdjacentHTML(
+		"beforeend",
+		'<span style="color:var(--text-3);">修改保存后需重新构建生效</span>',
+	);
+}
+
+function filterValues() {
+	if (!valuesCache.length) return;
+	renderValues();
+}
+
+function escapeHtml(s) {
+	return String(s)
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;");
+}
+
+async function saveValue(file, line, key) {
+	const input = document.getElementById(`val-${file}-${line}`);
+	const value = input.value;
+	const btn = document.getElementById(`btn-val-${file}-${line}`);
+	btn.disabled = true;
+	btn.innerHTML = '<span class="spinner"></span>';
+	try {
+		const res = await fetch("/api/values", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ file, line, key, value }),
+		});
+		const data = await res.json();
+		if (!data.ok) throw new Error(data.error);
+		input.dataset.dirty = "";
+		toast("已保存（原文件已自动备份）", "ok");
+	} catch (e) {
+		toast("保存失败: " + e.message, "err");
+		if (/刷新/.test(e.message)) loadValues();
+	} finally {
+		btn.disabled = false;
+		btn.innerHTML = "保存";
+	}
+}
+
+// ============ 构建部署 ============
+async function runBuild() {
+	const btn = document.getElementById("btn-build");
+	const log = document.getElementById("build-log");
+	btn.disabled = true;
+	btn.innerHTML = '<span class="spinner"></span>构建中';
+	log.classList.add("open");
+	log.textContent = "正在执行 pnpm build ...\n";
+	try {
+		const res = await fetch("/api/build", { method: "POST" });
+		const data = await res.json();
+		log.textContent = data.output || "(无输出)";
+		log.scrollTop = log.scrollHeight;
+		toast(data.ok ? "构建成功" : "构建失败，见日志", data.ok ? "ok" : "err");
+		refreshStatus();
+	} catch (e) {
+		log.textContent += "\n请求失败: " + e.message;
+		toast("构建请求失败: " + e.message, "err");
+	} finally {
+		btn.disabled = false;
+		btn.innerHTML = "开始构建";
+	}
+}
+
+async function toggleDev() {
+	const btn = document.getElementById("btn-dev");
+	const log = document.getElementById("dev-log");
+	const action = devRunning ? "stop" : "start";
+	btn.disabled = true;
+	try {
+		if (action === "start") {
+			log.classList.add("open");
+			log.textContent = "正在启动 dev server ...";
+			const res = await fetch("/api/dev/start", { method: "POST" });
+			const data = await res.json();
+			if (!data.ok) throw new Error(data.error);
+			devRunning = true;
+			btn.textContent = "停止";
+			btn.className = "";
+			document.getElementById("dev-status-line").innerHTML =
+				`<a href="${data.url}" target="_blank" style="color:var(--ok);font-weight:600;">${data.url}</a> <span style="color:var(--text-2);font-size:12px;">预览服务运行中</span>`;
+			toast("dev server 已启动", "ok");
+			pollDevLog();
+		} else {
+			await fetch("/api/dev/stop", { method: "POST" });
+			devRunning = false;
+			btn.textContent = "启动";
+			btn.className = "primary";
+			document.getElementById("dev-status-line").innerHTML = '<span style="color:var(--text-3);font-size:12px;">未启动</span>';
+			toast("dev server 已停止");
+		}
+	} catch (e) {
+		toast("操作失败: " + e.message, "err");
+	} finally {
+		btn.disabled = false;
+	}
+}
+
+let devPollTimer = null;
+async function pollDevLog() {
+	if (!devRunning) return;
+	try {
+		const res = await fetch("/api/dev");
+		const data = await res.json();
+		const log = document.getElementById("dev-log");
+		if (data.output && log.classList.contains("open")) {
+			log.textContent = data.output;
+			log.scrollTop = log.scrollHeight;
+		}
+		// 从日志解析出的实际地址可能不是默认 4321 端口，实时更新
+		const statusLine = document.getElementById("dev-status-line");
+		if (data.running && data.url && statusLine && statusLine.dataset.auto !== "0") {
+			statusLine.innerHTML =
+				`<a href="${data.url}" target="_blank" style="color:var(--ok);font-weight:600;">${data.url}</a> <span style="color:var(--text-2);font-size:12px;">预览服务运行中</span>`;
+		}
+	} catch (e) { /* 忽略 */ }
+	if (devRunning) devPollTimer = setTimeout(pollDevLog, 3000);
+}
+
+// ============ 初始化 ============
+document.getElementById("modal-confirm").addEventListener("click", doDelete);
+document.getElementById("modal-cancel").addEventListener("click", closeModal);
+goHome();
+refreshStatus();
+loadSwitches();
+loadDataFiles();
+loadValues();
+</script>
+</body>
+</html>

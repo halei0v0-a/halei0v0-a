@@ -52,3 +52,9 @@ src/data/bilibili-data.json
 
 # Lighthouse CI
 .lighthouseci/
+
+# admin local backups
+admin/backups/
+
+# admin build history
+admin/build-history.json

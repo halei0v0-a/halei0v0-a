@@ -1,12 +1,12 @@
 import type { CommentConfig } from "../types/config";
 
 export const commentConfig: CommentConfig = {
-	enable: true,
+	enable: true, // 是否启用评论功能
 	type: "twikoo",
 	twikoo: {
 		envId: "https://tool.halei0v0.dpdns.org",
 		lang: "zh-CN",
-		visitorCount: true,
+		visitorCount: true, // 是否显示访客数
 		// 本地 JS 优先，如需 CDN 可改为：
 		// https://registry.npmmirror.com/twikoo/1.7.14/files/dist/twikoo.min.js（国内推荐）
 		// https://cdn.jsdelivr.net/npm/twikoo@1.7.14/dist/twikoo.min.js（国际）
@@ -23,12 +23,12 @@ export const commentConfig: CommentConfig = {
 			"https://unpkg.com/@waline/emojis@1.4.0/bmoji",
 		],
 		login: "enable",
-		visitorCount: true,
+		visitorCount: true, // 是否显示访客数
 	},
 	artalk: {
 		server: "https://artalk.example.com/",
 		locale: "zh-CN",
-		visitorCount: true,
+		visitorCount: true, // 是否显示访客数
 	},
 	giscus: {
 		repo: "your-github-username/your-repo-name",

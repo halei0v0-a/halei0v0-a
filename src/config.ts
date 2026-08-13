@@ -95,7 +95,7 @@ export const siteConfig: SiteConfig = {
 		// 默认布局模式："list" 列表模式（单列布局），"grid" 网格模式（双列布局）
 		// 注意：如果侧边栏配置启用了"both"双侧边栏，则无法使用文章列表"grid"网格（双列）布局
 		defaultMode: "list",
-		// 是否允许用户切换布局
+		// 是否允许用户在文章列表页切换列表/网格布局
 		allowSwitch: true,
 		// 文章列表页分类导航条配置
 		categoryBar: {
@@ -338,19 +338,19 @@ export const navBarConfig: NavBarConfig = {
 				{
 					name: "GitHub",
 					url: "https://github.com/halei0v0-a",
-					external: true,
+					external: true, // 是否新标签页打开（外部链接）
 					icon: "fa7-brands:github",
 				},
 				{
 					name: "Guideline",
 					url: "https://halei0v0-a.github.io",
-					external: true,
+					external: true, // 是否新标签页打开（外部链接）
 					icon: "material-symbols:menu-book",
 				},
 				{
 					name: "Bilibili",
 					url: "https://space.bilibili.com/524530873?spm_id_from=333.1007.0.0",
-					external: true,
+					external: true, // 是否新标签页打开（外部链接）
 					icon: "fa7-brands:bilibili",
 				},
 			],
@@ -379,7 +379,7 @@ export const navBarConfig: NavBarConfig = {
 					name: "Devices",
 					url: "devices/",
 					icon: "material-symbols:devices",
-					external: false,
+					external: false, // 是否新标签页打开（外部链接）
 				},
 			],
 		},
@@ -453,7 +453,7 @@ export const profileConfig: ProfileConfig = {
 };
 
 export const licenseConfig: LicenseConfig = {
-	enable: true,
+	enable: true, // 是否在文章页脚显示版权许可信息
 	name: "CC BY-NC-SA 4.0",
 	url: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
 };
@@ -746,13 +746,13 @@ export const pioConfig: import("./types/config").PioConfig = {
 
 // 相关文章配置
 export const relatedPostsConfig: RelatedPostsConfig = {
-	enable: true,
+	enable: true, // 是否在文章底部显示相关文章推荐
 	maxCount: 5,
 };
 
 // 随机文章配置
 export const randomPostsConfig: RandomPostsConfig = {
-	enable: true,
+	enable: true, // 是否在侧栏显示随机文章推荐
 	maxCount: 5,
 };
 
