@@ -571,6 +571,10 @@ export interface PageProgressBarConfig {
  * 第三方统计配置（可能影响 Lighthouse 评分）
  */
 export interface ThirdPartyAnalyticsConfig {
-	enable: boolean; // 是否启用第三方统计（Microsoft Clarity），默认关闭
+	enable: boolean; // 是否启用第三方统计，默认关闭
 	clarityId?: string; // Clarity 项目 ID
+	umami?: {
+		websiteId: string; // Umami 站点 ID
+		scriptUrl?: string; // Umami 脚本地址，默认 https://cloud.umami.is/script.js
+	};
 }

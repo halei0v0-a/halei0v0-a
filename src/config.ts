@@ -266,8 +266,12 @@ export const siteConfig: SiteConfig = {
 	},
 
 	thirdPartyAnalytics: {
-		enable: false, // 是否启用第三方统计（Microsoft Clarity），默认关闭，启用可能影响 Lighthouse 评分
+		enable: true, // 是否启用第三方统计，默认关闭，启用可能影响 Lighthouse 评分
 		clarityId: "", // Clarity 项目 ID
+		umami: {
+			websiteId: "b533a243-f566-4047-9393-045c4b4ab045",
+			scriptUrl: "https://cloud.umami.is/script.js",
+		},
 	},
 };
 export const fullscreenWallpaperConfig: FullscreenWallpaperConfig = {

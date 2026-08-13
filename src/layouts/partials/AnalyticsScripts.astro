@@ -15,6 +15,10 @@ interface Props {
 	thirdPartyAnalytics?: {
 		enable: boolean;
 		clarityId?: string;
+		umami?: {
+			websiteId: string;
+			scriptUrl?: string;
+		};
 	};
 }
 
@@ -25,7 +29,23 @@ const {
 
 const clarityEnable =
 	thirdPartyAnalytics.enable && thirdPartyAnalytics.clarityId;
+
+const umami = thirdPartyAnalytics.umami;
+const umamiEnable = thirdPartyAnalytics.enable && umami?.websiteId;
 ---
+
+<!-- Umami Analytics - 延迟加载优化 -->
+{
+	umamiEnable && (
+		<script
+			is:inline
+			defer
+			data-swup-ignore-script
+			src={umami.scriptUrl || "https://cloud.umami.is/script.js"}
+			data-website-id={umami.websiteId}
+		></script>
+	)
+}
 
 <!-- 第三方分析脚本 - 仅在用户交互后延迟加载 -->
 <script
