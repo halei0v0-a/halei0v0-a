@@ -54,6 +54,14 @@ const diaryData: DiaryItem[] = [
 			"https://blogpicture.halei0v0.ccwu.cc/images/Classification/%E4%BA%8C%E6%AC%A1%E5%85%83/2026-04-06%2006-16.png",
 		],
 		"id": 5,
+	},
+	{
+		"content": "添加赞助小卡片，有没有人来赞助我吖？！",
+		"date": "2026-08-14",
+		"images": [
+			"https://blogpicture.halei0v0.ccwu.cc/images/Classification/%E5%8D%9A%E5%AE%A2/2026-08-14%2011-27%20%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E5%8F%A4%E5%BB%BA%E5%86%99%E6%84%8F-%E5%8F%A4%E5%BB%BA%E8%83%8C%E6%99%AF.webp",
+		],
+		"id": 6,
 	}
 ];
 

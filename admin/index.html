@@ -393,6 +393,134 @@
 	.modal .modal-btns { display: flex; justify-content: flex-end; gap: 10px; }
 	.split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 	@media (max-width: 640px) { .split { grid-template-columns: 1fr; } main { padding: 16px; } }
+	/* ============ 文章管理 ============ */
+	.post-card { cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+	.post-card:hover { border-color: var(--primary); box-shadow: 0 2px 10px rgba(79, 70, 229, .12); }
+	.post-card .row { display: flex; align-items: center; gap: 14px; }
+	.post-thumb {
+		width: 44px; height: 44px; border-radius: 9px; flex: none;
+		background: var(--primary-soft); color: var(--primary);
+		display: flex; align-items: center; justify-content: center;
+		font-size: 18px; overflow: hidden;
+	}
+	.post-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+	.post-main { flex: 1; min-width: 0; }
+	.post-title { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+	.post-meta { color: var(--text-2); font-size: 12px; margin-top: 3px; }
+	.post-meta .slug { font-family: Consolas, monospace; color: var(--text-3); }
+	.post-btns { display: flex; gap: 8px; flex: none; }
+	.post-btns button { padding: 5px 12px; font-size: 12px; }
+	.tag-chip {
+		display: inline-block; padding: 1px 8px; border-radius: 999px;
+		background: var(--primary-soft); color: var(--primary);
+		font-size: 11px; font-weight: 600;
+	}
+	.tag-chip.draft { background: var(--warn); color: #fff; }
+	.tag-chip.pinned { background: var(--danger-soft); color: var(--danger); }
+	/* 编辑器 */
+	.pe-toolbar {
+		display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+		padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 10px;
+	}
+	.pe-toolbar .slug { font-family: Consolas, monospace; font-size: 12px; color: var(--text-2); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	.pe-group { display: flex; gap: 6px; align-items: center; }
+	.pe-group + .pe-group { margin-left: 8px; }
+	.pe-toolbar button { padding: 5px 10px; font-size: 12px; }
+	.pe-toolbar button.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+	.pe-body { display: flex; gap: 10px; }
+	.pe-modules {
+		flex: none; width: 210px; max-height: 520px; overflow: auto;
+		border: 1px solid var(--border); border-radius: 10px; background: var(--card-2);
+		padding: 10px;
+	}
+	.pe-modules input {
+		width: 100%; padding: 6px 9px; margin-bottom: 8px;
+		border: 1px solid var(--border); border-radius: 8px; font-size: 12px;
+		background: var(--card); color: var(--text);
+	}
+	.pe-modules input:focus { outline: 2px solid var(--primary); border-color: transparent; }
+	.pe-mod-cat { margin-bottom: 6px; }
+	.pe-mod-cat-header {
+		font-size: 12px; font-weight: 700; color: var(--text-2);
+		padding: 4px 2px; cursor: pointer; user-select: none;
+		display: flex; align-items: center; gap: 5px;
+	}
+	.pe-mod-cat-header .arrow { font-size: 9px; transition: transform .15s; }
+	.pe-mod-cat-header.collapsed .arrow { transform: rotate(-90deg); }
+	.pe-mod-items.collapsed { display: none; }
+	.pe-mod-item {
+		font-size: 12px; padding: 4px 8px; border-radius: 6px; cursor: pointer;
+		color: var(--text-2);
+	}
+	.pe-mod-item:hover { background: var(--primary-soft); color: var(--primary); }
+	#pe-editor {
+		flex: 1; min-width: 0; min-height: 480px;
+		width: auto;
+	}
+	.pe-preview {
+		flex: 1; min-width: 0; min-height: 480px; max-height: 560px; overflow: auto;
+		border: 1px solid var(--border); border-radius: 9px;
+		background: var(--card-2); color: var(--text);
+		padding: 16px; font-size: 13.5px; line-height: 1.7;
+	}
+	.pe-preview h1 { font-size: 22px; margin: 8px 0 12px; }
+	.pe-preview h2 { font-size: 18px; margin: 18px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+	.pe-preview h3 { font-size: 15px; margin: 14px 0 8px; }
+	.pe-preview p { margin: 8px 0; }
+	.pe-preview ul, .pe-preview ol { padding-left: 22px; margin: 8px 0; }
+	.pe-preview li { margin: 3px 0; }
+	.pe-preview blockquote {
+		border-left: 3px solid var(--primary); background: var(--primary-soft);
+		margin: 10px 0; padding: 8px 14px; border-radius: 0 8px 8px 0; color: var(--text-2);
+	}
+	.pe-preview code { background: var(--border); padding: 2px 6px; border-radius: 4px; font-size: 12.5px; font-family: Consolas, monospace; }
+	.pe-preview pre { background: #0b1220; padding: 12px 14px; border-radius: 8px; overflow-x: auto; margin: 10px 0; }
+	.pe-preview pre code { background: transparent; padding: 0; color: #cbd5e1; }
+	.pe-preview table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+	.pe-preview th, .pe-preview td { border: 1px solid var(--border); padding: 6px 12px; text-align: left; }
+	.pe-preview th { background: var(--card-2); font-weight: 600; }
+	.pe-preview img { max-width: 100%; border-radius: 8px; }
+	.pe-preview a { color: var(--primary); }
+	.pe-preview hr { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+	.pe-status {
+		display: flex; gap: 16px; flex-wrap: wrap;
+		font-size: 11px; color: var(--text-3); margin-top: 8px; font-family: Consolas, monospace;
+	}
+	@media (max-width: 640px) {
+		.pe-body { flex-direction: column; }
+		.pe-modules { width: 100%; max-height: 200px; }
+		#pe-editor, .pe-preview { min-height: 360px; }
+	}
+	/* FM 弹窗 */
+	.fm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+	.fm-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: var(--text-2); }
+	.fm-grid label.full { grid-column: 1 / -1; }
+	.fm-grid input, .fm-grid select, .fm-grid textarea {
+		padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px;
+		font-size: 13px; font-family: inherit; background: var(--card-2); color: var(--text);
+	}
+	.fm-grid input:focus, .fm-grid select:focus, .fm-grid textarea:focus { outline: 2px solid var(--primary); border-color: transparent; }
+	.fm-checks { grid-column: 1 / -1; display: flex; gap: 16px; flex-wrap: wrap; padding: 4px 0; }
+	.fm-checks label { flex-direction: row; align-items: center; gap: 6px; font-weight: 500; }
+	.fm-checks input { accent-color: var(--primary); width: 16px; height: 16px; }
+	/* 查找替换 */
+	.find-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+	.find-row input {
+		flex: 1; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px;
+		font-size: 13px; background: var(--card-2); color: var(--text);
+	}
+	.find-row input:focus { outline: 2px solid var(--primary); border-color: transparent; }
+	.find-count { font-size: 12px; color: var(--text-3); }
+	.find-opt { font-size: 12px; color: var(--text-2); display: flex; align-items: center; gap: 5px; margin-bottom: 10px; }
+	.find-opt input { accent-color: var(--primary); }
+	/* 新建文章 */
+	.new-post-form { display: flex; flex-direction: column; gap: 12px; }
+	.new-post-form label { font-size: 13px; font-weight: 600; color: var(--text-2); display: flex; flex-direction: column; gap: 4px; }
+	.new-post-form input {
+		padding: 8px 11px; border: 1px solid var(--border); border-radius: 8px;
+		font-size: 13px; background: var(--card-2); color: var(--text);
+	}
+	.new-post-form input:focus { outline: 2px solid var(--primary); border-color: transparent; }
 </style>
 </head>
 <body>
@@ -465,6 +593,16 @@
 				</div>
 				<svg class="home-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
 			</button>
+			<button class="home-card" onclick="showTab('posts')">
+				<div class="home-ic">
+					<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>
+				</div>
+				<div class="home-info">
+					<div class="home-title">文章管理 <span class="badge" id="badge-posts">-</span></div>
+					<div class="home-desc">编辑/新建/删除博客文章，Markdown 编辑器 + 预览 + Front Matter 配置</div>
+				</div>
+				<svg class="home-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+			</button>
 		</div>
 		<div class="card" style="margin-top:16px;">
 			<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
@@ -495,6 +633,10 @@
 		<button class="tab" data-tab="values" onclick="showTab('values')">
 			<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
 			内容配置
+		</button>
+		<button class="tab" data-tab="posts" onclick="showTab('posts')">
+			<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>
+			文章管理
 		</button>
 	</div>
 
@@ -593,6 +735,64 @@
 		</div>
 		<div id="values-list"></div>
 	</section>
+
+	<!-- 文章管理 -->
+	<section id="tab-posts" class="hidden">
+		<div class="status-bar" id="posts-status"></div>
+		<div id="posts-list-view">
+			<div class="search-wrap" style="display:flex;gap:10px;">
+				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-3);"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+				<input type="text" id="posts-search" placeholder="搜索文章（标题 / 分类 / 标签）..." oninput="renderPosts()" style="flex:1;width:auto;">
+				<button class="primary" onclick="openNewPostModal()" style="flex:none;">
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+					新建文章
+				</button>
+			</div>
+			<div id="posts-list"></div>
+		</div>
+		<div id="post-editor-view" class="hidden">
+			<div class="back"><button onclick="backToPostsList()">← 返回文章列表</button></div>
+			<div class="card">
+				<div class="pe-toolbar">
+					<span class="slug" id="pe-slug"></span>
+					<div class="pe-group">
+						<button class="active" data-view="edit" onclick="setEditorView('edit', this)">编辑</button>
+						<button data-view="split" onclick="setEditorView('split', this)">分屏</button>
+						<button data-view="preview" onclick="setEditorView('preview', this)">预览</button>
+					</div>
+					<div class="pe-group">
+						<button onclick="toggleFmModal(true)" title="Front Matter 配置">
+							<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2"/><path d="M17 4h2a1 1 0 0 1 1 1v2"/><path d="M20 17v2a1 1 0 0 1-1 1h-2"/><path d="M7 20H5a1 1 0 0 1-1-1v-2"/></svg>
+							Front Matter
+						</button>
+						<button onclick="toggleFindModal(true)" title="查找替换">
+							<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+							查找替换
+						</button>
+						<button onclick="toggleModulesPanel()" title="模块面板">模块</button>
+						<button onclick="triggerImport()" title="导入 Markdown 文件">导入</button>
+						<button onclick="exportArticle()" title="导出">导出</button>
+						<button class="primary" onclick="savePost()">保存文章</button>
+					</div>
+				</div>
+				<div class="pe-body">
+					<div id="pe-modules" class="pe-modules hidden">
+						<input type="text" id="pe-module-search" placeholder="搜索模块..." oninput="renderModules()">
+						<div id="pe-module-list"></div>
+					</div>
+					<textarea id="pe-editor" spellcheck="false" placeholder="在此输入 Markdown 内容..." oninput="onEditorInput()" onscroll="syncEditorScroll()"></textarea>
+					<div id="pe-preview" class="pe-preview hidden"></div>
+				</div>
+				<div class="pe-status">
+					<span id="pe-chars">字符: 0</span>
+					<span id="pe-words">词数: 0</span>
+					<span id="pe-lines">行数: 0</span>
+					<span id="pe-cursor">位置: 1:1</span>
+				</div>
+			</div>
+		</div>
+		<input type="file" id="pe-file-input" accept=".md,.txt,.markdown,.html" style="display:none" onchange="handleImportFile(this)">
+	</section>
 </main>
 
 <div id="toast" class="toast"></div>
@@ -607,6 +807,83 @@
 	</div>
 </div>
 
+<!-- Front Matter 配置弹窗 -->
+<div id="fm-mask" class="modal-mask hidden">
+	<div class="modal" style="max-width:640px;max-height:90vh;overflow:auto;">
+		<h3 style="margin-bottom:14px;">Front Matter 配置</h3>
+		<div class="fm-grid">
+			<label>标题 <input type="text" id="fm-title" placeholder="文章标题"></label>
+			<label>发布日期 <input type="date" id="fm-published"></label>
+			<label class="full">描述 <textarea id="fm-description" rows="2" placeholder="文章描述"></textarea></label>
+			<label>封面图片 <input type="text" id="fm-image" placeholder="./cover.webp"></label>
+			<label>分类 <input type="text" id="fm-category" placeholder="分类名称"></label>
+			<label class="full">标签 <input type="text" id="fm-tags" placeholder="标签1, 标签2, 标签3"></label>
+			<div class="fm-checks">
+				<label><input type="checkbox" id="fm-draft"> 草稿</label>
+				<label><input type="checkbox" id="fm-pinned"> 置顶</label>
+				<label><input type="checkbox" id="fm-comment" checked> 评论</label>
+				<label><input type="checkbox" id="fm-encrypted" onchange="toggleFmPasswordRow()"> 加密</label>
+			</div>
+			<label id="fm-password-row" class="full hidden">密码 <input type="text" id="fm-password" placeholder="访问密码"></label>
+			<label>优先级 <input type="number" id="fm-priority" placeholder="0" min="0"></label>
+			<label>别名 <input type="text" id="fm-alias" placeholder="custom-url-slug"></label>
+			<label>语言
+				<select id="fm-lang">
+					<option value="">默认</option>
+					<option value="zh-CN">简体中文</option>
+					<option value="zh-TW">繁體中文</option>
+					<option value="en">English</option>
+					<option value="ja">日本語</option>
+				</select>
+			</label>
+			<label>许可证 <input type="text" id="fm-license" placeholder="CC BY-NC-SA 4.0"></label>
+			<label>作者 <input type="text" id="fm-author" placeholder="作者名"></label>
+			<label class="full">来源链接 <input type="text" id="fm-source" placeholder="https://..."></label>
+		</div>
+		<div class="modal-btns" style="margin-top:16px;">
+			<button onclick="toggleFmModal(false)">取消</button>
+			<button class="primary" onclick="applyFmToEditor()">应用到文章</button>
+		</div>
+	</div>
+</div>
+
+<!-- 查找替换弹窗 -->
+<div id="find-mask" class="modal-mask hidden">
+	<div class="modal">
+		<h3 style="margin-bottom:14px;">查找替换</h3>
+		<div class="find-row">
+			<input type="text" id="find-input" placeholder="查找..." oninput="findText()">
+			<button onclick="findPrev()">↑</button>
+			<button onclick="findNext()">↓</button>
+			<span class="find-count" id="find-count"></span>
+		</div>
+		<div class="find-row">
+			<input type="text" id="replace-input" placeholder="替换为...">
+			<button onclick="replaceOne()">替换</button>
+			<button onclick="replaceAll()">全部</button>
+		</div>
+		<div class="find-opt"><label style="display:flex;gap:5px;align-items:center;"><input type="checkbox" id="find-case" onchange="findText()"> 区分大小写</label></div>
+		<div class="modal-btns"><button onclick="toggleFindModal(false)">关闭</button></div>
+	</div>
+</div>
+
+<!-- 新建文章弹窗 -->
+<div id="newpost-mask" class="modal-mask hidden">
+	<div class="modal">
+		<h3 style="margin-bottom:14px;">新建文章</h3>
+		<div class="new-post-form">
+			<label>文章标题 <input type="text" id="newpost-title" placeholder="例如：我的新文章"></label>
+			<label>发布日期 <input type="date" id="newpost-date"></label>
+			<div class="modal-btns" style="margin-top:4px;">
+				<button onclick="toggleNewPostModal(false)">取消</button>
+				<button class="primary" onclick="createPost()">创建</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="/vendor/marked.min.js"></script>
+<script src="/vendor/highlight.min.js"></script>
 <script>
 let switchesCache = [];
 let schemasCache = null;
@@ -662,9 +939,11 @@ function showTab(name) {
 	document.getElementById("tab-data").classList.toggle("hidden", name !== "data");
 	document.getElementById("tab-build").classList.toggle("hidden", name !== "build");
 	document.getElementById("tab-values").classList.toggle("hidden", name !== "values");
+	document.getElementById("tab-posts").classList.toggle("hidden", name !== "posts");
 	if (name === "data") loadDataFiles();
 	if (name === "build") refreshStatus();
 	if (name === "values") loadValues();
+	if (name === "posts") loadPosts();
 }
 
 // 首页状态栏与卡片徽标
@@ -760,6 +1039,7 @@ function refreshAll() {
 	loadDataFiles();
 	refreshStatus();
 	loadHomeStatus();
+	loadPosts();
 	toast("已刷新");
 }
 
@@ -1144,10 +1424,24 @@ function closeModal() {
 
 async function doDelete() {
 	if (!pendingDelete) return;
-	const { file, cat, idx } = pendingDelete;
 	const btn = document.getElementById("modal-confirm");
 	btn.disabled = true;
 	try {
+		// 文章删除
+		if (pendingDelete.postSlug) {
+			const res = await fetch("/api/posts/delete", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ slug: pendingDelete.postSlug }),
+			});
+			const data = await res.json();
+			if (!data.ok) throw new Error(data.error);
+			toast("已删除，文章已备份到 admin/backups/", "ok");
+			closeModal();
+			backToPostsList();
+			return;
+		}
+		const { file, cat, idx } = pendingDelete;
 		const res = await fetch("/api/data/delete", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -1377,6 +1671,644 @@ async function pollDevLog() {
 	} catch (e) { /* 忽略 */ }
 	if (devRunning) devPollTimer = setTimeout(pollDevLog, 3000);
 }
+
+// ============ 文章管理 ============
+let postsCache = [];
+let currentPostSlug = null;
+let editorView = 'edit';
+let isSyncingScroll = false;
+
+// 模块面板数据（复用 Mizuki 编辑器）
+const POST_MODULES = [
+	{ cat: "Front Matter", items: [
+		{ name: "基本配置", code: '---\ntitle: "文章标题"\npublished: ' + new Date().toISOString().split("T")[0] + '\ndescription: "文章描述"\nimage: "./cover.webp"\ntags: [标签1, 标签2]\ncategory: 分类名称\ndraft: false\npinned: false\ncomment: true\n---\n\n' },
+		{ name: "加密配置", code: '---\ntitle: "加密文章"\npublished: ' + new Date().toISOString().split("T")[0] + '\ndescription: "加密文章描述"\nencrypted: true\npassword: "123456"\ntags: [加密]\ncategory: 安全\n---\n\n' },
+		{ name: "置顶配置", code: '---\ntitle: "置顶文章"\npublished: ' + new Date().toISOString().split("T")[0] + '\npinned: true\npriority: 0\ndescription: "置顶文章描述"\ntags: [公告]\ncategory: 公告\n---\n\n' },
+		{ name: "草稿配置", code: '---\ntitle: "草稿文章"\npublished: ' + new Date().toISOString().split("T")[0] + '\ndraft: true\ntags: [草稿]\ncategory: 示例\n---\n\n' }
+	]},
+	{ cat: "基础 Markdown", items: [
+		{ name: "一级标题", code: "# 标题\n\n" },
+		{ name: "二级标题", code: "## 标题\n\n" },
+		{ name: "三级标题", code: "### 标题\n\n" },
+		{ name: "加粗", code: "**加粗文本**" },
+		{ name: "斜体", code: "*斜体文本*" },
+		{ name: "删除线", code: "~~删除文本~~" },
+		{ name: "无序列表", code: "- 列表项一\n- 列表项二\n\n" },
+		{ name: "有序列表", code: "1. 第一项\n2. 第二项\n\n" },
+		{ name: "任务列表", code: "- [x] 已完成任务\n- [ ] 未完成任务\n\n" },
+		{ name: "引用", code: "> 引用内容\n>\n> 引用第二段\n\n" },
+		{ name: "行内代码", code: "`行内代码`" },
+		{ name: "代码块", code: "```javascript\n// 代码内容\nconsole.log(\"Hello\");\n```\n\n" },
+		{ name: "链接", code: "[链接文本](https://example.com)" },
+		{ name: "图片", code: "![替代文本](./images/photo.png)\n\n" },
+		{ name: "表格", code: "| 列1 | 列2 |\n|------|------|\n| 内容 | 内容 |\n\n" },
+		{ name: "分割线", code: "\n---\n\n" },
+		{ name: "HTML 块", code: '<div class="custom">\n  HTML内容\n</div>\n\n' }
+	]},
+	{ cat: "扩展功能", items: [
+		{ name: "GitHub 卡片", code: '::github{repo="用户名/仓库名"}\n\n' },
+		{ name: "Note 提示框", code: "::::note\n提示信息内容。\n::::\n\n" },
+		{ name: "Tip 技巧框", code: "::::tip\n技巧和建议内容。\n::::\n\n" },
+		{ name: "Important 重要框", code: "::::important\n重要信息内容。\n::::\n\n" },
+		{ name: "Warning 警告框", code: "::::warning\n警告内容。\n::::\n\n" },
+		{ name: "Caution 注意框", code: "::::caution\n注意事项内容。\n::::\n\n" },
+		{ name: "自定义标题提示框", code: "::::note[自定义标题]\n带有自定义标题的提示框内容。\n::::\n\n" },
+		{ name: "Spoiler 隐藏", code: ":spoiler[隐藏的内容]" },
+		{ name: "摘要分隔", code: "\n<!--more-->\n\n" },
+		{ name: "行内公式", code: "$E = mc^2$" },
+		{ name: "块级公式", code: "$$\n\\\\int_{-\\\\infty}^{\\\\infty} e^{-x^2} dx = \\\\sqrt{\\\\pi}\n$$\n\n" }
+	]},
+	{ cat: "Mermaid 图表", items: [
+		{ name: "流程图", code: "```mermaid\ngraph TD\n    A[开始] --> B{条件判断}\n    B -->|是| C[处理步骤1]\n    B -->|否| D[处理步骤2]\n    C --> E[结束]\n    D --> E\n```\n\n" },
+		{ name: "时序图", code: "```mermaid\nsequenceDiagram\n    participant 用户\n    participant 应用\n    participant 服务器\n    用户->>应用: 提交请求\n    应用->>服务器: 发送数据\n    服务器-->>应用: 返回结果\n    应用-->>用户: 显示结果\n```\n\n" },
+		{ name: "甘特图", code: "```mermaid\ngantt\n    title 项目时间线\n    dateFormat YYYY-MM-DD\n    section 设计\n    需求分析 :a1, 2024-01-01, 7d\n    UI设计   :a2, after a1, 10d\n    section 开发\n    前端开发 :b1, 2024-01-15, 15d\n    后端开发 :b2, 2024-01-20, 18d\n```\n\n" },
+		{ name: "类图", code: "```mermaid\nclassDiagram\n    class 用户 {\n        +用户名\n        +密码\n        +登录()\n        +退出()\n    }\n    用户 \"1\" -- \"*\" 文章 : 撰写\n```\n\n" },
+		{ name: "饼图", code: "```mermaid\npie title 数据分析\n    \"分类A\" : 45.6\n    \"分类B\" : 30.1\n    \"分类C\" : 15.3\n    \"其他\"  : 9.0\n```\n\n" },
+		{ name: "状态图", code: "```mermaid\nstateDiagram-v2\n    [*] --> 草稿\n    草稿 --> 审核中 : 提交\n    审核中 --> 草稿 : 拒绝\n    审核中 --> 已发布 : 通过\n    已发布 --> 已归档 : 归档\n```\n\n" }
+	]},
+	{ cat: "视频嵌入", items: [
+		{ name: "YouTube", code: '<iframe width="100%" height="468" src="https://www.youtube.com/embed/视频ID" title="YouTube" frameborder="0" allowfullscreen></iframe>\n\n' },
+		{ name: "Bilibili", code: '<iframe width="100%" height="468" src="//player.bilibili.com/player.html?bvid=视频BV号&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>\n\n' }
+	]},
+	{ cat: "文章模板", items: [
+		{ name: "标准文章", code: '---\ntitle: "文章标题"\npublished: ' + new Date().toISOString().split("T")[0] + '\nupdated: \ndescription: "文章描述"\nimage: ./cover.webp\ntags: [标签1, 标签2]\ncategory: 分类名称\ndraft: false\npinned: false\ncomment: true\n---\n\n# 文章主标题\n\n这里是文章开头部分。\n\n<!--more-->\n\n## 二级标题\n\n正文内容，支持**加粗**、*斜体*、` + "`行内代码`" + `。\n\n### 三级标题\n\n- 列表项一\n- 列表项二\n\n` + "```javascript\nconsole.log(\"Hello World\");\n```" + `\n\n> 引用内容\n\n---\n\n## 总结\n\n文章总结部分。\n' },
+		{ name: "加密文章", code: '---\ntitle: "加密文章示例"\npublished: ' + new Date().toISOString().split("T")[0] + '\ndescription: "需要密码访问的加密文章"\nencrypted: true\npassword: "myPassword123"\ntags: [加密, 安全]\ncategory: 安全\n---\n\n# 加密内容\n\n> 这是一篇加密文章，只有输入正确密码才能查看。\n\n## 敏感信息\n\n这里包含需要保护的内容。\n' },
+		{ name: "置顶公告", code: '---\ntitle: "重要公告"\npublished: ' + new Date().toISOString().split("T")[0] + '\npinned: true\npriority: 0\ndescription: "重要通知"\ntags: [公告, 重要]\ncategory: 公告\n---\n\n# 重要公告\n\n> **时间**：待定\n> **影响范围**：全站\n\n## 详细内容\n\n公告详情...\n\n::::warning[重要提醒]\n请注意...\n::::\n' },
+		{ name: "技术教程", code: '---\ntitle: "技术教程标题"\npublished: ' + new Date().toISOString().split("T")[0] + '\ndescription: "技术教程描述"\nimage: "./cover.webp"\ntags: [教程, 技术]\ncategory: 技术教程\nlicenseName: "CC BY-NC-SA 4.0"\n---\n\n# 技术教程标题\n\n简介段落。\n\n<!--more-->\n\n## 基本概念\n\n概念说明...\n\n### 示例代码\n\n` + "```python\ndef hello():\n    print(\"Hello World\")\n```" + `\n\n## 实际应用\n\n::::tip[实用技巧]\n技巧内容。\n::::\n\n## 总结\n\n**关键词**：关键词1, 关键词2\n' }
+	]}
+];
+
+async function loadPosts() {
+	const list = document.getElementById("posts-list");
+	list.innerHTML = '<div class="card">加载中...</div>';
+	try {
+		const res = await fetch("/api/posts");
+		const data = await res.json();
+		if (!data.ok) throw new Error(data.error);
+		postsCache = data.posts;
+		const b = document.getElementById("badge-posts");
+		if (b) b.textContent = data.posts.length;
+		document.getElementById("posts-search").value = "";
+		const st = document.getElementById("posts-status");
+		st.innerHTML = `<span><span class="dot idle"></span>文章 ${data.posts.length} 篇</span>`;
+		renderPosts();
+	} catch (e) {
+		list.innerHTML = `<div class="card">加载失败: ${e.message}</div>`;
+	}
+}
+
+function renderPosts() {
+	const list = document.getElementById("posts-list");
+	const q = (document.getElementById("posts-search").value || "").trim().toLowerCase();
+	const filtered = q
+		? postsCache.filter((p) =>
+				p.title.toLowerCase().includes(q) ||
+				p.category.toLowerCase().includes(q) ||
+				p.tags.some((t) => t.toLowerCase().includes(q)),
+			)
+		: postsCache;
+	if (!filtered.length) {
+		list.innerHTML = '<div class="card">' + (q ? "无匹配的文章" : "暂无文章，点击右上角「新建文章」") + "</div>";
+		return;
+	}
+	list.innerHTML = filtered
+		.map((p) => {
+			const chips = [];
+			if (p.draft) chips.push('<span class="tag-chip draft">草稿</span>');
+			if (p.pinned) chips.push('<span class="tag-chip pinned">置顶</span>');
+			if (p.category) chips.push(`<span class="tag-chip">${escapeHtml(p.category)}</span>`);
+			const tags = p.tags.slice(0, 3).map((t) => `<span class="tag-chip" style="background:var(--card-2);color:var(--text-2);">${escapeHtml(t)}</span>`).join("");
+			return `
+			<div class="card post-card">
+				<div class="row">
+					<div class="post-thumb" onclick="openPostEditor('${p.slug}')">
+						${p.image ? `<img src="${escapeHtml(p.image)}" alt="" onerror="this.remove()">` : "📄"}
+					</div>
+					<div class="post-main" onclick="openPostEditor('${p.slug}')">
+						<div class="post-title">${escapeHtml(p.title)} ${chips.join("")}</div>
+						<div class="post-meta">${p.published || "未发布"} · ${fmtChars(p.chars)} · <span class="slug">${escapeHtml(p.slug)}</span></div>
+						${tags ? `<div class="post-meta" style="margin-top:4px;">${tags}</div>` : ""}
+					</div>
+					<div class="post-btns">
+						<button class="primary" onclick="openPostEditor('${p.slug}')">编辑</button>
+						<button onclick="confirmDeletePost('${p.slug}')">删除</button>
+					</div>
+				</div>
+			</div>`;
+		})
+		.join("");
+}
+
+function fmtChars(n) {
+	if (n >= 10000) return (n / 10000).toFixed(1) + " 万字";
+	return n + " 字";
+}
+
+// ---- 编辑器 ----
+async function openPostEditor(slug) {
+	currentPostSlug = slug;
+	document.getElementById("posts-list-view").classList.add("hidden");
+	const editor = document.getElementById("post-editor-view");
+	editor.classList.remove("hidden");
+	document.getElementById("pe-slug").textContent = slug;
+	const ta = document.getElementById("pe-editor");
+	ta.value = "";
+	updateEditorStats();
+	try {
+		const res = await fetch("/api/posts?slug=" + encodeURIComponent(slug));
+		const data = await res.json();
+		if (!data.ok) throw new Error(data.error);
+		ta.value = data.content;
+		updatePreview();
+		updateEditorStats();
+		ta.focus();
+	} catch (e) {
+		toast("加载失败: " + e.message, "err");
+	}
+}
+
+function backToPostsList() {
+	currentPostSlug = null;
+	document.getElementById("posts-list-view").classList.remove("hidden");
+	document.getElementById("post-editor-view").classList.add("hidden");
+	loadPosts();
+}
+
+async function savePost() {
+	if (!currentPostSlug) return;
+	const content = document.getElementById("pe-editor").value;
+	if (!content.trim()) {
+		toast("内容为空，无法保存", "err");
+		return;
+	}
+	const btn = document.querySelector("#post-editor-view .pe-toolbar button.primary");
+	btn.disabled = true;
+	btn.innerHTML = '<span class="spinner"></span>保存中';
+	try {
+		const res = await fetch("/api/posts", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ slug: currentPostSlug, content }),
+		});
+		const data = await res.json();
+		if (!data.ok) throw new Error(data.error);
+		toast("保存成功，原文件已自动备份", "ok");
+	} catch (e) {
+		toast("保存失败: " + e.message, "err");
+	} finally {
+		btn.disabled = false;
+		btn.innerHTML = "保存文章";
+	}
+}
+
+function confirmDeletePost(slug) {
+	const post = postsCache.find((p) => p.slug === slug);
+	pendingDelete = { postSlug: slug };
+	document.getElementById("modal-title").textContent = "删除文章";
+	document.getElementById("modal-text").textContent =
+		`确定删除「${post ? post.title : slug}」吗？整个文章目录（含图片等资源）会被删除，原文件会自动备份到 admin/backups/。`;
+	document.getElementById("modal-mask").classList.remove("hidden");
+}
+
+// ---- 新建文章 ----
+function toggleNewPostModal(show) {
+	document.getElementById("newpost-mask").classList.toggle("hidden", !show);
+	if (show) {
+		document.getElementById("newpost-title").value = "";
+		document.getElementById("newpost-date").value = new Date().toISOString().split("T")[0];
+		setTimeout(() => document.getElementById("newpost-title").focus(), 50);
+	}
+}
+
+function openNewPostModal() { toggleNewPostModal(true); }
+
+async function createPost() {
+	const title = document.getElementById("newpost-title").value.trim();
+	if (!title) {
+		toast("请填写文章标题", "err");
+		return;
+	}
+	const published = document.getElementById("newpost-date").value;
+	const btn = document.querySelector("#newpost-mask .primary");
+	btn.disabled = true;
+	btn.innerHTML = '<span class="spinner"></span>创建中';
+	try {
+		const res = await fetch("/api/posts/create", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ title, published }),
+		});
+		const data = await res.json();
+		if (!data.ok) throw new Error(data.error);
+		toast("文章已创建", "ok");
+		toggleNewPostModal(false);
+		await loadPosts();
+		openPostEditor(data.slug);
+	} catch (e) {
+		toast("创建失败: " + e.message, "err");
+	} finally {
+		btn.disabled = false;
+		btn.innerHTML = "创建";
+	}
+}
+
+// ---- 编辑器核心 ----
+function getEditor() { return document.getElementById("pe-editor"); }
+
+function setEditorView(view, btn) {
+	editorView = view;
+	document.querySelectorAll("#post-editor-view .pe-toolbar [data-view]").forEach((b) =>
+		b.classList.toggle("active", b === btn),
+	);
+	const ta = getEditor();
+	const preview = document.getElementById("pe-preview");
+	ta.classList.toggle("hidden", view === "preview");
+	preview.classList.toggle("hidden", view === "edit");
+	if (view !== "edit") updatePreview();
+}
+
+function updatePreview() {
+	if (editorView === "edit") return;
+	const preview = document.getElementById("pe-preview");
+	let content = getEditor().value;
+	if (content.startsWith("---")) {
+		const end = content.indexOf("\n---", 3);
+		if (end !== -1) content = content.slice(end + 4);
+	}
+	try {
+		preview.innerHTML = marked.parse(content, {
+			gfm: true, breaks: true,
+			highlight: (code, lang) => {
+				if (lang && hljs.getLanguage(lang)) return hljs.highlight(code, { language: lang }).value;
+				return hljs.highlightAuto(code).value;
+			},
+		});
+	} catch (e) {
+		preview.innerHTML = marked.parse(content);
+	}
+}
+
+let previewTimer;
+function onEditorInput() {
+	clearTimeout(previewTimer);
+	previewTimer = setTimeout(updatePreview, 300);
+	updateEditorStats();
+}
+
+function updateEditorStats() {
+	const text = getEditor().value;
+	document.getElementById("pe-chars").textContent = "字符: " + text.length;
+	document.getElementById("pe-words").textContent = "词数: " + (text.trim() ? text.trim().split(/\s+/).length : 0);
+	document.getElementById("pe-lines").textContent = "行数: " + (text ? text.split("\n").length : 0);
+}
+
+function updateCursorPos() {
+	const ta = getEditor();
+	const text = ta.value.substring(0, ta.selectionStart).split("\n");
+	document.getElementById("pe-cursor").textContent = `位置: ${text.length}:${text[text.length - 1].length + 1}`;
+}
+
+// 分屏同步滚动
+function syncEditorScroll() {
+	if (editorView !== "split" || isSyncingScroll) return;
+	const ta = getEditor();
+	const preview = document.getElementById("pe-preview");
+	const maxE = ta.scrollHeight - ta.clientHeight;
+	const maxP = preview.scrollHeight - preview.clientHeight;
+	if (maxE <= 0 || maxP <= 0) return;
+	isSyncingScroll = true;
+	preview.scrollTop = (ta.scrollTop / maxE) * maxP;
+	requestAnimationFrame(() => (isSyncingScroll = false));
+}
+
+// 工具栏快捷键（编辑器内 Tab 缩进、括号自动配对）
+getEditor().addEventListener("keydown", (e) => {
+	if (e.key === "Tab") {
+		e.preventDefault();
+		insertAtCursor("  ");
+	}
+	// Ctrl/Meta 快捷键
+	if (!e.ctrlKey && !e.metaKey) return;
+	const k = e.key.toLowerCase();
+	const ta = getEditor();
+	if (k === "b") { e.preventDefault(); wrapSelection(ta, "**", "**"); }
+	else if (k === "i") { e.preventDefault(); wrapSelection(ta, "*", "*"); }
+	else if (k === "s") { e.preventDefault(); savePost(); }
+	else if (k === "f") { e.preventDefault(); toggleFindModal(true); }
+	else if (k === "k") { e.preventDefault(); wrapSelection(ta, "[", "](url)"); }
+});
+
+function wrapSelection(ta, before, after) {
+	const start = ta.selectionStart;
+	const end = ta.selectionEnd;
+	const text = ta.value.substring(start, end);
+	if (document.execCommand) {
+		document.execCommand("insertText", false, before + text + after);
+	} else {
+		ta.setRangeText(before + text + after, start, end, "end");
+	}
+	const newPos = start + before.length;
+	ta.setSelectionRange(newPos, newPos + text.length);
+	onEditorInput();
+	updatePreview();
+}
+
+// 括号自动配对
+const PE_PAIRS = { "(": ")", "[": "]", "{": "}", '"': '"', "'": "'", "`": "`" };
+getEditor().addEventListener("keydown", (e) => {
+	if (!PE_PAIRS[e.key]) return;
+	const ta = getEditor();
+	const start = ta.selectionStart;
+	const end = ta.selectionEnd;
+	e.preventDefault();
+	if (start !== end) {
+		const selected = ta.value.substring(start, end);
+		if (document.execCommand) {
+			document.execCommand("insertText", false, e.key + selected + PE_PAIRS[e.key]);
+		} else {
+			ta.setRangeText(e.key + selected + PE_PAIRS[e.key], start, end, "end");
+		}
+		ta.setSelectionRange(start + 1, end + 1);
+	} else {
+		if (document.execCommand) {
+			document.execCommand("insertText", false, e.key + PE_PAIRS[e.key]);
+		} else {
+			ta.setRangeText(e.key + PE_PAIRS[e.key], start, end, "end");
+		}
+		ta.setSelectionRange(start + 1, start + 1);
+	}
+	onEditorInput();
+});
+
+// ---- 模块面板 ----
+function toggleModulesPanel() {
+	document.getElementById("pe-modules").classList.toggle("hidden");
+}
+
+function renderModules() {
+	const list = document.getElementById("pe-module-list");
+	const q = (document.getElementById("pe-module-search").value || "").toLowerCase();
+	list.innerHTML = "";
+	for (const cat of POST_MODULES) {
+		const items = q
+			? cat.items.filter((i) => i.name.toLowerCase().includes(q) || cat.cat.toLowerCase().includes(q))
+			: cat.items;
+		if (!items.length) continue;
+		const catEl = document.createElement("div");
+		catEl.className = "pe-mod-cat";
+		catEl.innerHTML = `<div class="pe-mod-cat-header"><span class="arrow">▼</span>${cat.cat}</div><div class="pe-mod-items"></div>`;
+		const itemsEl = catEl.querySelector(".pe-mod-items");
+		for (const item of items) {
+			const el = document.createElement("div");
+			el.className = "pe-mod-item";
+			el.textContent = item.name;
+			el.onclick = () => insertAtCursor(item.code);
+			itemsEl.appendChild(el);
+		}
+		catEl.querySelector(".pe-mod-cat-header").onclick = function () {
+			this.classList.toggle("collapsed");
+			itemsEl.classList.toggle("collapsed");
+		};
+		list.appendChild(catEl);
+	}
+}
+
+function insertAtCursor(text) {
+	const ta = getEditor();
+	ta.focus();
+	const start = ta.selectionStart;
+	const end = ta.selectionEnd;
+	if (document.execCommand) {
+		document.execCommand("insertText", false, text);
+	} else {
+		ta.setRangeText(text, start, end, "end");
+	}
+	onEditorInput();
+}
+
+// ---- Front Matter ----
+function toggleFmModal(show) {
+	document.getElementById("fm-mask").classList.toggle("hidden", !show);
+	if (show) parseFmFromEditor();
+}
+
+function toggleFmPasswordRow() {
+	document.getElementById("fm-password-row").classList.toggle("hidden", !document.getElementById("fm-encrypted").checked);
+}
+
+function parseFmFromEditor() {
+	const content = getEditor().value;
+	const fm = {};
+	if (content.startsWith("---")) {
+		const end = content.indexOf("\n---", 3);
+		if (end !== -1) {
+			for (const line of content.slice(3, end).split("\n")) {
+				const m = line.match(/^(\w+):\s*(.+)$/);
+				if (!m) continue;
+				fm[m[1]] = m[2].replace(/^["']|["']$/g, "").trim();
+			}
+		}
+	}
+	const set = (id, v) => {
+		const el = document.getElementById(id);
+		if (el) el.value = v || "";
+	};
+	set("fm-title", fm.title);
+	set("fm-published", fm.published);
+	set("fm-updated", fm.updated);
+	set("fm-description", fm.description);
+	set("fm-image", fm.image);
+	set("fm-category", fm.category);
+	set("fm-tags", (fm.tags || "").replace(/[\[\]]/g, ""));
+	document.getElementById("fm-draft").checked = fm.draft === "true";
+	document.getElementById("fm-pinned").checked = fm.pinned === "true";
+	document.getElementById("fm-comment").checked = fm.comment !== "false";
+	document.getElementById("fm-encrypted").checked = fm.encrypted === "true";
+	toggleFmPasswordRow();
+	set("fm-password", fm.password);
+	set("fm-priority", fm.priority);
+	set("fm-alias", fm.alias);
+	set("fm-lang", fm.lang);
+	set("fm-license", fm.licenseName);
+	set("fm-author", fm.author);
+	set("fm-source", fm.sourceLink);
+}
+
+function applyFmToEditor() {
+	let fm = "---\n";
+	const add = (k, v) => { if (v !== undefined && v !== null && v !== "") fm += `${k}: ${v}\n`; };
+	const addQ = (k, v) => { if (v !== undefined && v !== null && v !== "") fm += `${k}: "${v}"\n`; };
+	addQ("title", document.getElementById("fm-title").value);
+	add("published", document.getElementById("fm-published").value);
+	add("updated", document.getElementById("fm-updated").value);
+	addQ("description", document.getElementById("fm-description").value);
+	add("image", document.getElementById("fm-image").value);
+	const tags = document.getElementById("fm-tags").value.split(/[,，]/).map((t) => t.trim()).filter(Boolean);
+	if (tags.length) fm += `tags: [${tags.join(", ")}]\n`;
+	add("category", document.getElementById("fm-category").value);
+	fm += `draft: ${document.getElementById("fm-draft").checked}\n`;
+	fm += `pinned: ${document.getElementById("fm-pinned").checked}\n`;
+	if (document.getElementById("fm-pinned").checked) add("priority", document.getElementById("fm-priority").value);
+	fm += `comment: ${document.getElementById("fm-comment").checked}\n`;
+	if (document.getElementById("fm-encrypted").checked) {
+		fm += "encrypted: true\n";
+		addQ("password", document.getElementById("fm-password").value);
+	}
+	add("alias", document.getElementById("fm-alias").value);
+	add("lang", document.getElementById("fm-lang").value);
+	addQ("licenseName", document.getElementById("fm-license").value);
+	addQ("author", document.getElementById("fm-author").value);
+	addQ("sourceLink", document.getElementById("fm-source").value);
+	fm += "---\n\n";
+
+	let content = getEditor().value;
+	if (content.startsWith("---")) {
+		const end = content.indexOf("\n---", 3);
+		if (end !== -1) content = content.slice(end + 4);
+	}
+	getEditor().value = fm + content;
+	toggleFmModal(false);
+	onEditorInput();
+	updatePreview();
+	toast("Front Matter 已应用到文章", "ok");
+}
+
+// ---- 查找替换 ----
+let findMatches = [];
+let findIndex = -1;
+
+function toggleFindModal(show) {
+	document.getElementById("find-mask").classList.toggle("hidden", !show);
+	if (show) {
+		findMatches = [];
+		findIndex = -1;
+		document.getElementById("find-count").textContent = "";
+		document.getElementById("find-input").focus();
+	}
+}
+
+function findText() {
+	findMatches = [];
+	findIndex = -1;
+	const text = document.getElementById("find-input").value;
+	const count = document.getElementById("find-count");
+	if (!text) {
+		count.textContent = "";
+		return;
+	}
+	const flags = document.getElementById("find-case").checked ? "g" : "gi";
+	const regex = new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), flags);
+	const content = getEditor().value;
+	let m;
+	while ((m = regex.exec(content)) !== null) {
+		findMatches.push({ start: m.index, end: m.index + m[0].length });
+	}
+	count.textContent = findMatches.length ? `${findMatches.length} 个结果` : "无结果";
+	if (findMatches.length) {
+		findIndex = 0;
+		highlightMatch();
+	}
+}
+
+function highlightMatch() {
+	if (findIndex < 0 || findIndex >= findMatches.length) return;
+	const ta = getEditor();
+	const match = findMatches[findIndex];
+	ta.focus();
+	ta.setSelectionRange(match.start, match.end);
+	const lineHeight = parseInt(getComputedStyle(ta).lineHeight) || 20;
+	const linesBefore = ta.value.substring(0, match.start).split("\n").length;
+	ta.scrollTop = (linesBefore - 5) * lineHeight;
+	updateCursorPos();
+}
+
+function findNext() {
+	if (!findMatches.length) return;
+	findIndex = (findIndex + 1) % findMatches.length;
+	highlightMatch();
+}
+
+function findPrev() {
+	if (!findMatches.length) return;
+	findIndex = (findIndex - 1 + findMatches.length) % findMatches.length;
+	highlightMatch();
+}
+
+function replaceOne() {
+	if (findIndex < 0 || findIndex >= findMatches.length) return;
+	const ta = getEditor();
+	const match = findMatches[findIndex];
+	const replaceText = document.getElementById("replace-input").value;
+	ta.focus();
+	ta.setSelectionRange(match.start, match.end);
+	if (document.execCommand) {
+		document.execCommand("insertText", false, replaceText);
+	} else {
+		ta.setRangeText(replaceText, match.start, match.end, "end");
+	}
+	findText();
+	onEditorInput();
+}
+
+function replaceAll() {
+	const findVal = document.getElementById("find-input").value;
+	if (!findVal) return;
+	const flags = document.getElementById("find-case").checked ? "g" : "gi";
+	const regex = new RegExp(findVal.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), flags);
+	const ta = getEditor();
+	ta.value = ta.value.replace(regex, document.getElementById("replace-input").value);
+	findMatches = [];
+	findIndex = -1;
+	document.getElementById("find-count").textContent = "已全部替换";
+	onEditorInput();
+}
+
+// ---- 导入导出 ----
+function triggerImport() {
+	document.getElementById("pe-file-input").click();
+}
+
+function handleImportFile(input) {
+	const file = input.files[0];
+	if (!file) return;
+	const reader = new FileReader();
+	reader.onload = (e) => {
+		let content = e.target.result;
+		if (file.name.endsWith(".html")) {
+			const tmp = document.createElement("div");
+			tmp.innerHTML = content;
+			content = tmp.textContent || tmp.innerText;
+		}
+		getEditor().value = content;
+		onEditorInput();
+		updatePreview();
+		toast("已导入 " + file.name, "ok");
+	};
+	reader.readAsText(file);
+	input.value = "";
+}
+
+function exportArticle() {
+	const raw = getEditor().value;
+	let content = raw;
+	if (raw.startsWith("---")) {
+		const end = raw.indexOf("\n---", 3);
+		if (end !== -1) content = raw.slice(end + 4);
+	}
+	const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement("a");
+	a.href = url;
+	a.download = (currentPostSlug || "article") + ".md";
+	a.click();
+	URL.revokeObjectURL(url);
+}
+
+// 光标位置更新
+["click", "keyup", "focus"].forEach((ev) =>
+	getEditor().addEventListener(ev, updateCursorPos),
+);
+renderModules();
 
 // ============ 初始化 ============
 document.getElementById("modal-confirm").addEventListener("click", doDelete);

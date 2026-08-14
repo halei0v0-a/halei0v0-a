@@ -27,6 +27,15 @@ enum I18nKey {
 	announcement = "announcement",
 	announcementClose = "announcementClose",
 
+	// 赞助卡片
+	sponsor = "sponsor",
+	sponsorFallback = "sponsorFallback",
+	sponsorSupport = "sponsorSupport",
+
+	// 最新动态类型标注
+	dynamicTypePost = "dynamicTypePost",
+	dynamicTypeDiary = "dynamicTypeDiary",
+
 	comments = "comments",
 	commentSection = "commentSection",
 	commentSubtitle = "commentSubtitle",

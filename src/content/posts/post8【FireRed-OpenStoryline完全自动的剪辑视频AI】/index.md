@@ -14,43 +14,53 @@ draft: false
 
 > FireRed-OpenStoryline 将复杂的视频创作转化为自然直观的对话体验。兼顾易用性和企业级可靠性，让视频创作对初学者和创意爱好者都变得简单友好。
 
-## 🌐 在线体验
+一句话理解：**你跟它说想做什么视频，它自己找素材、写文案、配音乐、出成片**，全程用对话驱动，不用碰剪辑软件。
 
-- [🤗 HuggingFace Demo](https://fireredteam-firered-openstoryline.hf.space/)
-- [🌐 Homepage](https://fireredteam.github.io/demos/firered_openstoryline/)
+## 在线体验
+
+- [HuggingFace Demo](https://fireredteam-firered-openstoryline.hf.space/)
+- [项目主页](https://fireredteam.github.io/demos/firered_openstoryline/)
 - [GitHub 仓库](https://github.com/FireRedTeam/FireRed-OpenStoryline)
 
-## 💡 项目愿景
+## 项目愿景
 
-FireRed，字面意思红色的火苗，取自"星星之火，可以燎原"。我们将这团火苗取名为 FireRed，就是希望将我们在真实场景中打磨出的 SOTA 能力，像火种一样撒向旷野，点燃全球开发者的想象力，共同改变这个 AI 的世界。
+FireRed，字面意思红色的火苗，取自"星星之火，可以燎原"。团队把项目命名为 FireRed，是希望把在真实场景中打磨出的能力像火种一样散出去，让更多开发者基于它做自己的视频创作工具。
 
-## ✨ 核心特性
+## 核心特性
 
-### 🌐 智能素材搜索与整理
+### 智能素材搜索与整理
 
 自动在线搜索并下载符合你需求的图片和视频片段。基于用户主题素材进行片段拆分与内容理解。
 
-### ✍️ 智能文案生成
+比如你想做一条"咖啡店探店"视频，告诉它主题，它自己去找咖啡相关的画面素材，不用你一个个搜。
+
+### 智能文案生成
 
 结合用户主题、画面理解与情绪识别，自动构建故事线及契合的旁白。内置少样本（Few-shot）仿写能力，支持通过输入参考文本（如种草测评、日常碎碎念等）定义文案风格，实现语感、节奏与句式的精准复刻。
 
-### 🎵 智能推荐音乐、配音与字体
+想模仿某类博主的文案风格？丢一段参考文本进去，它按那个味道写。
+
+### 智能推荐音乐、配音与字体
 
 支持导入私有歌单，根据视频内容和情绪自动推荐背景音乐并智能卡点。只需描述"克制一点"、"偏情绪化"、"像纪录片旁白"等风格，系统即可匹配合适的配音与字体，保证整体风格协调统一。
 
-### 💬 对话式精修
+### 对话式精修
 
 支持快速删减、替换或重组片段；修改任意字幕文案；调整文字颜色、字体、描边、位置等视觉元素——所有操作均通过自然语言完成，即改即得。
 
-### ⚡ 剪辑技能沉淀
+改字幕、换片段，不用拖时间线，直接打字告诉它就行。
+
+### 剪辑技能沉淀
 
 可一键保存为专属剪辑 Skill，记录完整的剪辑逻辑。下次只需更换素材并选择对应 Skill，即可快速复刻同款风格，实现高效批量生产。
 
-## 🏗️ 架构
+做了一条满意的视频，把整套剪辑逻辑存成技能，下次换个素材一键复刻同款风格。
+
+## 架构
 
 ![openstoryline 架构](https://raw.githubusercontent.com/FireRedTeam/fireredteam.github.io/main/demos/firered_openstoryline/pics/structure.jpg)
 
-## 🎬 演示案例
+## 演示案例
 
 | **种草视频** | **幽默有趣** | **好物分享** | **文艺风格** |
 |------------|------------|------------|------------|
@@ -59,23 +69,23 @@ FireRed，字面意思红色的火苗，取自"星星之火，可以燎原"。�
 | **开箱视频** | **宠物说话** | **旅行Vlog** | **年终总结** |
 |------------|------------|------------|------------|
 
-### 🎨 效果说明
+### 效果说明
 
 受限于开源素材的版权协议，第一行默认演示中的元素（字体/音乐）仅为基础效果。**强烈建议** 接入自建元素库教程，解锁商用级字体、音乐、特效等，可实现显著优于默认效果的视频质量。
 
-### ⚠️ 画质说明
+### 画质说明
 
 受限于 README 展示空间，演示视频经过极限压缩。实际运行默认保持原分辨率输出，支持自定义尺寸。
 
-### 💡 Demo 说明
+### Demo 说明
 
-Demo 中：**第一行** 为默认开源素材效果（受限模式），**第二行** 为小红书 App「AI剪辑」元素库效果。👉 点击查看体验教程
+Demo 中：**第一行** 为默认开源素材效果（受限模式），**第二行** 为小红书 App「AI剪辑」元素库效果。点击查看体验教程。
 
-### ⚖️ 免责声明
+### 免责声明
 
 演示中包含的用户自摄素材及品牌标识仅作技术能力展示，版权归原作者所有。如有侵权请联系删除。
 
-## 📦 安装
+## 安装
 
 ### 1. 克隆仓库
 
@@ -148,7 +158,13 @@ pip install -r requirements.txt
 pip install -r requirements.txt
 ```
 
-## 🚀 快速开始
+:::warning
+
+模型文件比较大，下载时注意磁盘空间，别把 C 盘塞满了。
+
+:::
+
+## 快速开始
 
 注意：在开始之前，您需要先在 config.toml 中配置 API-Key。详细信息请参阅文档 [API-Key 配置](docs/source/zh/api-key.md)
 
@@ -180,7 +196,9 @@ python cli.py
 uvicorn agent_fastapi:app --host 127.0.0.1 --port 7860
 ```
 
-## 🐳 Docker 部署
+启动后浏览器打开 `http://127.0.0.1:7860`，就能在网页里和它对话了。
+
+## Docker 部署
 
 如果未安装 Docker，请先安装 https://www.docker.com/products/docker-desktop/
 
@@ -209,46 +227,46 @@ docker run \
 
 启动后访问 Web 界面 http://0.0.0.0:7860
 
-## 📁 项目结构
+## 项目结构
 
 ```
 FireRed-OpenStoryline/
-├── 🎯 src/open_storyline/           核心应用
-│   ├── mcp/                         🔌 模型上下文协议
-│   ├── nodes/                       🎬 视频处理节点
-│   ├── skills/                      🛠️ Agent 技能库
-│   ├── storage/                     💾 Agent 记忆系统
-│   ├── utils/                       🧰 工具函数
-│   ├── agent.py                     🤖 Agent 构建
-│   └── config.py                    ⚙️ 配置管理
-├── 📚 docs/                         文档
-├── 🐳 Dockerfile                    Docker 配置
-├── 💬 prompts/                      LLM 提示词模板
-├── 🎨 resource/                     静态资源
-│   ├── bgms/                        背景音乐库
-│   ├── fonts/                       字体文件
-│   ├── script_templates/            视频脚本模板
-│   └── unicode_emojis.json          Emoji 列表
-├── 🔧 scripts/                      工具脚本
-├── 🌐 web/                          Web 界面
-├── 🚀 agent_fastapi.py              FastAPI 服务器
-├── 🖥️ cli.py                        命令行界面
-├── ⚙️ config.toml                   主配置文件
-├── 🚀 build_env.sh                  环境构建脚本
-├── 📥 download.sh                   资源下载脚本
-├── 📦 requirements.txt              运行时依赖
-└── ▶️ run.sh                        启动脚本
+├── src/open_storyline/           核心应用
+│   ├── mcp/                      模型上下文协议
+│   ├── nodes/                    视频处理节点
+│   ├── skills/                   Agent 技能库
+│   ├── storage/                  Agent 记忆系统
+│   ├── utils/                    工具函数
+│   ├── agent.py                  Agent 构建
+│   └── config.py                 配置管理
+├── docs/                         文档
+├── Dockerfile                    Docker 配置
+├── prompts/                      LLM 提示词模板
+├── resource/                     静态资源
+│   ├── bgms/                     背景音乐库
+│   ├── fonts/                    字体文件
+│   ├── script_templates/         视频脚本模板
+│   └── unicode_emojis.json       Emoji 列表
+├── scripts/                      工具脚本
+├── web/                          Web 界面
+├── agent_fastapi.py              FastAPI 服务器
+├── cli.py                        命令行界面
+├── config.toml                   主配置文件
+├── build_env.sh                  环境构建脚本
+├── download.sh                   资源下载脚本
+├── requirements.txt              运行时依赖
+└── run.sh                        启动脚本
 ```
 
-## 📚 文档
+## 文档
 
-### 📖 教程索引
+### 教程索引
 
 - [API 申请与配置](docs/source/zh/api-key.md) - 如何申请和配置 API 密钥
 - [使用教程](docs/source/zh/guide.md) - 常见用例和基本操作
 - [常见问题](docs/source/zh/faq.md) - 常见问题解答
 
-## 📋 TODO
+## TODO
 
 - [ ] 添加口播类型视频剪辑功能
 - [ ] 添加音色克隆功能
@@ -256,7 +274,7 @@ FireRed-OpenStoryline/
 - [ ] 添加图像/视频生成和编辑能力
 - [ ] 支持 GPU 渲染和高光裁切
 
-## 🙏 致谢
+## 致谢
 
 本项目基于以下优秀的开源项目构建：
 
@@ -266,10 +284,6 @@ FireRed-OpenStoryline/
 - [FFmpeg](https://ffmpeg.org/) - 多媒体框架
 - [LangChain](https://www.langchain.com/) - 提供预构建 Agent 的框架
 
-## 📄 License
+## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
-## ⭐ Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=FireRedTeam/FireRed-OpenStoryline&type=Date)](https://www.star-history.com/#FireRedTeam/FireRed-OpenStoryline&Date)

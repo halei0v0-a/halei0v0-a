@@ -30,6 +30,13 @@ export const en: Translation = {
 	[Key.announcement]: "Announcement",
 	[Key.announcementClose]: "Close",
 
+	// Sponsor
+	[Key.sponsor]: "Sponsor",
+	[Key.sponsorFallback]: "Support me, please~",
+	[Key.sponsorSupport]: "If you like this blog, you can support the author",
+	[Key.dynamicTypePost]: "Post",
+	[Key.dynamicTypeDiary]: "Diary",
+
 	[Key.comments]: "Comments",
 	[Key.commentSection]: "Comments",
 	[Key.commentSubtitle]: "Share your thoughts and discuss with everyone",

@@ -30,6 +30,13 @@ export const ja: Translation = {
 	[Key.announcement]: "お知らせ",
 	[Key.announcementClose]: "閉じる",
 
+	// スポンサー
+	[Key.sponsor]: "スポンサー",
+	[Key.sponsorFallback]: "支援してください〜",
+	[Key.sponsorSupport]: "このブログが好きなら、作者を支援できます",
+	[Key.dynamicTypePost]: "記事",
+	[Key.dynamicTypeDiary]: "日記",
+
 	[Key.comments]: "コメント",
 	[Key.commentSection]: "コメント欄",
 	[Key.commentSubtitle]: "あなたの考えを共有し、みんなと議論しましょう",

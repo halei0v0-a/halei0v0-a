@@ -30,6 +30,13 @@ export const zh_TW: Translation = {
 	[Key.announcement]: "公告",
 	[Key.announcementClose]: "關閉",
 
+	// 贊助卡片
+	[Key.sponsor]: "贊助支持",
+	[Key.sponsorFallback]: "贊助一下，求求啦~",
+	[Key.sponsorSupport]: "喜歡這個博客的話，可以支持一下作者哦",
+	[Key.dynamicTypePost]: "文章",
+	[Key.dynamicTypeDiary]: "日記",
+
 	[Key.comments]: "評論",
 	[Key.commentSection]: "評論區",
 	[Key.commentSubtitle]: "分享你的想法，與大家交流討論",

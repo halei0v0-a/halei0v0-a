@@ -1,6 +1,6 @@
 ---
 title: 博客浏览指南
-published: 2026-08-13
+published: 2026-08-12
 description: 一份写给新朋友也写给老朋友的使用说明书——如何逛遍这个站的每一个角落，以及那些藏在角落里的功能。
 tags: [博客,指南]
 category: 博客

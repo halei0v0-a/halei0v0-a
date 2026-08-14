@@ -14,6 +14,7 @@ const relativeTime = formatRelativeTime(
 ---
 
 <div
+	id={`diary-${moment.id}`}
 	class="moment-card group relative bg-transparent rounded-xl border border-black/10 dark:border-white/10 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
 	data-tags={moment.tags?.join(",") || ""}
 >

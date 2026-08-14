@@ -406,6 +406,17 @@ export interface SiteInfoConfig {
 	unknownBuildPlatform?: string;
 }
 
+export interface SponsorConfig {
+	// 赞助图片地址（二维码/横幅图），留空则显示默认求赞助文字
+	image?: string;
+	// 赞助链接，留空则显示"求赞助"样式而不跳转
+	url?: string;
+	// 求赞助文案（图片未配置时显示）
+	fallbackText?: string;
+	// 求赞助文案（图片已配置时的辅助文案）
+	subText?: string;
+}
+
 // 组件配置类型定义
 export type WidgetComponentType =
 	| "profile"
@@ -422,6 +433,7 @@ export type WidgetComponentType =
 	| "site-info" // 站点信息组件
 	| "dynamic" // 最新动态组件
 	| "calendar" // 日历组件
+	| "sponsor" // 赞助卡片组件
 	| "custom";
 
 export interface WidgetComponentConfig {

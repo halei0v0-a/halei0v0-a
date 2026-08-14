@@ -13,6 +13,7 @@
 	SakuraConfig,
 	ShareConfig,
 	SidebarLayoutConfig,
+	SponsorConfig,
 	ThirdPartyAnalyticsConfig,
 	SiteConfig,
 } from "./types/config";
@@ -135,27 +136,28 @@ export const siteConfig: SiteConfig = {
 				// "/assets/desktop-banner/cat (9).png",
 			], // 桌面横幅图片
 			mobile: [
-				"/assets/mobile-banner/cat (1).png",
-				"/assets/mobile-banner/cat (2).png",
-				"/assets/mobile-banner/cat (3).jpg",
-				"/assets/mobile-banner/cat (4).png",
-				"/assets/mobile-banner/cat (5).png",
-				"/assets/mobile-banner/cat (6).png",
-				"/assets/mobile-banner/cat (7).jpg",
-				"/assets/mobile-banner/cat (7).png",
-				"/assets/mobile-banner/cat (8).jpg",
-				"/assets/mobile-banner/cat (8).png",
-				"/assets/mobile-banner/cat (9).jpg",
-				"/assets/mobile-banner/cat (9).png",
-				"/assets/mobile-banner/cat (10).png",
-				"/assets/mobile-banner/cat (11).png",
-				"/assets/mobile-banner/cat (12).png",
-				"/assets/mobile-banner/cat (13).png",
-				"/assets/mobile-banner/cat (14).png",
-				"/assets/mobile-banner/cat (15).png",
-				"/assets/mobile-banner/cat (16).png",
-				"/assets/mobile-banner/cat (17).png",
-				"/assets/mobile-banner/cat (19).png",
+				"https://blogpicture.halei0v0.ccwu.cc/api/random/博客?type=mobile ",
+				// "/assets/mobile-banner/cat (1).png",
+				// "/assets/mobile-banner/cat (2).png",
+				// "/assets/mobile-banner/cat (3).jpg",
+				// "/assets/mobile-banner/cat (4).png",
+				// "/assets/mobile-banner/cat (5).png",
+				// "/assets/mobile-banner/cat (6).png",
+				// "/assets/mobile-banner/cat (7).jpg",
+				// "/assets/mobile-banner/cat (7).png",
+				// "/assets/mobile-banner/cat (8).jpg",
+				// "/assets/mobile-banner/cat (8).png",
+				// "/assets/mobile-banner/cat (9).jpg",
+				// "/assets/mobile-banner/cat (9).png",
+				// "/assets/mobile-banner/cat (10).png",
+				// "/assets/mobile-banner/cat (11).png",
+				// "/assets/mobile-banner/cat (12).png",
+				// "/assets/mobile-banner/cat (13).png",
+				// "/assets/mobile-banner/cat (14).png",
+				// "/assets/mobile-banner/cat (15).png",
+				// "/assets/mobile-banner/cat (16).png",
+				// "/assets/mobile-banner/cat (17).png",
+				// "/assets/mobile-banner/cat (19).png",
 			], // 移动横幅图片
 		}, // 使用本地横幅图片
 
@@ -513,6 +515,18 @@ export const announcementConfig: AnnouncementConfig = {
 	},
 };
 
+export const sponsorConfig: SponsorConfig = {
+	// 赞助卡片配置（左栏显示）
+	// 图片地址（二维码/横幅图），留空则显示"求赞助"文字样式
+	image: "",
+	// 赞助链接，留空则不跳转
+	url: "",
+	// 未配置图片时的求赞助文案
+	fallbackText: "赞助一下，求求啦~【在留言板留言给我哦~】",
+	// 已配置图片时的辅助文案
+	subText: "喜欢这个博客的话，可以支持一下作者哦",
+};
+
 export const musicPlayerConfig: MusicPlayerConfig = {
 	enable: true, // 启用音乐播放器功能
 	showFloatingPlayer: true, // 显示悬浮播放器 UI
@@ -660,13 +674,23 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			// 非文章页面不显示目录
 			hideOnNonPostPage: true,
 		},
+		{
+			// 组件类型：赞助卡片组件
+			type: "sponsor",
+			// 组件位置
+			position: "top",
+			// CSS 类名
+			class: "onload-animation",
+			// 动画延迟时间
+			animationDelay: 450,
+		},
 	],
 
 	// 侧栏组件布局配置
 	components: {
-		left: ["profile", "announcement", "categories", "tags"],
+		left: ["profile", "announcement", "categories", "tags", "sponsor"],
 		right: ["dynamic", "site-stats", "umami-stats", "site-info", "calendar", "card-toc"],
-		drawer: ["profile", "announcement", "categories", "tags"],
+		drawer: ["profile", "announcement", "categories", "tags", "sponsor", "umami-stats"],
 	},
 
 	// 默认动画配置

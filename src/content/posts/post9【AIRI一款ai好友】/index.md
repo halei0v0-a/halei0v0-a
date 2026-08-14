@@ -18,15 +18,15 @@ sourceLink: "https://github.com/moeru-ai/airi"
 
 你是否梦想过拥有一个赛博生命（赛博 waifu、数字桌宠），一个能陪你玩耍、交谈的数字伴侣？今天给大家介绍一个能实现这个愿望的开源项目——**Project AIRI**。
 
-## 🌐 相关链接
+## 相关链接
 
-- [🌍 官网](https://airi.moeru.ai)
-- [📚 中文文档](https://airi.moeru.ai/docs/zh-Hans/)
-- [🚀 网页版在线体验](https://airi.moeru.ai/)
-- [📦 桌面版下载（GitHub Releases）](https://github.com/moeru-ai/airi/releases/latest)
-- [💬 Discord 社区](https://discord.gg/TgQ3Cu2F7A)
+- [官网](https://airi.moeru.ai)
+- [中文文档](https://airi.moeru.ai/docs/zh-Hans/)
+- [网页版在线体验](https://airi.moeru.ai/)
+- [桌面版下载（GitHub Releases）](https://github.com/moeru-ai/airi/releases/latest)
+- [Discord 社区](https://discord.gg/TgQ3Cu2F7A)
 
-## 🧠 这是什么？
+## 这是什么？
 
 借助现代大语言模型的力量（如 ChatGPT、Claude），让 AI 和你角色扮演聊天早已不是难事——[Character.ai](https://character.ai)、[JanitorAI](https://janitorai.com/) 和 [SillyTavern](https://github.com/SillyTavern/SillyTavern)（酒馆）都是相当成熟的方案。但 AIRI 想推进的是另一件事：
 
@@ -34,23 +34,23 @@ sourceLink: "https://github.com/moeru-ai/airi"
 
 你可能听说过 [Neuro-sama](https://www.youtube.com/@Neurosama)，她是最出色的 AI VTuber 之一，能玩游戏、聊天并与观众互动。可惜她并不开源，直播下线后你就无法与她互动了。AIRI 正是受她启发的**开源替代方向**，让你随时随地拥有自己的数字生命。
 
-## ✨ 特别之处
+## 特别之处
 
 与其他 AI VTuber 开源项目不同，AIRI 从第一天起就大量使用 Web 技术（WebGPU、WebAudio、Web Workers、WebAssembly、WebSocket），把重心放在「角色如何进入真实环境」：
 
 | 维度 | 说明 |
 |------|------|
-| 🫧 **身体** | 支持 Live2D 与 VRM 模型，拥有可互动的 2D / 3D 表现，自动眨眼、自动看、空闲眼睛移动 |
-| 🎙️ **声音** | 整合 TTS（如 ElevenLabs）、STT 语音识别与说话检测，让角色可以开口、听见你说话 |
-| 📖 **上下文** | 插件系统正在把应用状态、开发环境、游戏状态等上下文接入对话流程 |
-| 🎮 **行动能力** | Minecraft、Factorio、Discord、Telegram 等服务模块，展示作为智能体参与外部世界的方向 |
-| 📱 **可移植** | 网页、桌面、移动端共用基础设施，支持 PWA，手机上也能用 |
+| **身体** | 支持 Live2D 与 VRM 模型，拥有可互动的 2D / 3D 表现，自动眨眼、自动看、空闲眼睛移动 |
+| **声音** | 整合 TTS（如 ElevenLabs）、STT 语音识别与说话检测，让角色可以开口、听见你说话 |
+| **上下文** | 插件系统正在把应用状态、开发环境、游戏状态等上下文接入对话流程 |
+| **行动能力** | Minecraft、Factorio、Discord、Telegram 等服务模块，展示作为智能体参与外部世界的方向 |
+| **可移植** | 网页、桌面、移动端共用基础设施，支持 PWA，手机上也能用 |
 
 ::::tip
 **担心 Web 技术性能下降？** 不用太担心——浏览器版只是用来展示 Web 能做到什么，并不完全依赖它。桌面版默认支持 NVIDIA CUDA 与 Apple Metal 加速（基于 [candle](https://github.com/huggingface/candle)），且无需复杂的依赖管理。
 ::::
 
-## ✅ 当前进度
+## 当前进度
 
 - [x] **大脑**
   - [x] 玩 [Minecraft](https://www.minecraft.net)
@@ -67,7 +67,7 @@ sourceLink: "https://github.com/moeru-ai/airi"
   - [x] VRM 模型控制与动画（自动眨眼 / 自动看 / 空闲眼睛移动）
   - [x] Live2D 模型控制与动画（自动眨眼 / 自动看 / 空闲眼睛移动）
 
-## 🚀 怎么开始玩？
+## 怎么开始玩？
 
 ### 网页版（零配置体验）
 
@@ -97,6 +97,10 @@ nix run github:moeru-ai/airi
 **仍在快速演进**：发布版优先保证聊天、角色、模型显示与基础设置；Minecraft 智能体、Discord / Telegram 机器人、Factorio、插件宿主、MCP 等高级能力可能还需要从源码配置或参与开发。详细指南见[开发者文档](https://airi.moeru.ai/docs/zh-Hans/docs/contributing/)。
 ::::
 
-## ⭐ Star History
+## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=moeru-ai/airi&type=Date)](https://www.star-history.com/#moeru-ai/airi&Date)
+
+## 使用感受
+
+网页版开箱即用，填个 API Key 就能聊；桌面版挂个 Live2D 模型放桌面上挺有意思的，说话会张嘴，眼睛会跟着鼠标转，摸鱼的时候有个小东西陪着。缺点也很明显：项目还在快速迭代，高级功能（游戏智能体、MCP）大多要自己编译折腾，不适合普通用户直接拿来当成品用。想体验"赛博桌宠"的话，网页版先试试水，觉得对味再上桌面版。

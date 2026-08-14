@@ -22,6 +22,7 @@ export const WIDGET_COMPONENT_MAP = {
 	"site-info": "../components/widgets/site-info/SiteInfo.astro",
 	dynamic: "../components/widgets/dynamic/Dynamic.astro",
 	calendar: "../components/widgets/calendar/Calendar.astro",
+	sponsor: "../components/widgets/sponsor/Sponsor.astro",
 	custom: null,
 } as const;
 

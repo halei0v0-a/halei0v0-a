@@ -4,6 +4,9 @@ import { Icon } from "astro-icon/components";
 import type { WidgetComponentConfig } from "../../../types/config";
 import { getSortedPosts } from "../../../utils/content-utils";
 import { getPostUrl } from "../../../utils/url-utils";
+import { getDiaryList } from "../../../data/diary";
+import I18nKey from "../../../i18n/i18nKey";
+import { i18n } from "../../../i18n/translation";
 import WidgetLayout from "../common/WidgetLayout.astro";
 
 interface Props {
@@ -17,8 +20,35 @@ const showTitle = widgetConfig?.showTitle !== false;
 const configuredLimit = widgetConfig?.specificConfig?.dynamic?.limit ?? 3;
 const limit = Math.max(1, Math.floor(configuredLimit));
 
+interface DynamicItem {
+	type: "post" | "diary";
+	title: string;
+	date: Date;
+	href: string;
+}
+
 const posts = await getSortedPosts();
-const latestPosts = posts.slice(0, limit);
+const diaries = getDiaryList();
+
+const postItems: DynamicItem[] = posts.map((post) => ({
+	type: "post",
+	title: post.data.title,
+	date: post.data.published,
+	href: getPostUrl(post),
+}));
+
+const diaryItems: DynamicItem[] = diaries.map((diary) => ({
+	type: "diary",
+	title: diary.content,
+	date: new Date(diary.date),
+	href: `/diary/#diary-${diary.id}`,
+}));
+
+const allItems = [...postItems, ...diaryItems].sort(
+	(a, b) => b.date.getTime() - a.date.getTime(),
+);
+
+const latestItems = allItems.slice(0, limit);
 ---
 
 <WidgetLayout
@@ -30,24 +60,42 @@ const latestPosts = posts.slice(0, limit);
 >
 	<div class="flex flex-col gap-2">
 		{
-			latestPosts.map((post) => (
+			latestItems.map((item) => (
 				<a
-					href={getPostUrl(post)}
+					href={item.href}
 					class="group flex items-start gap-2 rounded-lg px-2 py-2 transition hover:bg-[var(--btn-plain-bg-hover)]"
 				>
 					<div class="mt-0.5 text-[var(--primary)]">
-						<Icon name="material-symbols:dynamic-feed-rounded" />
+						{item.type === "post" ? (
+							<Icon name="material-symbols:dynamic-feed-rounded" />
+						) : (
+							<Icon name="material-symbols:edit-note-rounded" />
+						)}
 					</div>
 					<div class="min-w-0">
-						<div class="text-xs text-neutral-500 dark:text-neutral-400">
-							{post.data.published.toLocaleDateString("zh-CN", {
-								year: "numeric",
-								month: "2-digit",
-								day: "2-digit",
-							})}
+						<div class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+							<span
+								class:list={[
+									"shrink-0 rounded px-1 py-px text-[10px] leading-tight",
+									item.type === "post"
+										? "bg-[var(--primary)]/10 text-[var(--primary)]"
+										: "bg-neutral-500/15 text-neutral-500 dark:text-neutral-400",
+								]}
+							>
+								{item.type === "post"
+									? i18n(I18nKey.dynamicTypePost)
+									: i18n(I18nKey.dynamicTypeDiary)}
+							</span>
+							<span>
+								{item.date.toLocaleDateString("zh-CN", {
+									year: "numeric",
+									month: "2-digit",
+									day: "2-digit",
+								})}
+							</span>
 						</div>
 						<div class="line-clamp-2 text-sm font-medium text-neutral-800 dark:text-neutral-200 group-hover:text-[var(--primary)]">
-							{post.data.title}
+							{item.title}
 						</div>
 					</div>
 				</a>

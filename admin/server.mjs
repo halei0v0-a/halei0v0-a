@@ -24,6 +24,7 @@ const PORT = process.env.ADMIN_PORT || 4830;
 const CONFIG_FILE = path.join(ROOT, "src", "config.ts");
 const COMMENT_CONFIG_FILE = path.join(ROOT, "src", "config", "commentConfig.ts");
 const DATA_DIR = path.join(ROOT, "src", "data");
+const POSTS_DIR = path.join(ROOT, "src", "content", "posts");
 const BACKUP_DIR = path.join(__dirname, "backups");
 const DEV_PORT = 4321;
 
@@ -124,6 +125,12 @@ const CONFIG_VALUE_FIELDS = [
 	{ file: "config.ts", path: "announcementConfig.content", label: "公告内容", group: "公告", hint: "", type: "textarea" },
 	{ file: "config.ts", path: "announcementConfig.link.text", label: "公告链接文本", group: "公告", hint: "" },
 	{ file: "config.ts", path: "announcementConfig.link.url", label: "公告链接地址", group: "公告", hint: "" },
+
+	// ---- 赞助卡片 ----
+	{ file: "config.ts", path: "sponsorConfig.image", label: "赞助图片地址", group: "赞助卡片", hint: "二维码/横幅图，留空则显示求赞助文字" },
+	{ file: "config.ts", path: "sponsorConfig.url", label: "赞助链接", group: "赞助卡片", hint: "留空则不跳转" },
+	{ file: "config.ts", path: "sponsorConfig.fallbackText", label: "求赞助文案", group: "赞助卡片", hint: "未配置图片时显示" },
+	{ file: "config.ts", path: "sponsorConfig.subText", label: "辅助文案", group: "赞助卡片", hint: "图片下方或求赞助按钮下方的说明文字" },
 
 	// ---- 页脚与版权 ----
 	{ file: "config.ts", path: "footerConfig.customHtml", label: "自定义页脚 HTML", group: "页脚与版权", hint: "例如备案号，留空不显示", type: "textarea" },
@@ -622,8 +629,75 @@ function setSwitch(source, lineIndex, newValue) {
 	if (replaced === line) {
 		throw new Error(`行 ${lineIndex + 1} 未找到布尔值`);
 	}
-	lines[lineIndex] = replaced;
+lines[lineIndex] = replaced;
 	return lines.join("\n");
+}
+
+// ============ 文章管理 ============
+/** 解析 Front Matter（YAML 简单子集：key: value / key: "quoted" / key: [a, b]），返回对象 */
+function parseFrontMatter(content) {
+	const fm = {};
+	if (!content.startsWith("---")) return fm;
+	const end = content.indexOf("\n---", 3);
+	if (end === -1) return fm;
+	const yaml = content.slice(3, end).trim();
+	for (const line of yaml.split("\n")) {
+		const m = line.match(/^([\w.-]+):\s*(.*)$/);
+		if (!m) continue;
+		const [, key, raw] = m;
+		const v = raw.trim();
+		if (!v) continue;
+		if (v.startsWith("[") && v.endsWith("]")) {
+			fm[key] = v
+				.slice(1, -1)
+				.split(",")
+				.map((s) => s.trim().replace(/^["']|["']$/g, ""))
+				.filter(Boolean);
+		} else if (v === "true") fm[key] = true;
+		else if (v === "false") fm[key] = false;
+		else fm[key] = v.replace(/^["']|["']$/g, "");
+	}
+	return fm;
+}
+
+/** 扫描 posts 目录，返回文章元信息列表 */
+function listPosts() {
+	const posts = [];
+	if (!fs.existsSync(POSTS_DIR)) return posts;
+	for (const dir of fs.readdirSync(POSTS_DIR, { withFileTypes: true })) {
+		if (!dir.isDirectory()) continue;
+		const indexMd = path.join(POSTS_DIR, dir.name, "index.md");
+		if (!fs.existsSync(indexMd)) continue;
+		try {
+			const content = fs.readFileSync(indexMd, "utf-8");
+			const fm = parseFrontMatter(content);
+			// 正文去 front matter 后的纯文本（估算字数）
+			const body = content.replace(/^---[\s\S]*?\n---\n?/, "").replace(/[#*`>~\-[\]()|_\\]/g, " ");
+			posts.push({
+				slug: dir.name,
+				title: fm.title || dir.name,
+				published: fm.published || "",
+				updated: fm.updated || "",
+				description: fm.description || "",
+				image: fm.image || "",
+				category: fm.category || "",
+				tags: Array.isArray(fm.tags) ? fm.tags : [],
+				draft: fm.draft === true,
+				pinned: fm.pinned === true,
+				chars: body.length,
+			});
+		} catch { /* 忽略单个文件错误 */ }
+	}
+	posts.sort((a, b) => String(b.published).localeCompare(String(a.published)));
+	return posts;
+}
+
+/** 校验文章 slug（目录名），防止路径穿越 */
+function safeSlug(slug) {
+	if (typeof slug !== "string" || !slug.trim()) return null;
+	const name = path.basename(slug.trim());
+	if (!name || name === "." || name === ".." || /[\\/]/.test(name)) return null;
+	return name;
 }
 
 // ============ API 处理 ============
@@ -1126,6 +1200,119 @@ function handleApi(req, res, url) {
 			devProc = null;
 		}
 		return sendJson(res, 200, { ok: true, running: false });
+	}
+
+	// ---- 文章列表 ----
+	if (pathname === "/api/posts" && method === "GET" && !url.searchParams.get("slug")) {
+		return sendJson(res, 200, { ok: true, posts: listPosts() });
+	}
+
+	// ---- 读取单篇文章 ----
+	if (pathname === "/api/posts" && method === "GET" && url.searchParams.get("slug")) {
+		const slug = safeSlug(url.searchParams.get("slug"));
+		if (!slug) return sendJson(res, 400, { ok: false, error: "无效的文章目录名" });
+		const file = path.join(POSTS_DIR, slug, "index.md");
+		if (!fs.existsSync(file)) return sendJson(res, 404, { ok: false, error: "文章不存在: " + slug });
+		try {
+			return sendJson(res, 200, { ok: true, slug, content: fs.readFileSync(file, "utf-8") });
+		} catch (e) {
+			return sendJson(res, 400, { ok: false, error: String(e.message || e) });
+		}
+	}
+
+	// ---- 保存文章（自动备份原文件） ----
+	if (pathname === "/api/posts" && method === "POST") {
+		let body = "";
+		req.on("data", (chunk) => (body += chunk));
+		req.on("end", () => {
+			try {
+				const { slug, content } = JSON.parse(body);
+				const safe = safeSlug(slug);
+				if (!safe) return sendJson(res, 400, { ok: false, error: "无效的文章目录名" });
+				if (typeof content !== "string") return sendJson(res, 400, { ok: false, error: "内容必须是字符串" });
+				const dir = path.join(POSTS_DIR, safe);
+				const file = path.join(dir, "index.md");
+				if (!fs.existsSync(file)) return sendJson(res, 404, { ok: false, error: "文章不存在: " + safe });
+				writeFileWithBackup(file, content);
+				sendJson(res, 200, { ok: true });
+			} catch (e) {
+				sendJson(res, 400, { ok: false, error: String(e.message || e) });
+			}
+		});
+		return;
+	}
+
+	// ---- 新建文章（创建目录 + index.md 模板） ----
+	if (pathname === "/api/posts/create" && method === "POST") {
+		let body = "";
+		req.on("data", (chunk) => (body += chunk));
+		req.on("end", () => {
+			try {
+				const { title, published } = JSON.parse(body);
+				if (!title || !String(title).trim()) return sendJson(res, 400, { ok: false, error: "请填写文章标题" });
+				const today = published || new Date().toISOString().split("T")[0];
+				// 生成目录名：postN-标题（数字自动递增，标题含中文保留）
+				let n = 1;
+				for (const p of listPosts()) {
+					const m = /^post(\d+)/.exec(p.slug);
+					if (m) n = Math.max(n, parseInt(m[1], 10) + 1);
+				}
+				const clean = String(title).trim().replace(/[\\/:*?"<>|]/g, "").slice(0, 40);
+				const slug = `post${n}【${clean}】`;
+				const dir = path.join(POSTS_DIR, slug);
+				if (fs.existsSync(dir)) return sendJson(res, 400, { ok: false, error: "目录已存在: " + slug });
+				const template = `---\ntitle: ${JSON.stringify(String(title).trim())}\npublished: ${today}\ndescription: ""\ntags: []\ncategory: 未分类\ndraft: true\n---\n\n# ${String(title).trim()}\n\n`;
+				fs.mkdirSync(dir, { recursive: true });
+				fs.writeFileSync(path.join(dir, "index.md"), template, "utf-8");
+				sendJson(res, 200, { ok: true, slug });
+			} catch (e) {
+				sendJson(res, 400, { ok: false, error: String(e.message || e) });
+			}
+		});
+		return;
+	}
+
+	// ---- 删除文章（备份后删除整个目录） ----
+	if (pathname === "/api/posts/delete" && method === "POST") {
+		let body = "";
+		req.on("data", (chunk) => (body += chunk));
+		req.on("end", () => {
+			try {
+				const { slug } = JSON.parse(body);
+				const safe = safeSlug(slug);
+				if (!safe) return sendJson(res, 400, { ok: false, error: "无效的文章目录名" });
+				const dir = path.join(POSTS_DIR, safe);
+				const file = path.join(dir, "index.md");
+				if (!fs.existsSync(dir)) return sendJson(res, 404, { ok: false, error: "文章不存在: " + safe });
+				// 备份 index.md 与目录内全部文件（fs.cpSync 在中文路径下崩溃，手动递归复制）
+				if (!fs.existsSync(BACKUP_DIR)) fs.mkdirSync(BACKUP_DIR, { recursive: true });
+				const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+				const backupDir = path.join(BACKUP_DIR, `${safe}.del.${ts}`);
+				fs.mkdirSync(backupDir, { recursive: true });
+				const copyRecursive = (src, dst) => {
+					for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+						const s = path.join(src, entry.name);
+						const d = path.join(dst, entry.name);
+						if (entry.isDirectory()) {
+							fs.mkdirSync(d, { recursive: true });
+							copyRecursive(s, d);
+						} else {
+							fs.copyFileSync(s, d);
+						}
+					}
+				};
+				copyRecursive(dir, backupDir);
+				// fs.rmSync 在中文路径下崩溃（Node 24 Windows bug），改用异步版本
+				fs.promises.rm(dir, { recursive: true, force: true }).then(() => {
+					sendJson(res, 200, { ok: true });
+				}).catch((e) => {
+					sendJson(res, 400, { ok: false, error: String(e.message || e) });
+				});
+			} catch (e) {
+				sendJson(res, 400, { ok: false, error: String(e.message || e) });
+			}
+		});
+		return;
 	}
 
 	sendJson(res, 404, { ok: false, error: "未知 API" });

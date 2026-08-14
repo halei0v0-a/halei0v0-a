@@ -1,0 +1,92 @@
+---
+/**
+ * 赞助卡片组件
+ * 配置了图片和链接时：显示赞助图片（可点击跳转）
+ * 未配置图片或链接时：显示可爱"求赞助"文字样式
+ */
+import { Icon } from "astro-icon/components";
+
+import { sponsorConfig } from "../../../config";
+import I18nKey from "../../../i18n/i18nKey";
+import { i18n } from "../../../i18n/translation";
+import WidgetLayout from "../common/WidgetLayout.astro";
+
+const config = sponsorConfig;
+
+const hasImage = !!config.image;
+const hasLink = !!config.url;
+const isExternal = hasLink && !config.url!.startsWith("/");
+
+interface Props {
+	class?: string;
+	style?: string;
+}
+const className = Astro.props.class;
+const style = Astro.props.style;
+---
+
+<WidgetLayout
+	name={i18n(I18nKey.sponsor)}
+	id="sponsor"
+	class={className}
+	style={style}
+>
+	{
+		hasImage ? (
+			<div class="flex flex-col gap-3">
+				<a
+					href={config.url}
+					target={hasLink && isExternal ? "_blank" : undefined}
+					rel={hasLink && isExternal ? "noopener noreferrer" : undefined}
+					class:list={[
+						"group block overflow-hidden rounded-xl bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 active:scale-[0.98] transition",
+						{ "cursor-pointer": hasLink },
+					]}
+				>
+					<img
+						src={config.image}
+						alt={config.subText || i18n(I18nKey.sponsor)}
+						class="w-full object-contain transition group-hover:scale-[1.02]"
+						loading="lazy"
+					/>
+				</a>
+				{
+					config.subText && (
+						<div class="text-center text-sm text-neutral-500 dark:text-neutral-400">
+							{config.subText}
+						</div>
+					)
+				}
+			</div>
+		) : (
+			<div class="text-center">
+				<a
+					href={hasLink ? config.url : undefined}
+					target={hasLink && isExternal ? "_blank" : undefined}
+					rel={hasLink && isExternal ? "noopener noreferrer" : undefined}
+					class:list={[
+						"group flex flex-col items-center gap-2 rounded-xl px-4 py-5 border border-dashed border-[var(--primary)]/40 bg-gradient-to-br from-[var(--primary)]/10 via-transparent to-transparent active:scale-[0.98] transition",
+						{ "cursor-pointer hover:border-[var(--primary)]/70 hover:shadow-lg hover:shadow-[var(--primary)]/10": hasLink },
+					]}
+				>
+					<span
+						class="flex items-center justify-center w-12 h-12 rounded-full bg-[var(--primary)]/15 text-[var(--primary)] transition group-hover:scale-110"
+					>
+						<Icon
+							name="material-symbols:favorite-rounded"
+							class="text-2xl"
+						/>
+					</span>
+					<span class="font-bold text-neutral-800 dark:text-neutral-100">
+						{config.fallbackText || i18n(I18nKey.sponsorFallback)}
+					</span>
+					{hasLink && (
+						<span class="text-xs text-neutral-500 dark:text-neutral-400">
+							{config.subText || i18n(I18nKey.sponsorSupport)}
+						</span>
+					)}
+				</a>
+			</div>
+		)
+	}
+</WidgetLayout>
