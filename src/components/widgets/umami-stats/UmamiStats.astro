@@ -70,10 +70,15 @@ const shareUrl = umami?.shareUrl || "";
 
 <script is:inline>
 	(function () {
-		const pageviewsEl = document.getElementById("umami-total-pageviews");
-		const visitsEl = document.getElementById("umami-total-visits");
-		const visitorsEl = document.getElementById("umami-total-visitors");
-		if (!pageviewsEl || !visitsEl || !visitorsEl) {
+		// 移动端抽屉与桌面侧栏各渲染一个实例，需全部更新
+		function getAllCards() {
+			return Array.from(
+				document.querySelectorAll('widget-layout[data-id="umami-stats"]'),
+			);
+		}
+
+		const cards = getAllCards();
+		if (cards.length === 0) {
 			return;
 		}
 
@@ -107,6 +112,19 @@ const shareUrl = umami?.shareUrl || "";
 			requestAnimationFrame(step);
 		}
 
+		function updateCards(stats) {
+			getAllCards().forEach((card) => {
+				const pageviewsEl = card.querySelector("#umami-total-pageviews");
+				const visitsEl = card.querySelector("#umami-total-visits");
+				const visitorsEl = card.querySelector("#umami-total-visitors");
+				if (pageviewsEl && visitsEl && visitorsEl) {
+					countUp(pageviewsEl, stats.pageviews);
+					countUp(visitsEl, stats.visits);
+					countUp(visitorsEl, stats.visitors);
+				}
+			});
+		}
+
 		async function loadStats() {
 			if (loaded || !window.oddmisc) {
 				return;
@@ -114,15 +132,13 @@ const shareUrl = umami?.shareUrl || "";
 			loaded = true;
 			try {
 				const stats = await window.oddmisc.getSiteStats();
-				countUp(pageviewsEl, stats.pageviews);
-				countUp(visitsEl, stats.visits);
-				countUp(visitorsEl, stats.visitors);
+				updateCards(stats);
 			} catch (e) {
 				loaded = false;
 			}
 		}
 
-		// 懒加载：卡片进入视口时才请求数据
+		// 懒加载：任一卡片进入视口时才请求数据
 		if ("IntersectionObserver" in window) {
 			const observer = new IntersectionObserver(
 				(entries) => {
@@ -135,12 +151,7 @@ const shareUrl = umami?.shareUrl || "";
 				},
 				{ threshold: 0.1 },
 			);
-			const target = document.getElementById("umami-stats");
-			if (target) {
-				observer.observe(target);
-			} else {
-				loadStats();
-			}
+			cards.forEach((card) => observer.observe(card));
 		} else {
 			loadStats();
 		}
@@ -148,9 +159,14 @@ const shareUrl = umami?.shareUrl || "";
 		// swup 页面切换后重新监听
 		window.swup?.hooks.on("page:view", () => {
 			loaded = false;
-			pageviewsEl.textContent = "-";
-			visitsEl.textContent = "-";
-			visitorsEl.textContent = "-";
+			getAllCards().forEach((card) => {
+				const pageviewsEl = card.querySelector("#umami-total-pageviews");
+				const visitsEl = card.querySelector("#umami-total-visits");
+				const visitorsEl = card.querySelector("#umami-total-visitors");
+				if (pageviewsEl) pageviewsEl.textContent = "-";
+				if (visitsEl) visitsEl.textContent = "-";
+				if (visitorsEl) visitorsEl.textContent = "-";
+			});
 			const observer2 = new IntersectionObserver(
 				(entries) => {
 					entries.forEach((entry) => {
@@ -162,12 +178,7 @@ const shareUrl = umami?.shareUrl || "";
 				},
 				{ threshold: 0.1 },
 			);
-			const target2 = document.getElementById("umami-stats");
-			if (target2) {
-				observer2.observe(target2);
-			} else {
-				loadStats();
-			}
+			getAllCards().forEach((card) => observer2.observe(card));
 		});
 	})();
 </script>
