@@ -10,6 +10,7 @@
  * 启动：node admin/server.mjs（或运行 start-admin.bat）
  */
 import http from "node:http";
+import https from "node:https";
 import fs from "node:fs";
 import path from "node:path";
 import { spawn } from "node:child_process";
@@ -700,8 +701,199 @@ function safeSlug(slug) {
 	return name;
 }
 
+// ============ AI 评论自动回复 ============
+// 环境变量：
+//   TWIKOO_ADMIN_PASS    Twikoo 管理密码（必需，仅环境变量，不落盘）
+//   AI_ADMIN_KEY         OpenRouter API Key（必需，仅环境变量，不落盘）
+//   OPENROUTER_MODEL     OpenRouter 模型（可选，默认免费文本模型）
+// 说明：Twikoo 自建版（tkserver）管理认证为 accessToken = 管理密码明文
+const AI_REPLY_STATE_FILE = path.join(__dirname, "ai-reply-state.json");
+const TWIKOO_ENV_ID =
+	process.env.TWIKOO_ENV_ID || "https://tool.halei0v0.dpdns.org";
+const AI_REPLY_NICK = process.env.TWIKOO_REPLY_NICK || "halei0v0博客小助手";
+// 小助手专用邮箱（非博主邮箱，避免被标记为站长 master 身份）
+const AI_REPLY_EMAIL = process.env.TWIKOO_REPLY_EMAIL || "halei0v0-a@skymail.ink";
+
+/** 读取已回复评论 id 记录 */
+function loadAiReplyState() {
+	try {
+		const obj = JSON.parse(fs.readFileSync(AI_REPLY_STATE_FILE, "utf-8"));
+		return Array.isArray(obj.replied) ? obj : { replied: [], log: [] };
+	} catch {
+		return { replied: [], log: [] };
+	}
+}
+
+function saveAiReplyState(state) {
+	try {
+		fs.writeFileSync(AI_REPLY_STATE_FILE, JSON.stringify(state, null, "\t"), "utf-8");
+	} catch { /* 忽略 */ }
+}
+
+/** 向 Twikoo 服务端发事件请求 */
+function twikooRequest(event) {
+	return new Promise((resolve, reject) => {
+		const data = JSON.stringify(event);
+		const u = new URL(TWIKOO_ENV_ID);
+		const req = https.request(
+			u,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"Content-Length": Buffer.byteLength(data),
+					"User-Agent": "admin-server/1.0",
+				},
+			},
+			(res) => {
+				let chunks = "";
+				res.on("data", (d) => (chunks += d));
+				res.on("end", () => {
+					try {
+						resolve(JSON.parse(chunks));
+					} catch {
+						reject(new Error("Twikoo 响应非 JSON: " + chunks.slice(0, 200)));
+					}
+				});
+			},
+		);
+		req.on("error", reject);
+		req.write(data);
+		req.end();
+	});
+}
+
+/** 调用 OpenRouter 生成回复 */
+async function openrouterChat(prompt) {
+	const key = process.env.AI_ADMIN_KEY;
+	if (!key) throw new Error("未配置 AI_ADMIN_KEY 环境变量");
+	const model =
+		process.env.OPENROUTER_MODEL || "nvidia/nemotron-3-ultra-550b-a55b:free";
+	const body = JSON.stringify({
+		model,
+		messages: [
+			{
+				role: "system",
+				content:
+					"你是博客「halei0v0博客小助手」，是站长开发的 AI 助手，正在替站长回复访客评论。用自然口语化的中文回复，简洁（一般不超过 80 字），友好热情，不要使用任何 emoji 表情，不要用 Markdown 语法。明确定位为博客小助手，不冒充站长本人，但也不用特意声明自己是 AI（除非访客直接询问），语气像真诚可靠的助手。",
+			},
+			{ role: "user", content: prompt },
+		],
+		max_tokens: 200,
+	});
+	return new Promise((resolve, reject) => {
+		const req = https.request(
+			"https://openrouter.ai/api/v1/chat/completions",
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${key}`,
+					"Content-Length": Buffer.byteLength(body),
+				},
+			},
+			(res) => {
+				let chunks = "";
+				res.on("data", (d) => (chunks += d));
+				res.on("end", () => {
+					try {
+						const parsed = JSON.parse(chunks);
+						const text = parsed?.choices?.[0]?.message?.content;
+						if (!text) {
+							reject(new Error("OpenRouter 无返回内容: " + chunks.slice(0, 300)));
+							return;
+						}
+						resolve(String(text).trim());
+					} catch (e) {
+						reject(new Error("OpenRouter 响应解析失败: " + chunks.slice(0, 300)));
+					}
+				});
+			},
+		);
+		req.on("error", reject);
+		req.write(body);
+		req.end();
+	});
+}
+
+/** 管理员身份发表回复（accessToken = 管理密码明文） */
+async function twikooReply(comment, replyText) {
+	const pass = process.env.TWIKOO_ADMIN_PASS;
+	if (!pass) throw new Error("未配置 TWIKOO_ADMIN_PASS 环境变量");
+	const event = {
+		event: "COMMENT_SUBMIT",
+		accessToken: pass,
+		url: comment.url,
+		ua: "halei0v0 admin-server",
+		nick: AI_REPLY_NICK,
+		comment: replyText,
+	};
+	if (AI_REPLY_EMAIL) event.mail = AI_REPLY_EMAIL;
+	if (comment.id) {
+		event.pid = comment.id;
+		event.rid = comment.id;
+	}
+	const res = await twikooRequest(event);
+	if (res.code) {
+		throw new Error(`Twikoo 提交失败(${res.code}): ${res.message || ""}`);
+	}
+	return res;
+}
+
+/** 检查 Twikoo 配置（管理密码是否正确、envId 是否可用） */
+async function checkTwikooConfig() {
+	const status = {};
+	try {
+		const ver = await twikooRequest({ event: "GET_FUNC_VERSION" });
+		status.envIdOk = !ver.code;
+		status.version = ver.version?.VERSION || ver.data?.VERSION || "";
+	} catch (e) {
+		status.envIdOk = false;
+		status.version = String(e.message || e);
+	}
+	const pass = process.env.TWIKOO_ADMIN_PASS;
+	if (!pass) {
+		status.passOk = false;
+		status.passMsg = "未配置 TWIKOO_ADMIN_PASS";
+	} else {
+		const login = await twikooRequest({ event: "LOGIN", password: pass });
+		status.passOk = !login.code;
+		status.passMsg = login.message || (status.passOk ? "密码正确" : "");
+	}
+	status.apiKeyOk = Boolean(process.env.AI_ADMIN_KEY);
+	status.model = process.env.OPENROUTER_MODEL || "nvidia/nemotron-3-ultra-550b-a55b:free";
+	return status;
+}
+
+/** 拉取最近未回复的访客评论 */
+async function fetchPendingComments(maxCount) {
+	// 先验证管理密码
+	const status = await checkTwikooConfig();
+	if (!status.passOk) {
+		throw new Error("Twikoo 管理密码不正确或未配置: " + status.passMsg);
+	}
+	const res = await twikooRequest({
+		event: "GET_RECENT_COMMENTS",
+		pageSize: Math.min(maxCount * 2 + 10, 100),
+		includeReply: false,
+	});
+	if (res.code) throw new Error("拉取评论失败(" + res.code + "): " + (res.message || ""));
+	const comments = Array.isArray(res.data) ? res.data : [];
+	const state = loadAiReplyState();
+	const pending = [];
+	for (const c of comments) {
+		if (state.replied.includes(c.id)) continue;
+		// 排除站长自己的评论（昵称匹配，避免回复自己）
+		if (c.nick === AI_REPLY_NICK) continue;
+		if (c.master) continue;
+		pending.push(c);
+		if (pending.length >= maxCount) break;
+	}
+	return { pending, state };
+}
+
 // ============ API 处理 ============
-function handleApi(req, res, url) {
+async function handleApi(req, res, url) {
 	const method = req.method;
 	const pathname = url.pathname;
 
@@ -1313,6 +1505,68 @@ function handleApi(req, res, url) {
 			}
 		});
 		return;
+	}
+
+	// ---- AI 自动回复：配置状态 ----
+	if (pathname === "/api/ai-reply/status" && method === "GET") {
+		const state = loadAiReplyState();
+		return sendJson(res, 200, {
+			ok: true,
+			envId: TWIKOO_ENV_ID,
+			nick: AI_REPLY_NICK,
+			repliedCount: state.replied.length,
+			lastLog: state.log.slice(-20),
+			...(await checkTwikooConfig()),
+		});
+	}
+
+	// ---- AI 自动回复：执行一轮 ----
+	if (pathname === "/api/ai-reply/run" && method === "POST") {
+		let bodyBuf = "";
+		req.on("data", (chunk) => (bodyBuf += chunk));
+		req.on("end", async () => {
+			try {
+				const reqBody = bodyBuf ? JSON.parse(bodyBuf) : {};
+				const maxCount = Math.min(Math.max(parseInt(reqBody.maxCount) || 3, 1), 10);
+				const { pending, state } = await fetchPendingComments(maxCount);
+				if (pending.length === 0) {
+					return sendJson(res, 200, { ok: true, replied: [], skipped: true, message: "没有需要回复的新评论" });
+				}
+				const results = [];
+				for (const c of pending) {
+					try {
+						const prompt =
+							`访客「${c.nick}」在文章（${c.url}）下评论：\n${c.commentText || c.comment || ""}\n\n请以站长博客的 AI 小助手「halei0v0博客小助手」的身份回复这条评论。`;
+						const reply = await openrouterChat(prompt);
+						await twikooReply(c, reply);
+						state.replied.push(c.id);
+						state.log.unshift({
+							time: new Date().toISOString(),
+							id: c.id,
+							nick: c.nick,
+							url: c.url,
+							comment: (c.commentText || "").slice(0, 60),
+							reply: reply.slice(0, 60),
+						});
+						state.log.length = Math.min(state.log.length, 50);
+						results.push({ ok: true, id: c.id, nick: c.nick, reply });
+					} catch (e) {
+						results.push({ ok: false, id: c.id, nick: c.nick, error: String(e.message || e) });
+					}
+				}
+				saveAiReplyState(state);
+				sendJson(res, 200, { ok: true, replied: results });
+			} catch (e) {
+				sendJson(res, 400, { ok: false, error: String(e.message || e) });
+			}
+		});
+		return;
+	}
+
+	// ---- AI 自动回复：清空已回复记录 ----
+	if (pathname === "/api/ai-reply/reset" && method === "POST") {
+		saveAiReplyState({ replied: [], log: [] });
+		return sendJson(res, 200, { ok: true });
 	}
 
 	sendJson(res, 404, { ok: false, error: "未知 API" });

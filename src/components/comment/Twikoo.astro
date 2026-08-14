@@ -71,6 +71,22 @@ const config = {
 			});
 		}
 
+		async function triggerAiReply() {
+			try {
+				if (sessionStorage.getItem("ai-reply-triggered")) {
+					return;
+				}
+				sessionStorage.setItem("ai-reply-triggered", "1");
+				fetch("/api/ai-reply", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: "{}",
+				}).catch(() => {});
+			} catch (error) {
+				/* 静默失败，不影响评论 */
+			}
+		}
+
 		async function initTwikoo() {
 			const commentEl = document.getElementById("tcomment");
 			if (!commentEl) {
@@ -88,6 +104,7 @@ const config = {
 				commentEl.innerHTML = "";
 				const dynamicConfig = createTwikooConfig();
 				await twikoo.init(dynamicConfig);
+				triggerAiReply();
 			} catch (error) {
 				console.error("[Twikoo] 初始化失败:", error);
 			}
