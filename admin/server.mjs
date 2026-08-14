@@ -23,7 +23,12 @@ const PORT = process.env.ADMIN_PORT || 4830;
 
 // ============ 路径 ============
 const CONFIG_FILE = path.join(ROOT, "src", "config.ts");
-const COMMENT_CONFIG_FILE = path.join(ROOT, "src", "config", "commentConfig.ts");
+const COMMENT_CONFIG_FILE = path.join(
+	ROOT,
+	"src",
+	"config",
+	"commentConfig.ts",
+);
 const DATA_DIR = path.join(ROOT, "src", "data");
 const POSTS_DIR = path.join(ROOT, "src", "content", "posts");
 const BACKUP_DIR = path.join(__dirname, "backups");
@@ -55,7 +60,9 @@ function dirSize(dir) {
 			if (entry.isDirectory()) total += dirSize(p);
 			else if (entry.isFile()) total += fs.statSync(p).size;
 		}
-	} catch { /* 忽略 */ }
+	} catch {
+		/* 忽略 */
+	}
 	return total;
 }
 
@@ -69,7 +76,9 @@ function countDataItems() {
 			if (!decl) continue;
 			const v = tsLiteralToJson(decl.content);
 			total += Array.isArray(v) ? v.length : Object.keys(v).length;
-		} catch { /* 忽略 */ }
+		} catch {
+			/* 忽略 */
+		}
 	}
 	return total;
 }
@@ -84,7 +93,10 @@ function extractDevUrl(log) {
 function tailLog(log, maxBytes) {
 	const buf = Buffer.from(log, "utf8");
 	if (buf.length <= maxBytes) return log;
-	return buf.subarray(buf.length - maxBytes).toString("utf8").replace(/^\uFFFD+/, "");
+	return buf
+		.subarray(buf.length - maxBytes)
+		.toString("utf8")
+		.replace(/^\uFFFD+/, "");
 }
 
 // 剥离 ANSI 颜色/样式转义码，避免浏览器中显示为乱码
@@ -100,72 +112,353 @@ function stripAnsi(s) {
 // group: 前端分组展示；type: text | url | textarea
 const CONFIG_VALUE_FIELDS = [
 	// ---- 站点信息 ----
-	{ file: "config.ts", path: "siteConfig.title", label: "站点名称", group: "站点信息", hint: "浏览器标题与页脚显示" },
-	{ file: "config.ts", path: "siteConfig.subtitle", label: "站点副标题", group: "站点信息", hint: "" },
-	{ file: "config.ts", path: "siteConfig.siteURL", label: "站点地址", group: "站点信息", hint: "请替换为你的站点URL，以斜杠结尾" },
-	{ file: "config.ts", path: "siteConfig.siteStartDate", label: "开始运行日期", group: "站点信息", hint: "用于站点统计组件计算运行天数" },
-	{ file: "config.ts", path: "siteConfig.navbarTitle.text", label: "导航栏标题文字", group: "站点信息", hint: "" },
-	{ file: "config.ts", path: "siteConfig.aboutLink", label: "关于链接", group: "站点信息", hint: "" },
+	{
+		file: "config.ts",
+		path: "siteConfig.title",
+		label: "站点名称",
+		group: "站点信息",
+		hint: "浏览器标题与页脚显示",
+	},
+	{
+		file: "config.ts",
+		path: "siteConfig.subtitle",
+		label: "站点副标题",
+		group: "站点信息",
+		hint: "",
+	},
+	{
+		file: "config.ts",
+		path: "siteConfig.siteURL",
+		label: "站点地址",
+		group: "站点信息",
+		hint: "请替换为你的站点URL，以斜杠结尾",
+	},
+	{
+		file: "config.ts",
+		path: "siteConfig.siteStartDate",
+		label: "开始运行日期",
+		group: "站点信息",
+		hint: "用于站点统计组件计算运行天数",
+	},
+	{
+		file: "config.ts",
+		path: "siteConfig.navbarTitle.text",
+		label: "导航栏标题文字",
+		group: "站点信息",
+		hint: "",
+	},
+	{
+		file: "config.ts",
+		path: "siteConfig.aboutLink",
+		label: "关于链接",
+		group: "站点信息",
+		hint: "",
+	},
 
 	// ---- 首页横幅 ----
-	{ file: "config.ts", path: "siteConfig.banner.homeText.title", label: "主页横幅主标题", group: "首页横幅", hint: "" },
-	{ file: "config.ts", path: "siteConfig.banner.playerUrl", label: "背景视频 URL", group: "首页横幅", hint: "支持远程视频URL，本地视频请放在 public/assets/videos/" },
-	{ file: "config.ts", path: "siteConfig.banner.imageApi.url", label: "随机图片 API 地址", group: "首页横幅", hint: "API地址，返回每行一个图片链接的文本" },
-	{ file: "config.ts", path: "siteConfig.banner.credit.text", label: "图片来源文本", group: "首页横幅", hint: "横幅图片来源的标注文本" },
-	{ file: "config.ts", path: "siteConfig.banner.credit.url", label: "图片来源链接", group: "首页横幅", hint: "原始艺术品或艺术家页面链接" },
+	{
+		file: "config.ts",
+		path: "siteConfig.banner.homeText.title",
+		label: "主页横幅主标题",
+		group: "首页横幅",
+		hint: "",
+	},
+	{
+		file: "config.ts",
+		path: "siteConfig.banner.playerUrl",
+		label: "背景视频 URL",
+		group: "首页横幅",
+		hint: "支持远程视频URL，本地视频请放在 public/assets/videos/",
+	},
+	{
+		file: "config.ts",
+		path: "siteConfig.banner.imageApi.url",
+		label: "随机图片 API 地址",
+		group: "首页横幅",
+		hint: "API地址，返回每行一个图片链接的文本",
+	},
+	{
+		file: "config.ts",
+		path: "siteConfig.banner.credit.text",
+		label: "图片来源文本",
+		group: "首页横幅",
+		hint: "横幅图片来源的标注文本",
+	},
+	{
+		file: "config.ts",
+		path: "siteConfig.banner.credit.url",
+		label: "图片来源链接",
+		group: "首页横幅",
+		hint: "原始艺术品或艺术家页面链接",
+	},
 
 	// ---- 个人资料 ----
-	{ file: "config.ts", path: "profileConfig.name", label: "昵称", group: "个人资料", hint: "" },
-	{ file: "config.ts", path: "profileConfig.avatar", label: "头像路径", group: "个人资料", hint: "相对于 /src 目录，以 / 开头则相对于 /public" },
-	{ file: "config.ts", path: "profileConfig.bio", label: "个人简介", group: "个人资料", hint: "" },
-	{ file: "config.ts", pathPrefix: "profileConfig.links[].name", label: "社交链接名称", group: "个人资料", hint: "侧栏社交链接（多条）" },
-	{ file: "config.ts", pathPrefix: "profileConfig.links[].url", label: "社交链接地址", group: "个人资料", hint: "侧栏社交链接（多条）" },
+	{
+		file: "config.ts",
+		path: "profileConfig.name",
+		label: "昵称",
+		group: "个人资料",
+		hint: "",
+	},
+	{
+		file: "config.ts",
+		path: "profileConfig.avatar",
+		label: "头像路径",
+		group: "个人资料",
+		hint: "相对于 /src 目录，以 / 开头则相对于 /public",
+	},
+	{
+		file: "config.ts",
+		path: "profileConfig.bio",
+		label: "个人简介",
+		group: "个人资料",
+		hint: "",
+	},
+	{
+		file: "config.ts",
+		pathPrefix: "profileConfig.links[].name",
+		label: "社交链接名称",
+		group: "个人资料",
+		hint: "侧栏社交链接（多条）",
+	},
+	{
+		file: "config.ts",
+		pathPrefix: "profileConfig.links[].url",
+		label: "社交链接地址",
+		group: "个人资料",
+		hint: "侧栏社交链接（多条）",
+	},
 
 	// ---- 公告 ----
-	{ file: "config.ts", path: "announcementConfig.title", label: "公告标题", group: "公告", hint: "填空使用 i18n 默认文案" },
-	{ file: "config.ts", path: "announcementConfig.content", label: "公告内容", group: "公告", hint: "", type: "textarea" },
-	{ file: "config.ts", path: "announcementConfig.link.text", label: "公告链接文本", group: "公告", hint: "" },
-	{ file: "config.ts", path: "announcementConfig.link.url", label: "公告链接地址", group: "公告", hint: "" },
+	{
+		file: "config.ts",
+		path: "announcementConfig.title",
+		label: "公告标题",
+		group: "公告",
+		hint: "填空使用 i18n 默认文案",
+	},
+	{
+		file: "config.ts",
+		path: "announcementConfig.content",
+		label: "公告内容",
+		group: "公告",
+		hint: "",
+		type: "textarea",
+	},
+	{
+		file: "config.ts",
+		path: "announcementConfig.link.text",
+		label: "公告链接文本",
+		group: "公告",
+		hint: "",
+	},
+	{
+		file: "config.ts",
+		path: "announcementConfig.link.url",
+		label: "公告链接地址",
+		group: "公告",
+		hint: "",
+	},
 
 	// ---- 赞助卡片 ----
-	{ file: "config.ts", path: "sponsorConfig.image", label: "赞助图片地址", group: "赞助卡片", hint: "二维码/横幅图，留空则显示求赞助文字" },
-	{ file: "config.ts", path: "sponsorConfig.url", label: "赞助链接", group: "赞助卡片", hint: "留空则不跳转" },
-	{ file: "config.ts", path: "sponsorConfig.fallbackText", label: "求赞助文案", group: "赞助卡片", hint: "未配置图片时显示" },
-	{ file: "config.ts", path: "sponsorConfig.subText", label: "辅助文案", group: "赞助卡片", hint: "图片下方或求赞助按钮下方的说明文字" },
+	{
+		file: "config.ts",
+		path: "sponsorConfig.image",
+		label: "赞助图片地址",
+		group: "赞助卡片",
+		hint: "二维码/横幅图，留空则显示求赞助文字",
+	},
+	{
+		file: "config.ts",
+		path: "sponsorConfig.url",
+		label: "赞助链接",
+		group: "赞助卡片",
+		hint: "留空则不跳转",
+	},
+	{
+		file: "config.ts",
+		path: "sponsorConfig.fallbackText",
+		label: "求赞助文案",
+		group: "赞助卡片",
+		hint: "未配置图片时显示",
+	},
+	{
+		file: "config.ts",
+		path: "sponsorConfig.subText",
+		label: "辅助文案",
+		group: "赞助卡片",
+		hint: "图片下方或求赞助按钮下方的说明文字",
+	},
 
 	// ---- 页脚与版权 ----
-	{ file: "config.ts", path: "footerConfig.customHtml", label: "自定义页脚 HTML", group: "页脚与版权", hint: "例如备案号，留空不显示", type: "textarea" },
-	{ file: "config.ts", path: "licenseConfig.name", label: "许可协议名称", group: "页脚与版权", hint: "如 CC BY-NC-SA 4.0" },
-	{ file: "config.ts", path: "licenseConfig.url", label: "许可协议链接", group: "页脚与版权", hint: "" },
+	{
+		file: "config.ts",
+		path: "footerConfig.customHtml",
+		label: "自定义页脚 HTML",
+		group: "页脚与版权",
+		hint: "例如备案号，留空不显示",
+		type: "textarea",
+	},
+	{
+		file: "config.ts",
+		path: "licenseConfig.name",
+		label: "许可协议名称",
+		group: "页脚与版权",
+		hint: "如 CC BY-NC-SA 4.0",
+	},
+	{
+		file: "config.ts",
+		path: "licenseConfig.url",
+		label: "许可协议链接",
+		group: "页脚与版权",
+		hint: "",
+	},
 
 	// ---- 评论系统 ----
-	{ file: "commentConfig.ts", path: "commentConfig.twikoo.envId", label: "Twikoo 服务地址", group: "评论系统", hint: "Twikoo 部署的云函数/服务地址" },
-	{ file: "commentConfig.ts", path: "commentConfig.waline.serverURL", label: "Waline 服务地址", group: "评论系统", hint: "Waline 后端 API 地址" },
-	{ file: "commentConfig.ts", path: "commentConfig.artalk.server", label: "Artalk 服务地址", group: "评论系统", hint: "Artalk 后端 API 地址" },
+	{
+		file: "commentConfig.ts",
+		path: "commentConfig.twikoo.envId",
+		label: "Twikoo 服务地址",
+		group: "评论系统",
+		hint: "Twikoo 部署的云函数/服务地址",
+	},
+	{
+		file: "commentConfig.ts",
+		path: "commentConfig.waline.serverURL",
+		label: "Waline 服务地址",
+		group: "评论系统",
+		hint: "Waline 后端 API 地址",
+	},
+	{
+		file: "commentConfig.ts",
+		path: "commentConfig.artalk.server",
+		label: "Artalk 服务地址",
+		group: "评论系统",
+		hint: "Artalk 后端 API 地址",
+	},
 
 	// ---- 统计与第三方 ----
-	{ file: "config.ts", path: "siteConfig.thirdPartyAnalytics.clarityId", label: "Clarity 项目 ID", group: "统计与第三方", hint: "Microsoft Clarity 项目 ID" },
-	{ file: "config.ts", path: "siteConfig.thirdPartyAnalytics.umami.websiteId", label: "Umami 站点 ID", group: "统计与第三方", hint: "" },
-	{ file: "config.ts", path: "siteConfig.thirdPartyAnalytics.umami.scriptUrl", label: "Umami 脚本地址", group: "统计与第三方", hint: "" },
-	{ file: "config.ts", path: "siteConfig.thirdPartyAnalytics.umami.shareUrl", label: "Umami 分享链接", group: "统计与第三方", hint: "统计卡片点击跳转" },
-	{ file: "config.ts", path: "umamiConfig.baseUrl", label: "Umami API 地址", group: "统计与第三方", hint: "Umami Cloud API地址" },
-	{ file: "config.ts", path: "siteConfig.bilibili.vmid", label: "Bilibili UID", group: "统计与第三方", hint: "B站数据展示的用户ID" },
-	{ file: "config.ts", path: "siteConfig.bangumi.userId", label: "Bangumi 用户 ID", group: "统计与第三方", hint: "番剧页面数据来源" },
+	{
+		file: "config.ts",
+		path: "siteConfig.thirdPartyAnalytics.clarityId",
+		label: "Clarity 项目 ID",
+		group: "统计与第三方",
+		hint: "Microsoft Clarity 项目 ID",
+	},
+	{
+		file: "config.ts",
+		path: "siteConfig.thirdPartyAnalytics.umami.websiteId",
+		label: "Umami 站点 ID",
+		group: "统计与第三方",
+		hint: "",
+	},
+	{
+		file: "config.ts",
+		path: "siteConfig.thirdPartyAnalytics.umami.scriptUrl",
+		label: "Umami 脚本地址",
+		group: "统计与第三方",
+		hint: "",
+	},
+	{
+		file: "config.ts",
+		path: "siteConfig.thirdPartyAnalytics.umami.shareUrl",
+		label: "Umami 分享链接",
+		group: "统计与第三方",
+		hint: "统计卡片点击跳转",
+	},
+	{
+		file: "config.ts",
+		path: "umamiConfig.baseUrl",
+		label: "Umami API 地址",
+		group: "统计与第三方",
+		hint: "Umami Cloud API地址",
+	},
+	{
+		file: "config.ts",
+		path: "siteConfig.bilibili.vmid",
+		label: "Bilibili UID",
+		group: "统计与第三方",
+		hint: "B站数据展示的用户ID",
+	},
+	{
+		file: "config.ts",
+		path: "siteConfig.bangumi.userId",
+		label: "Bangumi 用户 ID",
+		group: "统计与第三方",
+		hint: "番剧页面数据来源",
+	},
 
 	// ---- 导航栏 ----
-	{ file: "config.ts", pathPrefix: "navBarConfig.links[].name", label: "导航栏菜单名", group: "导航栏", hint: "一级菜单（多条）" },
-	{ file: "config.ts", pathPrefix: "navBarConfig.links[].url", label: "导航栏菜单链接", group: "导航栏", hint: "一级菜单（多条）" },
-	{ file: "config.ts", pathPrefix: "navBarConfig.links[].children[].name", label: "导航栏子菜单名", group: "导航栏", hint: "下拉子菜单（多条）" },
-	{ file: "config.ts", pathPrefix: "navBarConfig.links[].children[].url", label: "导航栏子菜单链接", group: "导航栏", hint: "下拉子菜单（多条）" },
+	{
+		file: "config.ts",
+		pathPrefix: "navBarConfig.links[].name",
+		label: "导航栏菜单名",
+		group: "导航栏",
+		hint: "一级菜单（多条）",
+	},
+	{
+		file: "config.ts",
+		pathPrefix: "navBarConfig.links[].url",
+		label: "导航栏菜单链接",
+		group: "导航栏",
+		hint: "一级菜单（多条）",
+	},
+	{
+		file: "config.ts",
+		pathPrefix: "navBarConfig.links[].children[].name",
+		label: "导航栏子菜单名",
+		group: "导航栏",
+		hint: "下拉子菜单（多条）",
+	},
+	{
+		file: "config.ts",
+		pathPrefix: "navBarConfig.links[].children[].url",
+		label: "导航栏子菜单链接",
+		group: "导航栏",
+		hint: "下拉子菜单（多条）",
+	},
 
 	// ---- 音乐播放器 ----
-	{ file: "config.ts", path: "musicPlayerConfig.id", label: "歌单 ID", group: "音乐播放器", hint: "meting 模式的歌单ID" },
+	{
+		file: "config.ts",
+		path: "musicPlayerConfig.id",
+		label: "歌单 ID",
+		group: "音乐播放器",
+		hint: "meting 模式的歌单ID",
+	},
 
 	// ---- 看板娘 ----
-	{ file: "config.ts", path: "pioConfig.dialog.welcome", label: "欢迎词", group: "看板娘", hint: "", type: "textarea" },
-	{ file: "config.ts", path: "pioConfig.dialog.home", label: "首页提示语", group: "看板娘", hint: "", type: "textarea" },
-	{ file: "config.ts", path: "pioConfig.dialog.close", label: "关闭提示语", group: "看板娘", hint: "", type: "textarea" },
-	{ file: "config.ts", path: "pioConfig.dialog.link", label: "关于链接", group: "看板娘", hint: "" },
+	{
+		file: "config.ts",
+		path: "pioConfig.dialog.welcome",
+		label: "欢迎词",
+		group: "看板娘",
+		hint: "",
+		type: "textarea",
+	},
+	{
+		file: "config.ts",
+		path: "pioConfig.dialog.home",
+		label: "首页提示语",
+		group: "看板娘",
+		hint: "",
+		type: "textarea",
+	},
+	{
+		file: "config.ts",
+		path: "pioConfig.dialog.close",
+		label: "关闭提示语",
+		group: "看板娘",
+		hint: "",
+		type: "textarea",
+	},
+	{
+		file: "config.ts",
+		path: "pioConfig.dialog.link",
+		label: "关于链接",
+		group: "看板娘",
+		hint: "",
+	},
 ];
 
 /** 解析配置文件中的字符串字段（key: "value"），返回路径/行号/值/注释 */
@@ -200,18 +493,23 @@ function parseStringValues(source) {
 			stack.push({ indent, key: m[1], isArray: true });
 			continue;
 		}
-		m = trimmed.match(/^(\w+):\s*"((?:[^"\\]|\\.)*)",?\s*(?:\/\/\s*(.+))?$/);
+		m = trimmed.match(
+			/^(\w+):\s*"((?:[^"\\]|\\.)*)",?\s*(?:\/\/\s*(.+))?$/,
+		);
 		if (!m) {
 			continue;
 		}
-		const path = [...stack.map((s) => (s.isArray ? `${s.key}[]` : s.key)), m[1]].join(".");
+		const path = [
+			...stack.map((s) => (s.isArray ? `${s.key}[]` : s.key)),
+			m[1],
+		].join(".");
 		values.push({
 			line: i,
 			path,
 			key: m[1],
 			// 正则捕获返回源文本，需手动还原转义（\\ \" \n \r \t）
 			value: m[2].replace(/\\(["\\nrt])/g, (_, c) =>
-				c === "n" ? "\n" : c === "r" ? "\r" : c === "t" ? "\t" : c
+				c === "n" ? "\n" : c === "r" ? "\r" : c === "t" ? "\t" : c,
 			),
 			comment: m[3] ? m[3].trim() : "",
 		});
@@ -277,29 +575,100 @@ const DATA_SCHEMAS = {
 		idField: "id",
 		idAuto: true,
 		fields: [
-			{ key: "title", label: "名称", type: "text", required: true, placeholder: "站点/人名" },
+			{
+				key: "title",
+				label: "名称",
+				type: "text",
+				required: true,
+				placeholder: "站点/人名",
+			},
 			{ key: "imgurl", label: "头像 URL", type: "url", required: true },
 			{ key: "desc", label: "描述", type: "textarea", required: true },
 			{ key: "siteurl", label: "网站 URL", type: "url", required: true },
-			{ key: "tags", label: "标签", type: "tags", required: true, placeholder: "多个用逗号分隔，如: Blog, Docs" },
+			{
+				key: "tags",
+				label: "标签",
+				type: "tags",
+				required: true,
+				placeholder: "多个用逗号分隔，如: Blog, Docs",
+			},
 		],
 	},
 	"projects.ts": {
 		kind: "array",
 		idField: "id",
 		fields: [
-			{ key: "id", label: "唯一 ID", type: "text", required: true, placeholder: "英文标识，如 Blog" },
+			{
+				key: "id",
+				label: "唯一 ID",
+				type: "text",
+				required: true,
+				placeholder: "英文标识，如 Blog",
+			},
 			{ key: "title", label: "标题", type: "text", required: true },
-			{ key: "description", label: "描述", type: "textarea", required: true },
-			{ key: "image", label: "图片 URL", type: "url", placeholder: "可留空" },
-			{ key: "category", label: "分类", type: "select", required: true, options: ["web", "mobile", "desktop", "other"] },
-			{ key: "techStack", label: "技术栈", type: "tags", required: true, placeholder: "多个用逗号分隔" },
-			{ key: "status", label: "状态", type: "select", required: true, options: ["completed", "in-progress", "planned"] },
-			{ key: "liveDemo", label: "在线演示 URL", type: "url", placeholder: "可留空" },
-			{ key: "sourceCode", label: "源码 URL", type: "url", placeholder: "可留空" },
-			{ key: "visitUrl", label: "访问 URL", type: "url", placeholder: "可留空" },
-			{ key: "startDate", label: "开始日期", type: "date", required: true },
-			{ key: "endDate", label: "结束日期", type: "date", placeholder: "可留空" },
+			{
+				key: "description",
+				label: "描述",
+				type: "textarea",
+				required: true,
+			},
+			{
+				key: "image",
+				label: "图片 URL",
+				type: "url",
+				placeholder: "可留空",
+			},
+			{
+				key: "category",
+				label: "分类",
+				type: "select",
+				required: true,
+				options: ["web", "mobile", "desktop", "other"],
+			},
+			{
+				key: "techStack",
+				label: "技术栈",
+				type: "tags",
+				required: true,
+				placeholder: "多个用逗号分隔",
+			},
+			{
+				key: "status",
+				label: "状态",
+				type: "select",
+				required: true,
+				options: ["completed", "in-progress", "planned"],
+			},
+			{
+				key: "liveDemo",
+				label: "在线演示 URL",
+				type: "url",
+				placeholder: "可留空",
+			},
+			{
+				key: "sourceCode",
+				label: "源码 URL",
+				type: "url",
+				placeholder: "可留空",
+			},
+			{
+				key: "visitUrl",
+				label: "访问 URL",
+				type: "url",
+				placeholder: "可留空",
+			},
+			{
+				key: "startDate",
+				label: "开始日期",
+				type: "date",
+				required: true,
+			},
+			{
+				key: "endDate",
+				label: "结束日期",
+				type: "date",
+				placeholder: "可留空",
+			},
 			{ key: "featured", label: "精选展示", type: "boolean" },
 			{ key: "tags", label: "标签", type: "tags", placeholder: "可留空" },
 			{ key: "showImage", label: "显示图片", type: "boolean" },
@@ -309,51 +678,183 @@ const DATA_SCHEMAS = {
 		kind: "array",
 		idField: "id",
 		fields: [
-			{ key: "id", label: "唯一 ID", type: "text", required: true, placeholder: "英文标识，如 astro" },
+			{
+				key: "id",
+				label: "唯一 ID",
+				type: "text",
+				required: true,
+				placeholder: "英文标识，如 astro",
+			},
 			{ key: "name", label: "名称", type: "text", required: true },
-			{ key: "description", label: "描述", type: "textarea", required: true },
-			{ key: "icon", label: "图标 (Iconify)", type: "text", required: true, placeholder: "如 mdi:language-javascript" },
-			{ key: "category", label: "分类", type: "select", required: true, options: ["frontend", "backend", "database", "tools", "other"] },
-			{ key: "level", label: "熟练度", type: "select", required: true, options: ["beginner", "intermediate", "advanced", "expert"] },
-			{ key: "experience.years", label: "经验-年", type: "number", required: true },
-			{ key: "experience.months", label: "经验-月", type: "number", required: true },
-			{ key: "projects", label: "关联项目 ID", type: "tags", placeholder: "可留空" },
-			{ key: "certifications", label: "证书", type: "tags", placeholder: "可留空" },
-			{ key: "color", label: "主题色", type: "text", placeholder: "如 #3a88edff" },
+			{
+				key: "description",
+				label: "描述",
+				type: "textarea",
+				required: true,
+			},
+			{
+				key: "icon",
+				label: "图标 (Iconify)",
+				type: "text",
+				required: true,
+				placeholder: "如 mdi:language-javascript",
+			},
+			{
+				key: "category",
+				label: "分类",
+				type: "select",
+				required: true,
+				options: ["frontend", "backend", "database", "tools", "other"],
+			},
+			{
+				key: "level",
+				label: "熟练度",
+				type: "select",
+				required: true,
+				options: ["beginner", "intermediate", "advanced", "expert"],
+			},
+			{
+				key: "experience.years",
+				label: "经验-年",
+				type: "number",
+				required: true,
+			},
+			{
+				key: "experience.months",
+				label: "经验-月",
+				type: "number",
+				required: true,
+			},
+			{
+				key: "projects",
+				label: "关联项目 ID",
+				type: "tags",
+				placeholder: "可留空",
+			},
+			{
+				key: "certifications",
+				label: "证书",
+				type: "tags",
+				placeholder: "可留空",
+			},
+			{
+				key: "color",
+				label: "主题色",
+				type: "text",
+				placeholder: "如 #3a88edff",
+			},
 		],
 	},
 	"timeline.ts": {
 		kind: "array",
 		idField: "id",
 		fields: [
-			{ key: "id", label: "唯一 ID", type: "text", required: true, placeholder: "如 初中" },
+			{
+				key: "id",
+				label: "唯一 ID",
+				type: "text",
+				required: true,
+				placeholder: "如 初中",
+			},
 			{ key: "title", label: "标题", type: "text", required: true },
-			{ key: "description", label: "描述", type: "textarea", required: true },
-			{ key: "type", label: "类型", type: "select", required: true, options: ["achievement", "education", "career", "milestone"] },
-			{ key: "startDate", label: "开始日期", type: "date", required: true },
-			{ key: "skills", label: "技能标签", type: "tags", placeholder: "可留空" },
-			{ key: "achievements", label: "成就列表", type: "textarea", placeholder: "每条一行" },
-			{ key: "icon", label: "图标 (Iconify)", type: "text", placeholder: "如 mdi:trophy" },
-			{ key: "color", label: "主题色", type: "text", placeholder: "如 #3a88edff" },
+			{
+				key: "description",
+				label: "描述",
+				type: "textarea",
+				required: true,
+			},
+			{
+				key: "type",
+				label: "类型",
+				type: "select",
+				required: true,
+				options: ["achievement", "education", "career", "milestone"],
+			},
+			{
+				key: "startDate",
+				label: "开始日期",
+				type: "date",
+				required: true,
+			},
+			{
+				key: "skills",
+				label: "技能标签",
+				type: "tags",
+				placeholder: "可留空",
+			},
+			{
+				key: "achievements",
+				label: "成就列表",
+				type: "textarea",
+				placeholder: "每条一行",
+			},
+			{
+				key: "icon",
+				label: "图标 (Iconify)",
+				type: "text",
+				placeholder: "如 mdi:trophy",
+			},
+			{
+				key: "color",
+				label: "主题色",
+				type: "text",
+				placeholder: "如 #3a88edff",
+			},
 		],
 	},
 	"anime.ts": {
 		kind: "array",
 		fields: [
 			{ key: "title", label: "标题", type: "text", required: true },
-			{ key: "status", label: "状态", type: "select", required: true, options: ["watching", "completed", "planned"] },
+			{
+				key: "status",
+				label: "状态",
+				type: "select",
+				required: true,
+				options: ["watching", "completed", "planned"],
+			},
 			{ key: "rating", label: "评分", type: "number", required: true },
 			{ key: "cover", label: "封面 URL", type: "url", required: true },
-			{ key: "description", label: "描述", type: "textarea", required: true },
-			{ key: "episodes", label: "集数描述", type: "text", placeholder: "如 12 episodes" },
+			{
+				key: "description",
+				label: "描述",
+				type: "textarea",
+				required: true,
+			},
+			{
+				key: "episodes",
+				label: "集数描述",
+				type: "text",
+				placeholder: "如 12 episodes",
+			},
 			{ key: "year", label: "年份", type: "text", required: true },
 			{ key: "genre", label: "类型标签", type: "tags", required: true },
 			{ key: "studio", label: "制作公司", type: "text" },
 			{ key: "link", label: "链接 URL", type: "url" },
-			{ key: "progress", label: "观看进度", type: "number", required: true },
-			{ key: "totalEpisodes", label: "总集数", type: "number", required: true },
-			{ key: "startDate", label: "开播日期", type: "text", placeholder: "如 2022-07" },
-			{ key: "endDate", label: "完结日期", type: "text", placeholder: "如 2022-09" },
+			{
+				key: "progress",
+				label: "观看进度",
+				type: "number",
+				required: true,
+			},
+			{
+				key: "totalEpisodes",
+				label: "总集数",
+				type: "number",
+				required: true,
+			},
+			{
+				key: "startDate",
+				label: "开播日期",
+				type: "text",
+				placeholder: "如 2022-07",
+			},
+			{
+				key: "endDate",
+				label: "完结日期",
+				type: "text",
+				placeholder: "如 2022-09",
+			},
 		],
 	},
 	"devices.ts": {
@@ -362,7 +863,13 @@ const DATA_SCHEMAS = {
 		fields: [
 			{ key: "name", label: "名称", type: "text", required: true },
 			{ key: "image", label: "图片 URL", type: "url" },
-			{ key: "specs", label: "规格", type: "text", required: true, placeholder: "如 GPU / CPU / 内存" },
+			{
+				key: "specs",
+				label: "规格",
+				type: "text",
+				required: true,
+				placeholder: "如 GPU / CPU / 内存",
+			},
 			{ key: "description", label: "描述", type: "textarea" },
 			{ key: "link", label: "链接 URL", type: "url" },
 		],
@@ -374,7 +881,12 @@ const DATA_SCHEMAS = {
 		fields: [
 			{ key: "content", label: "内容", type: "textarea", required: true },
 			{ key: "date", label: "日期", type: "date", required: true },
-			{ key: "images", label: "图片 URL 列表", type: "textarea", placeholder: "每行一个 URL，可留空" },
+			{
+				key: "images",
+				label: "图片 URL 列表",
+				type: "textarea",
+				placeholder: "每行一个 URL，可留空",
+			},
 		],
 	},
 };
@@ -469,12 +981,17 @@ function tsLiteralToJson(content) {
 		const c = m[m.length - 1];
 		const prefix = m.slice(0, -1);
 		switch (c) {
-			case "\n": return prefix + "\\n";
-			case "\t": return prefix + "\\t";
-			case "\r": return prefix + "\\r";
+			case "\n":
+				return prefix + "\\n";
+			case "\t":
+				return prefix + "\\t";
+			case "\r":
+				return prefix + "\\r";
 			default:
 				return (
-					prefix + "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0")
+					prefix +
+					"\\u" +
+					c.charCodeAt(0).toString(16).padStart(4, "0")
 				);
 		}
 	};
@@ -594,13 +1111,20 @@ function parseSwitches(source) {
 			continue;
 		}
 
-const path = [...stack.map((s) => (s.isArray ? `${s.key}[]` : s.key)), m[1]].join(".");
+		const path = [
+			...stack.map((s) => (s.isArray ? `${s.key}[]` : s.key)),
+			m[1],
+		].join(".");
 		const commentMatch = line.match(/\/\/\s*(.+)$/);
 		let comment = commentMatch ? commentMatch[1].trim() : "";
 		// 无行内注释时，回退到上一行紧邻的说明注释
 		if (!comment) {
 			const prev = lines[i - 1]?.trim();
-			if (prev && prev.startsWith("//") && !prev.startsWith("// eslint")) {
+			if (
+				prev &&
+				prev.startsWith("//") &&
+				!prev.startsWith("// eslint")
+			) {
 				comment = prev.replace(/^\/\/\s*/, "").trim();
 			}
 		}
@@ -630,7 +1154,7 @@ function setSwitch(source, lineIndex, newValue) {
 	if (replaced === line) {
 		throw new Error(`行 ${lineIndex + 1} 未找到布尔值`);
 	}
-lines[lineIndex] = replaced;
+	lines[lineIndex] = replaced;
 	return lines.join("\n");
 }
 
@@ -673,7 +1197,9 @@ function listPosts() {
 			const content = fs.readFileSync(indexMd, "utf-8");
 			const fm = parseFrontMatter(content);
 			// 正文去 front matter 后的纯文本（估算字数）
-			const body = content.replace(/^---[\s\S]*?\n---\n?/, "").replace(/[#*`>~\-[\]()|_\\]/g, " ");
+			const body = content
+				.replace(/^---[\s\S]*?\n---\n?/, "")
+				.replace(/[#*`>~\-[\]()|_\\]/g, " ");
 			posts.push({
 				slug: dir.name,
 				title: fm.title || dir.name,
@@ -687,9 +1213,13 @@ function listPosts() {
 				pinned: fm.pinned === true,
 				chars: body.length,
 			});
-		} catch { /* 忽略单个文件错误 */ }
+		} catch {
+			/* 忽略单个文件错误 */
+		}
 	}
-	posts.sort((a, b) => String(b.published).localeCompare(String(a.published)));
+	posts.sort((a, b) =>
+		String(b.published).localeCompare(String(a.published)),
+	);
 	return posts;
 }
 
@@ -697,7 +1227,8 @@ function listPosts() {
 function safeSlug(slug) {
 	if (typeof slug !== "string" || !slug.trim()) return null;
 	const name = path.basename(slug.trim());
-	if (!name || name === "." || name === ".." || /[\\/]/.test(name)) return null;
+	if (!name || name === "." || name === ".." || /[\\/]/.test(name))
+		return null;
 	return name;
 }
 
@@ -710,9 +1241,11 @@ function safeSlug(slug) {
 const AI_REPLY_STATE_FILE = path.join(__dirname, "ai-reply-state.json");
 const TWIKOO_ENV_ID =
 	process.env.TWIKOO_ENV_ID || "https://tool.halei0v0.dpdns.org";
-const AI_REPLY_NICK = process.env.TWIKOO_REPLY_NICK || "halei0v0博客小助手";
+const AI_REPLY_NICK =
+	process.env.TWIKOO_REPLY_NICK || "halei0v0博客小助手【AI自动回复】";
 // 小助手专用邮箱（非博主邮箱，避免被标记为站长 master 身份）
-const AI_REPLY_EMAIL = process.env.TWIKOO_REPLY_EMAIL || "halei0v0-a@skymail.ink";
+const AI_REPLY_EMAIL =
+	process.env.TWIKOO_REPLY_EMAIL || "halei0v0-a@skymail.ink";
 
 /** 读取已回复评论 id 记录 */
 function loadAiReplyState() {
@@ -726,8 +1259,14 @@ function loadAiReplyState() {
 
 function saveAiReplyState(state) {
 	try {
-		fs.writeFileSync(AI_REPLY_STATE_FILE, JSON.stringify(state, null, "\t"), "utf-8");
-	} catch { /* 忽略 */ }
+		fs.writeFileSync(
+			AI_REPLY_STATE_FILE,
+			JSON.stringify(state, null, "\t"),
+			"utf-8",
+		);
+	} catch {
+		/* 忽略 */
+	}
 }
 
 /** 向 Twikoo 服务端发事件请求 */
@@ -752,7 +1291,11 @@ function twikooRequest(event) {
 					try {
 						resolve(JSON.parse(chunks));
 					} catch {
-						reject(new Error("Twikoo 响应非 JSON: " + chunks.slice(0, 200)));
+						reject(
+							new Error(
+								"Twikoo 响应非 JSON: " + chunks.slice(0, 200),
+							),
+						);
 					}
 				});
 			},
@@ -768,7 +1311,8 @@ async function openrouterChat(prompt) {
 	const key = process.env.AI_ADMIN_KEY;
 	if (!key) throw new Error("未配置 AI_ADMIN_KEY 环境变量");
 	const model =
-		process.env.OPENROUTER_MODEL || "nvidia/nemotron-3-ultra-550b-a55b:free";
+		process.env.OPENROUTER_MODEL ||
+		"nvidia/nemotron-3-ultra-550b-a55b:free";
 	const body = JSON.stringify({
 		model,
 		messages: [
@@ -800,12 +1344,22 @@ async function openrouterChat(prompt) {
 						const parsed = JSON.parse(chunks);
 						const text = parsed?.choices?.[0]?.message?.content;
 						if (!text) {
-							reject(new Error("OpenRouter 无返回内容: " + chunks.slice(0, 300)));
+							reject(
+								new Error(
+									"OpenRouter 无返回内容: " +
+										chunks.slice(0, 300),
+								),
+							);
 							return;
 						}
 						resolve(String(text).trim());
 					} catch (e) {
-						reject(new Error("OpenRouter 响应解析失败: " + chunks.slice(0, 300)));
+						reject(
+							new Error(
+								"OpenRouter 响应解析失败: " +
+									chunks.slice(0, 300),
+							),
+						);
 					}
 				});
 			},
@@ -861,7 +1415,9 @@ async function checkTwikooConfig() {
 		status.passMsg = login.message || (status.passOk ? "密码正确" : "");
 	}
 	status.apiKeyOk = Boolean(process.env.AI_ADMIN_KEY);
-	status.model = process.env.OPENROUTER_MODEL || "nvidia/nemotron-3-ultra-550b-a55b:free";
+	status.model =
+		process.env.OPENROUTER_MODEL ||
+		"nvidia/nemotron-3-ultra-550b-a55b:free";
 	return status;
 }
 
@@ -877,7 +1433,10 @@ async function fetchPendingComments(maxCount) {
 		pageSize: Math.min(maxCount * 2 + 10, 100),
 		includeReply: false,
 	});
-	if (res.code) throw new Error("拉取评论失败(" + res.code + "): " + (res.message || ""));
+	if (res.code)
+		throw new Error(
+			"拉取评论失败(" + res.code + "): " + (res.message || ""),
+		);
 	const comments = Array.isArray(res.data) ? res.data : [];
 	const state = loadAiReplyState();
 	const pending = [];
@@ -931,7 +1490,10 @@ async function handleApi(req, res, url) {
 				writeFileWithBackup(target, updated);
 				sendJson(res, 200, { ok: true });
 			} catch (e) {
-				sendJson(res, 400, { ok: false, error: String(e.message || e) });
+				sendJson(res, 400, {
+					ok: false,
+					error: String(e.message || e),
+				});
 			}
 		});
 		return;
@@ -958,7 +1520,10 @@ async function handleApi(req, res, url) {
 				const meta = DATA_FILES.find((d) => d.file === file);
 				const schema = DATA_SCHEMAS[file];
 				if (!meta || !schema) {
-					return sendJson(res, 404, { ok: false, error: "未知数据文件" });
+					return sendJson(res, 404, {
+						ok: false,
+						error: "未知数据文件",
+					});
 				}
 				const source = readFileSafe(path.join(DATA_DIR, file));
 				const decl = extractDeclarations(source, meta.exportName);
@@ -1006,14 +1571,20 @@ async function handleApi(req, res, url) {
 							// 嵌套字段如 experience.years
 							const [a, b] = f.key.split(".");
 							item[a] = item[a] || {};
-							item[a][b] = f.type === "number" ? Number(raw) : raw;
+							item[a][b] =
+								f.type === "number" ? Number(raw) : raw;
 							continue;
 						}
 						item[f.key] = raw;
 					}
 					// 必填校验
 					for (const f of schema.fields) {
-						if (f.required && (item[f.key] === undefined || item[f.key] === "" || item[f.key] === null)) {
+						if (
+							f.required &&
+							(item[f.key] === undefined ||
+								item[f.key] === "" ||
+								item[f.key] === null)
+						) {
 							throw new Error(`缺少必填字段: ${f.label}`);
 						}
 					}
@@ -1021,7 +1592,14 @@ async function handleApi(req, res, url) {
 					// 数组类型：id 处理
 					if (schema.idField && schema.idAuto) {
 						const maxId = Array.isArray(data)
-							? data.reduce((m, it) => Math.max(m, Number(it[schema.idField]) || 0), 0)
+							? data.reduce(
+									(m, it) =>
+										Math.max(
+											m,
+											Number(it[schema.idField]) || 0,
+										),
+									0,
+								)
 							: 0;
 						item[schema.idField] = maxId + 1;
 					}
@@ -1034,13 +1612,19 @@ async function handleApi(req, res, url) {
 					// devices: Record<string, T[]>
 					const name = (categoryName || "").trim();
 					if (!name) {
-						return sendJson(res, 400, { ok: false, error: "请选择或填写设备类别" });
+						return sendJson(res, 400, {
+							ok: false,
+							error: "请选择或填写设备类别",
+						});
 					}
 					if (!data[name]) data[name] = [];
 					data[name].push(item);
 				} else {
 					if (!Array.isArray(data)) {
-						return sendJson(res, 400, { ok: false, error: "数据结构不是数组" });
+						return sendJson(res, 400, {
+							ok: false,
+							error: "数据结构不是数组",
+						});
 					}
 					data.push(item);
 				}
@@ -1053,7 +1637,10 @@ async function handleApi(req, res, url) {
 				writeFileWithBackup(path.join(DATA_DIR, file), updated);
 				sendJson(res, 200, { ok: true, item });
 			} catch (e) {
-				sendJson(res, 400, { ok: false, error: String(e.message || e) });
+				sendJson(res, 400, {
+					ok: false,
+					error: String(e.message || e),
+				});
 			}
 		});
 		return;
@@ -1099,18 +1686,30 @@ async function handleApi(req, res, url) {
 						? COMMENT_CONFIG_FILE
 						: CONFIG_FILE;
 				const source = readFileSafe(target);
-				const updated = setStringValue(source, line, key, String(value ?? ""));
+				const updated = setStringValue(
+					source,
+					line,
+					key,
+					String(value ?? ""),
+				);
 				writeFileWithBackup(target, updated);
 				sendJson(res, 200, { ok: true });
 			} catch (e) {
-				sendJson(res, 400, { ok: false, error: String(e.message || e) });
+				sendJson(res, 400, {
+					ok: false,
+					error: String(e.message || e),
+				});
 			}
 		});
 		return;
 	}
 
 	// ---- 获取数据文件列表 ----
-	if (pathname === "/api/data" && method === "GET" && !url.searchParams.get("file")) {
+	if (
+		pathname === "/api/data" &&
+		method === "GET" &&
+		!url.searchParams.get("file")
+	) {
 		const list = DATA_FILES.map((d) => ({
 			name: d.exportName,
 			title: d.title,
@@ -1120,7 +1719,11 @@ async function handleApi(req, res, url) {
 	}
 
 	// ---- 获取单个数据 ----
-	if (pathname === "/api/data" && method === "GET" && url.searchParams.get("file")) {
+	if (
+		pathname === "/api/data" &&
+		method === "GET" &&
+		url.searchParams.get("file")
+	) {
 		const file = url.searchParams.get("file");
 		const meta = DATA_FILES.find((d) => d.file === file);
 		if (!meta) {
@@ -1160,7 +1763,10 @@ async function handleApi(req, res, url) {
 				}
 				const meta = DATA_FILES.find((d) => d.file === file);
 				if (!meta) {
-					return sendJson(res, 404, { ok: false, error: "未知数据文件" });
+					return sendJson(res, 404, {
+						ok: false,
+						error: "未知数据文件",
+					});
 				}
 				const source = readFileSafe(path.join(DATA_DIR, file));
 				const decl = extractDeclarations(source, meta.exportName);
@@ -1178,7 +1784,10 @@ async function handleApi(req, res, url) {
 				writeFileWithBackup(path.join(DATA_DIR, file), updated);
 				sendJson(res, 200, { ok: true });
 			} catch (e) {
-				sendJson(res, 400, { ok: false, error: String(e.message || e) });
+				sendJson(res, 400, {
+					ok: false,
+					error: String(e.message || e),
+				});
 			}
 		});
 		return;
@@ -1194,10 +1803,16 @@ async function handleApi(req, res, url) {
 				const meta = DATA_FILES.find((d) => d.file === file);
 				const schema = DATA_SCHEMAS[file];
 				if (!meta || !schema) {
-					return sendJson(res, 404, { ok: false, error: "未知数据文件" });
+					return sendJson(res, 404, {
+						ok: false,
+						error: "未知数据文件",
+					});
 				}
 				if (index === undefined || index < 0) {
-					return sendJson(res, 400, { ok: false, error: "无效的索引" });
+					return sendJson(res, 400, {
+						ok: false,
+						error: "无效的索引",
+					});
 				}
 				const source = readFileSafe(path.join(DATA_DIR, file));
 				const decl = extractDeclarations(source, meta.exportName);
@@ -1211,16 +1826,25 @@ async function handleApi(req, res, url) {
 				if (schema.kind === "map") {
 					const name = (categoryName || "").trim();
 					if (!data[name] || !Array.isArray(data[name])) {
-						return sendJson(res, 400, { ok: false, error: "类别不存在" });
+						return sendJson(res, 400, {
+							ok: false,
+							error: "类别不存在",
+						});
 					}
 					if (index >= data[name].length) {
-						return sendJson(res, 400, { ok: false, error: "索引越界" });
+						return sendJson(res, 400, {
+							ok: false,
+							error: "索引越界",
+						});
 					}
 					data[name].splice(index, 1);
 					if (data[name].length === 0) delete data[name];
 				} else {
 					if (!Array.isArray(data) || index >= data.length) {
-						return sendJson(res, 400, { ok: false, error: "索引越界" });
+						return sendJson(res, 400, {
+							ok: false,
+							error: "索引越界",
+						});
 					}
 					data.splice(index, 1);
 				}
@@ -1232,7 +1856,10 @@ async function handleApi(req, res, url) {
 				writeFileWithBackup(path.join(DATA_DIR, file), updated);
 				sendJson(res, 200, { ok: true });
 			} catch (e) {
-				sendJson(res, 400, { ok: false, error: String(e.message || e) });
+				sendJson(res, 400, {
+					ok: false,
+					error: String(e.message || e),
+				});
 			}
 		});
 		return;
@@ -1269,7 +1896,9 @@ async function handleApi(req, res, url) {
 					JSON.stringify(history, null, "\t"),
 					"utf-8",
 				);
-			} catch (e) { /* 忽略 */ }
+			} catch (e) {
+				/* 忽略 */
+			}
 			sendJson(res, 200, {
 				ok: code === 0,
 				exitCode: code,
@@ -1298,7 +1927,9 @@ async function handleApi(req, res, url) {
 			distSize = dirSize(distDir);
 			try {
 				distBuiltAt = fs.statSync(distDir).mtime.toISOString();
-			} catch { /* 忽略 */ }
+			} catch {
+				/* 忽略 */
+			}
 		}
 		const siteStart = /siteStartDate:\s*"([\d-]+)"/.exec(configSource);
 		let days = null;
@@ -1306,7 +1937,8 @@ async function handleApi(req, res, url) {
 			days = Math.max(
 				0,
 				Math.floor(
-					(Date.now() - Date.parse(siteStart[1])) / (24 * 60 * 60 * 1000),
+					(Date.now() - Date.parse(siteStart[1])) /
+						(24 * 60 * 60 * 1000),
 				),
 			);
 		}
@@ -1327,7 +1959,9 @@ async function handleApi(req, res, url) {
 			dev: devProc
 				? {
 						running: true,
-						port: extractDevUrl(devLog) ? new URL(devUrl).port : DEV_PORT,
+						port: extractDevUrl(devLog)
+							? new URL(devUrl).port
+							: DEV_PORT,
 						url: devUrl || `http://localhost:${DEV_PORT}`,
 					}
 				: { running: false },
@@ -1395,20 +2029,40 @@ async function handleApi(req, res, url) {
 	}
 
 	// ---- 文章列表 ----
-	if (pathname === "/api/posts" && method === "GET" && !url.searchParams.get("slug")) {
+	if (
+		pathname === "/api/posts" &&
+		method === "GET" &&
+		!url.searchParams.get("slug")
+	) {
 		return sendJson(res, 200, { ok: true, posts: listPosts() });
 	}
 
 	// ---- 读取单篇文章 ----
-	if (pathname === "/api/posts" && method === "GET" && url.searchParams.get("slug")) {
+	if (
+		pathname === "/api/posts" &&
+		method === "GET" &&
+		url.searchParams.get("slug")
+	) {
 		const slug = safeSlug(url.searchParams.get("slug"));
-		if (!slug) return sendJson(res, 400, { ok: false, error: "无效的文章目录名" });
+		if (!slug)
+			return sendJson(res, 400, { ok: false, error: "无效的文章目录名" });
 		const file = path.join(POSTS_DIR, slug, "index.md");
-		if (!fs.existsSync(file)) return sendJson(res, 404, { ok: false, error: "文章不存在: " + slug });
+		if (!fs.existsSync(file))
+			return sendJson(res, 404, {
+				ok: false,
+				error: "文章不存在: " + slug,
+			});
 		try {
-			return sendJson(res, 200, { ok: true, slug, content: fs.readFileSync(file, "utf-8") });
+			return sendJson(res, 200, {
+				ok: true,
+				slug,
+				content: fs.readFileSync(file, "utf-8"),
+			});
 		} catch (e) {
-			return sendJson(res, 400, { ok: false, error: String(e.message || e) });
+			return sendJson(res, 400, {
+				ok: false,
+				error: String(e.message || e),
+			});
 		}
 	}
 
@@ -1420,15 +2074,30 @@ async function handleApi(req, res, url) {
 			try {
 				const { slug, content } = JSON.parse(body);
 				const safe = safeSlug(slug);
-				if (!safe) return sendJson(res, 400, { ok: false, error: "无效的文章目录名" });
-				if (typeof content !== "string") return sendJson(res, 400, { ok: false, error: "内容必须是字符串" });
+				if (!safe)
+					return sendJson(res, 400, {
+						ok: false,
+						error: "无效的文章目录名",
+					});
+				if (typeof content !== "string")
+					return sendJson(res, 400, {
+						ok: false,
+						error: "内容必须是字符串",
+					});
 				const dir = path.join(POSTS_DIR, safe);
 				const file = path.join(dir, "index.md");
-				if (!fs.existsSync(file)) return sendJson(res, 404, { ok: false, error: "文章不存在: " + safe });
+				if (!fs.existsSync(file))
+					return sendJson(res, 404, {
+						ok: false,
+						error: "文章不存在: " + safe,
+					});
 				writeFileWithBackup(file, content);
 				sendJson(res, 200, { ok: true });
 			} catch (e) {
-				sendJson(res, 400, { ok: false, error: String(e.message || e) });
+				sendJson(res, 400, {
+					ok: false,
+					error: String(e.message || e),
+				});
 			}
 		});
 		return;
@@ -1441,24 +2110,39 @@ async function handleApi(req, res, url) {
 		req.on("end", () => {
 			try {
 				const { title, published } = JSON.parse(body);
-				if (!title || !String(title).trim()) return sendJson(res, 400, { ok: false, error: "请填写文章标题" });
-				const today = published || new Date().toISOString().split("T")[0];
+				if (!title || !String(title).trim())
+					return sendJson(res, 400, {
+						ok: false,
+						error: "请填写文章标题",
+					});
+				const today =
+					published || new Date().toISOString().split("T")[0];
 				// 生成目录名：postN-标题（数字自动递增，标题含中文保留）
 				let n = 1;
 				for (const p of listPosts()) {
 					const m = /^post(\d+)/.exec(p.slug);
 					if (m) n = Math.max(n, parseInt(m[1], 10) + 1);
 				}
-				const clean = String(title).trim().replace(/[\\/:*?"<>|]/g, "").slice(0, 40);
+				const clean = String(title)
+					.trim()
+					.replace(/[\\/:*?"<>|]/g, "")
+					.slice(0, 40);
 				const slug = `post${n}【${clean}】`;
 				const dir = path.join(POSTS_DIR, slug);
-				if (fs.existsSync(dir)) return sendJson(res, 400, { ok: false, error: "目录已存在: " + slug });
+				if (fs.existsSync(dir))
+					return sendJson(res, 400, {
+						ok: false,
+						error: "目录已存在: " + slug,
+					});
 				const template = `---\ntitle: ${JSON.stringify(String(title).trim())}\npublished: ${today}\ndescription: ""\ntags: []\ncategory: 未分类\ndraft: true\n---\n\n# ${String(title).trim()}\n\n`;
 				fs.mkdirSync(dir, { recursive: true });
 				fs.writeFileSync(path.join(dir, "index.md"), template, "utf-8");
 				sendJson(res, 200, { ok: true, slug });
 			} catch (e) {
-				sendJson(res, 400, { ok: false, error: String(e.message || e) });
+				sendJson(res, 400, {
+					ok: false,
+					error: String(e.message || e),
+				});
 			}
 		});
 		return;
@@ -1472,17 +2156,31 @@ async function handleApi(req, res, url) {
 			try {
 				const { slug } = JSON.parse(body);
 				const safe = safeSlug(slug);
-				if (!safe) return sendJson(res, 400, { ok: false, error: "无效的文章目录名" });
+				if (!safe)
+					return sendJson(res, 400, {
+						ok: false,
+						error: "无效的文章目录名",
+					});
 				const dir = path.join(POSTS_DIR, safe);
 				const file = path.join(dir, "index.md");
-				if (!fs.existsSync(dir)) return sendJson(res, 404, { ok: false, error: "文章不存在: " + safe });
+				if (!fs.existsSync(dir))
+					return sendJson(res, 404, {
+						ok: false,
+						error: "文章不存在: " + safe,
+					});
 				// 备份 index.md 与目录内全部文件（fs.cpSync 在中文路径下崩溃，手动递归复制）
-				if (!fs.existsSync(BACKUP_DIR)) fs.mkdirSync(BACKUP_DIR, { recursive: true });
-				const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+				if (!fs.existsSync(BACKUP_DIR))
+					fs.mkdirSync(BACKUP_DIR, { recursive: true });
+				const ts = new Date()
+					.toISOString()
+					.replace(/[:.]/g, "-")
+					.slice(0, 19);
 				const backupDir = path.join(BACKUP_DIR, `${safe}.del.${ts}`);
 				fs.mkdirSync(backupDir, { recursive: true });
 				const copyRecursive = (src, dst) => {
-					for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+					for (const entry of fs.readdirSync(src, {
+						withFileTypes: true,
+					})) {
 						const s = path.join(src, entry.name);
 						const d = path.join(dst, entry.name);
 						if (entry.isDirectory()) {
@@ -1495,13 +2193,22 @@ async function handleApi(req, res, url) {
 				};
 				copyRecursive(dir, backupDir);
 				// fs.rmSync 在中文路径下崩溃（Node 24 Windows bug），改用异步版本
-				fs.promises.rm(dir, { recursive: true, force: true }).then(() => {
-					sendJson(res, 200, { ok: true });
-				}).catch((e) => {
-					sendJson(res, 400, { ok: false, error: String(e.message || e) });
-				});
+				fs.promises
+					.rm(dir, { recursive: true, force: true })
+					.then(() => {
+						sendJson(res, 200, { ok: true });
+					})
+					.catch((e) => {
+						sendJson(res, 400, {
+							ok: false,
+							error: String(e.message || e),
+						});
+					});
 			} catch (e) {
-				sendJson(res, 400, { ok: false, error: String(e.message || e) });
+				sendJson(res, 400, {
+					ok: false,
+					error: String(e.message || e),
+				});
 			}
 		});
 		return;
@@ -1527,16 +2234,23 @@ async function handleApi(req, res, url) {
 		req.on("end", async () => {
 			try {
 				const reqBody = bodyBuf ? JSON.parse(bodyBuf) : {};
-				const maxCount = Math.min(Math.max(parseInt(reqBody.maxCount) || 3, 1), 10);
+				const maxCount = Math.min(
+					Math.max(parseInt(reqBody.maxCount) || 3, 1),
+					10,
+				);
 				const { pending, state } = await fetchPendingComments(maxCount);
 				if (pending.length === 0) {
-					return sendJson(res, 200, { ok: true, replied: [], skipped: true, message: "没有需要回复的新评论" });
+					return sendJson(res, 200, {
+						ok: true,
+						replied: [],
+						skipped: true,
+						message: "没有需要回复的新评论",
+					});
 				}
 				const results = [];
 				for (const c of pending) {
 					try {
-						const prompt =
-							`访客「${c.nick}」在文章（${c.url}）下评论：\n${c.commentText || c.comment || ""}\n\n请以站长博客的 AI 小助手「halei0v0博客小助手」的身份回复这条评论。`;
+						const prompt = `访客「${c.nick}」在文章（${c.url}）下评论：\n${c.commentText || c.comment || ""}\n\n请以站长博客的 AI 小助手「halei0v0博客小助手」的身份回复这条评论。`;
 						const reply = await openrouterChat(prompt);
 						await twikooReply(c, reply);
 						state.replied.push(c.id);
@@ -1549,15 +2263,28 @@ async function handleApi(req, res, url) {
 							reply: reply.slice(0, 60),
 						});
 						state.log.length = Math.min(state.log.length, 50);
-						results.push({ ok: true, id: c.id, nick: c.nick, reply });
+						results.push({
+							ok: true,
+							id: c.id,
+							nick: c.nick,
+							reply,
+						});
 					} catch (e) {
-						results.push({ ok: false, id: c.id, nick: c.nick, error: String(e.message || e) });
+						results.push({
+							ok: false,
+							id: c.id,
+							nick: c.nick,
+							error: String(e.message || e),
+						});
 					}
 				}
 				saveAiReplyState(state);
 				sendJson(res, 200, { ok: true, replied: results });
 			} catch (e) {
-				sendJson(res, 400, { ok: false, error: String(e.message || e) });
+				sendJson(res, 400, {
+					ok: false,
+					error: String(e.message || e),
+				});
 			}
 		});
 		return;
@@ -1587,7 +2314,13 @@ const server = http.createServer((req, res) => {
 		filePath = path.join(__dirname, "index.html");
 	} else if (url.pathname === "/logo.png") {
 		// 后台左上角图标：使用博客 logo
-		filePath = path.join(ROOT, "public", "assets", "home", "default-logo.png");
+		filePath = path.join(
+			ROOT,
+			"public",
+			"assets",
+			"home",
+			"default-logo.png",
+		);
 	} else {
 		filePath = path.join(__dirname, url.pathname);
 	}
@@ -1618,7 +2351,9 @@ server.on("error", (err) => {
 	if (err.code === "EADDRINUSE") {
 		console.error(`端口 ${PORT} 已被占用，管理后台可能已在运行。`);
 		console.error(`请直接访问 http://localhost:${PORT}`);
-		console.error(`如需重启：先关闭已有实例（结束 node.exe 进程），再重新启动。`);
+		console.error(
+			`如需重启：先关闭已有实例（结束 node.exe 进程），再重新启动。`,
+		);
 		process.exit(1);
 	}
 	throw err;

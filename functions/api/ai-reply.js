@@ -27,7 +27,7 @@
 
 const DEFAULT_ENV = "https://tool.halei0v0.dpdns.org";
 const DEFAULT_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free";
-const DEFAULT_NICK = "halei0v0博客小助手";
+const DEFAULT_NICK = "halei0v0博客小助手【AI自动回复】";
 const DEFAULT_EMAIL = "halei0v0-a@skymail.ink";
 
 export async function onRequest({ request, env }) {
@@ -57,7 +57,10 @@ export async function onRequest({ request, env }) {
 	const nick = env.TWIKOO_REPLY_NICK || DEFAULT_NICK;
 	const email = env.TWIKOO_REPLY_EMAIL || DEFAULT_EMAIL;
 	const model = env.OPENROUTER_MODEL || DEFAULT_MODEL;
-	const maxRun = Math.min(Math.max(parseInt(env.AI_REPLY_MAX || "1") || 1, 1), 3);
+	const maxRun = Math.min(
+		Math.max(parseInt(env.AI_REPLY_MAX || "1") || 1, 1),
+		3,
+	);
 
 	try {
 		// KV 防抖：30 分钟内只执行一次（可选）
@@ -66,7 +69,11 @@ export async function onRequest({ request, env }) {
 			const last = await kv.get("last_run");
 			if (last && Date.now() - Number(last) < 30 * 60 * 1000) {
 				return new Response(
-					JSON.stringify({ ok: true, skipped: true, reason: "30 分钟内已执行过" }),
+					JSON.stringify({
+						ok: true,
+						skipped: true,
+						reason: "30 分钟内已执行过",
+					}),
 					{ headers: cors },
 				);
 			}
@@ -78,9 +85,12 @@ export async function onRequest({ request, env }) {
 			pageSize: 30,
 			includeReply: false,
 		});
-		const comments = (recent && Array.isArray(recent.data) && recent.data) || [];
+		const comments =
+			(recent && Array.isArray(recent.data) && recent.data) || [];
 		if (comments.length === 0) {
-			return new Response(JSON.stringify({ ok: true, replied: [] }), { headers: cors });
+			return new Response(JSON.stringify({ ok: true, replied: [] }), {
+				headers: cors,
+			});
 		}
 
 		// 2. 读取已回复记录（KV，可选）
@@ -106,12 +116,14 @@ export async function onRequest({ request, env }) {
 				event: "COMMENT_GET",
 				url: c.url,
 			});
-			const treeData = (tree && Array.isArray(tree.data) && tree.data) || [];
+			const treeData =
+				(tree && Array.isArray(tree.data) && tree.data) || [];
 			const node = treeData.find((n) => n.id === c.id);
 			if (!node) continue;
 			// 站长自己的评论不回复；已有任何回复的评论不回复
 			if (node.master === true) continue;
-			if (Array.isArray(node.replies) && node.replies.length > 0) continue;
+			if (Array.isArray(node.replies) && node.replies.length > 0)
+				continue;
 
 			// 4. 生成回复
 			const prompt =
@@ -133,12 +145,21 @@ export async function onRequest({ request, env }) {
 			};
 			const done = await postJson(twikooUrl, submit);
 			if (done && done.code) {
-				results.push({ ok: false, id: c.id, error: `${done.code}: ${done.message || ""}` });
+				results.push({
+					ok: false,
+					id: c.id,
+					error: `${done.code}: ${done.message || ""}`,
+				});
 				continue;
 			}
 
 			repliedIds.push(c.id);
-			results.push({ ok: true, id: c.id, nick: c.nick, reply: reply.slice(0, 80) });
+			results.push({
+				ok: true,
+				id: c.id,
+				nick: c.nick,
+				reply: reply.slice(0, 80),
+			});
 			count++;
 		}
 
@@ -150,12 +171,19 @@ export async function onRequest({ request, env }) {
 		}
 
 		return new Response(
-			JSON.stringify({ ok: true, replied: results, skipped: results.length === 0 }),
+			JSON.stringify({
+				ok: true,
+				replied: results,
+				skipped: results.length === 0,
+			}),
 			{ headers: cors },
 		);
 	} catch (e) {
 		return new Response(
-			JSON.stringify({ ok: false, error: String((e && e.message) || e).slice(0, 300) }),
+			JSON.stringify({
+				ok: false,
+				error: String((e && e.message) || e).slice(0, 300),
+			}),
 			{ headers: cors },
 		);
 	}
@@ -209,9 +237,10 @@ async function openrouterChat(apiKey, model, prompt) {
 			`OpenRouter ${res.status}: ${(parsed.error && parsed.error.message) || text.slice(0, 200)}`,
 		);
 	}
-	const content = parsed.choices && parsed.choices[0] && parsed.choices[0].message
-		? parsed.choices[0].message.content
-		: "";
+	const content =
+		parsed.choices && parsed.choices[0] && parsed.choices[0].message
+			? parsed.choices[0].message.content
+			: "";
 	if (!content) throw new Error("OpenRouter 未返回内容");
 	return String(content).trim();
 }

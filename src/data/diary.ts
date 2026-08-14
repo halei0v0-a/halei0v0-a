@@ -62,6 +62,11 @@ const diaryData: DiaryItem[] = [
 			"https://blogpicture.halei0v0.ccwu.cc/images/Classification/%E5%8D%9A%E5%AE%A2/2026-08-14%2011-27%20%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E5%8F%A4%E5%BB%BA%E5%86%99%E6%84%8F-%E5%8F%A4%E5%BB%BA%E8%83%8C%E6%99%AF.webp",
 		],
 		"id": 6,
+	},
+	{
+		"content": "哇咔咔，AI回复评论功能上线啦！！！还在测试阶段~~~快去试试！\n免费版 20次/分钟 和 50次/天大家别干废了。\n用的nemotron-3-ultra-550b-a55b可能会会的慢点。",
+		"date": "2026-08-15",
+		"id": 7,
 	}
 ];
 
