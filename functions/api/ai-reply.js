@@ -14,9 +14,10 @@
  *   TWIKOO_ADMIN_PASS    Twikoo 管理密码（必需）
  *   AI_ADMIN_KEY         OpenRouter API Key（必需）
  *   TWIKOO_ENV_ID        Twikoo 服务地址（可选，默认 https://tool.halei0v0.dpdns.org）
+ *   SITE_URL             博客站点地址（可选，默认 https://blog.halei0v0.ccwu.cc，用于抓取文章内容）
  *   TWIKOO_REPLY_NICK    回复昵称（可选，默认 halei0v0博客小助手）
  *   TWIKOO_REPLY_EMAIL   小助手邮箱（可选，默认 halei0v0-a@skymail.ink）
- *   OPENROUTER_MODEL     OpenRouter 模型（可选，默认 deepseek/deepseek-chat-v3-0324:free）
+ *   OPENROUTER_MODEL     OpenRouter 模型（可选，默认 nvidia/nemotron-3-ultra-550b-a55b:free）
  *   AI_REPLY_MAX         每次最多回复条数（可选，默认 1，OpenRouter 免费额度 50/天 需保守）
  *
  * KV 绑定（可选，推荐）：绑定名为 REPLY_KV
@@ -27,8 +28,9 @@
 
 const DEFAULT_ENV = "https://tool.halei0v0.dpdns.org";
 const DEFAULT_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free";
-const DEFAULT_NICK = "halei0v0博客小助手【AI自动回复】";
+const DEFAULT_NICK = "halei0v0博客小助手";
 const DEFAULT_EMAIL = "halei0v0-a@skymail.ink";
+const DEFAULT_SITE_URL = "https://blog.halei0v0.ccwu.cc";
 
 export async function onRequest({ request, env }) {
 	const cors = {
@@ -54,6 +56,7 @@ export async function onRequest({ request, env }) {
 	}
 
 	const twikooUrl = env.TWIKOO_ENV_ID || DEFAULT_ENV;
+	const siteUrl = env.SITE_URL || DEFAULT_SITE_URL;
 	const nick = env.TWIKOO_REPLY_NICK || DEFAULT_NICK;
 	const email = env.TWIKOO_REPLY_EMAIL || DEFAULT_EMAIL;
 	const model = env.OPENROUTER_MODEL || DEFAULT_MODEL;
@@ -125,10 +128,12 @@ export async function onRequest({ request, env }) {
 			if (Array.isArray(node.replies) && node.replies.length > 0)
 				continue;
 
-			// 4. 生成回复
-			const prompt =
-				`访客「${c.nick}」在文章（${c.url}）下评论：\n` +
-				`${c.commentText || c.comment || ""}\n\n请以站长博客的 AI 小助手「halei0v0博客小助手」的身份回复这条评论。`;
+			// 4. 生成回复（附带文章标题与正文摘要，让回复更贴合文章内容）
+			const article = await fetchArticleInfo(siteUrl, c.url);
+			let prompt = `文章地址：${c.url}`;
+			if (article.title) prompt += `\n文章标题：${article.title}`;
+			if (article.text) prompt += `\n文章内容摘要：${article.text}`;
+			prompt += `\n\n访客「${c.nick}」的评论：${c.commentText || c.comment || ""}\n\n请以站长博客的 AI 小助手「halei0v0博客小助手」的身份回复这条评论，回复内容尽量贴合文章内容。`;
 			const reply = await openrouterChat(apiKey, model, prompt);
 
 			// 5. 以「halei0v0博客小助手」身份提交回复（小助手专用邮箱，非博主邮箱）
@@ -186,6 +191,43 @@ export async function onRequest({ request, env }) {
 			}),
 			{ headers: cors },
 		);
+	}
+}
+
+/** 抓取文章页面，提取标题与正文纯文本摘要（失败时返回空对象，不影响回复） */
+async function fetchArticleInfo(siteUrl, articleUrl) {
+	try {
+		const url = new URL(articleUrl, siteUrl).toString();
+		const res = await fetch(url, {
+			headers: { "User-Agent": "halei0v0-blog-ai-reply" },
+		});
+		if (!res.ok) return {};
+		const html = await res.text();
+
+		const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+		const title = titleMatch
+			? titleMatch[1].replace(/<[^>]+>/g, "").trim()
+			: "";
+
+		// 去脚本/样式/标签，提取正文纯文本
+		const text = html
+			.replace(/<script[\s\S]*?<\/script>/gi, " ")
+			.replace(/<style[\s\S]*?<\/style>/gi, " ")
+			.replace(/<nav[\s\S]*?<\/nav>/gi, " ")
+			.replace(/<header[\s\S]*?<\/header>/gi, " ")
+			.replace(/<footer[\s\S]*?<\/footer>/gi, " ")
+			.replace(/<[^>]+>/g, " ")
+			.replace(/&nbsp;/gi, " ")
+			.replace(/&amp;/gi, "&")
+			.replace(/&lt;/gi, "<")
+			.replace(/&gt;/gi, ">")
+			.replace(/\s+/g, " ")
+			.trim()
+			.slice(0, 1500);
+
+		return { title, text };
+	} catch {
+		return {};
 	}
 }
 

@@ -1306,9 +1306,74 @@ function twikooRequest(event) {
 	});
 }
 
+/** 抓取文章页面，提取标题与正文纯文本摘要（失败时返回空对象，不影响回复） */
+function fetchArticleInfo(articleUrl, maxLen = 1500) {
+	const siteUrl =
+		process.env.SITE_URL || "https://blog.halei0v0.ccwu.cc";
+	let u;
+	try {
+		u = new URL(articleUrl, siteUrl);
+	} catch {
+		return Promise.resolve({});
+	}
+	return new Promise((resolve) => {
+		const req = https.get(
+			u,
+			{
+				headers: { "User-Agent": "halei0v0-blog-ai-reply" },
+			},
+			(res) => {
+				if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+					res.resume();
+					return resolve({});
+				}
+				if (res.statusCode !== 200) {
+					res.resume();
+					return resolve({});
+				}
+				let html = "";
+				res.setEncoding("utf8");
+				res.on("data", (d) => {
+					html += d;
+					if (html.length > 200000) res.destroy();
+				});
+				res.on("end", () => {
+					try {
+						const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+						const title = titleMatch
+							? titleMatch[1].replace(/<[^>]+>/g, "").trim()
+							: "";
+						const text = html
+							.replace(/<script[\s\S]*?<\/script>/gi, " ")
+							.replace(/<style[\s\S]*?<\/style>/gi, " ")
+							.replace(/<nav[\s\S]*?<\/nav>/gi, " ")
+							.replace(/<header[\s\S]*?<\/header>/gi, " ")
+							.replace(/<footer[\s\S]*?<\/footer>/gi, " ")
+							.replace(/<[^>]+>/g, " ")
+							.replace(/&nbsp;/gi, " ")
+							.replace(/&amp;/gi, "&")
+							.replace(/&lt;/gi, "<")
+							.replace(/&gt;/gi, ">")
+							.replace(/\s+/g, " ")
+							.trim()
+							.slice(0, maxLen);
+						resolve({ title, text });
+					} catch {
+						resolve({});
+					}
+				});
+			},
+		);
+		req.setTimeout(8000, () => {
+			req.destroy();
+			resolve({});
+		});
+		req.on("error", () => resolve({}));
+	});
+}
+
 /** 调用 OpenRouter 生成回复 */
-async function openrouterChat(prompt) {
-	const key = process.env.AI_ADMIN_KEY;
+async function openrouterChat(prompt) {	const key = process.env.AI_ADMIN_KEY;
 	if (!key) throw new Error("未配置 AI_ADMIN_KEY 环境变量");
 	const model =
 		process.env.OPENROUTER_MODEL ||
@@ -2250,7 +2315,11 @@ async function handleApi(req, res, url) {
 				const results = [];
 				for (const c of pending) {
 					try {
-						const prompt = `访客「${c.nick}」在文章（${c.url}）下评论：\n${c.commentText || c.comment || ""}\n\n请以站长博客的 AI 小助手「halei0v0博客小助手」的身份回复这条评论。`;
+						const article = await fetchArticleInfo(c.url);
+						let prompt = `文章地址：${c.url}`;
+						if (article.title) prompt += `\n文章标题：${article.title}`;
+						if (article.text) prompt += `\n文章内容摘要：${article.text}`;
+						prompt += `\n\n访客「${c.nick}」的评论：${c.commentText || c.comment || ""}\n\n请以站长博客的 AI 小助手「halei0v0博客小助手」的身份回复这条评论，回复内容尽量贴合文章内容。`;
 						const reply = await openrouterChat(prompt);
 						await twikooReply(c, reply);
 						state.replied.push(c.id);
