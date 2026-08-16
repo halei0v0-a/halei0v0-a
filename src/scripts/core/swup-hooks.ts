@@ -28,6 +28,7 @@ export interface SwupHookHandlers {
 interface VisitObject {
 	to: {
 		url: string;
+		document?: Document;
 	};
 }
 
@@ -148,7 +149,7 @@ export class SwupHooksManager {
 	 * 处理页面视图显示
 	 */
 	private registerPageViewHook(): void {
-		window.swup!.hooks.on("page:view", () => {
+		window.swup!.hooks.on("page:view", (visit: VisitObject) => {
 			// 扩展页面高度
 			this.extendPageHeight(false);
 
@@ -161,9 +162,44 @@ export class SwupHooksManager {
 			// 同步主题状态
 			this.syncThemeState();
 
+			// 同步 Banner 文章页覆盖层（Banner 在 swup 容器 main 之外，不会随页面替换）
+			this.syncBannerPostOverlay(visit);
+
 			// 触发页面加载完成事件
 			this.dispatchPageLoadedEvent();
 		});
+	}
+
+	/**
+	 * 同步 Banner 的文章页简介覆盖层
+	 * Banner 组件位于 swup 容器之外，页面切换时 DOM 不会更新，
+	 * 若从文章页导航到主页，会残留文章标题/简介，这里按新文档同步覆盖层。
+	 */
+	private syncBannerPostOverlay(visit: VisitObject): void {
+		const newDoc = visit.to.document;
+		if (!newDoc) {
+			return;
+		}
+		const wrapper = document.getElementById("banner-wrapper");
+		if (!wrapper) {
+			return;
+		}
+
+		const curOverlay = wrapper.querySelector(".banner-post-meta-overlay");
+		const newOverlay = newDoc.querySelector(".banner-post-meta-overlay");
+
+		if (curOverlay) {
+			curOverlay.remove();
+		}
+		if (newOverlay) {
+			// 插入到首页文字覆盖层之前，避免遮挡
+			const textOverlay = wrapper.querySelector(".banner-text-overlay");
+			if (textOverlay) {
+				wrapper.insertBefore(newOverlay, textOverlay);
+			} else {
+				wrapper.appendChild(newOverlay);
+			}
+		}
 	}
 
 	/**

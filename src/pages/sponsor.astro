@@ -1,0 +1,136 @@
+---
+import { PageHeader } from "@components/features/page-header";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { sponsorList } from "../data/sponsor-list";
+import { sponsorMethods } from "../data/sponsor-methods";
+
+export const prerender = true;
+
+const title = "赞助";
+const hasMethods = sponsorMethods.length > 0;
+const hasRecords = sponsorList.length > 0;
+---
+
+<MainGridLayout title={title} description={title}>
+	<script>
+		import("../scripts/right-sidebar-layout.js");
+	</script>
+
+	<div
+		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
+	>
+		<div class="card-base z-10 px-9 py-6 relative w-full">
+			<PageHeader title={title} />
+
+			<!-- 介绍 -->
+			<div
+				class="mt-4 space-y-3 text-black/75 dark:text-white/75 leading-relaxed"
+			>
+				<p>
+					如果我的内容对你有帮助，欢迎通过以下方式打赏我，你的支持是我持续创作的动力！
+				</p>
+				<p>
+					您的打赏将用于服务器维护、内容创作和功能开发，帮助我持续提供优质内容。
+				</p>
+			</div>
+
+			<!-- 打赏方式 -->
+			{
+				hasMethods ? (
+					<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 mt-8">
+						{sponsorMethods.map((m) => {
+							const available =
+								(m.type === "image" && m.image) ||
+								(m.type === "link" && m.link);
+							return (
+								<div class="card flex flex-col items-center gap-3 p-6 text-center">
+									<div class="font-bold text-lg">
+										{m.name}
+									</div>
+									<div class="text-sm text-black/60 dark:text-white/60">
+										{m.desc}
+									</div>
+									{m.type === "image" ? (
+										available ? (
+											<img
+												src={m.image}
+												alt={`${m.name} 扫码打赏`}
+												loading="lazy"
+												class="w-44 h-44 object-contain rounded-lg border border-black/10 dark:border-white/10"
+											/>
+										) : (
+											<div class="w-44 h-44 flex items-center justify-center rounded-lg border border-dashed border-black/20 dark:border-white/20 text-sm text-black/40 dark:text-white/40">
+												暂未开放
+											</div>
+										)
+									) : available ? (
+										<a
+											href={m.link}
+											target="_blank"
+											rel="noopener"
+											class="btn-primary"
+										>
+											前往打赏
+										</a>
+									) : (
+										<span class="px-5 py-2 rounded-lg border border-dashed border-black/20 dark:border-white/20 text-sm text-black/40 dark:text-white/40">
+											暂未开放
+										</span>
+									)}
+								</div>
+							);
+						})}
+					</div>
+				) : (
+					<div class="mt-8 p-8 text-center rounded-lg border border-dashed border-black/20 dark:border-white/20 text-black/50 dark:text-white/50">
+						打赏功能暂未开放
+					</div>
+				)
+			}
+
+			<!-- 打赏列表 -->
+			<div class="mt-10">
+				<div class="flex items-center gap-3 mb-4">
+					<h2 class="text-xl font-bold">打赏列表</h2>
+					<span
+						class="text-xs px-2 py-0.5 rounded-full bg-[var(--btn-regular-bg)] text-black/60 dark:text-white/60"
+					>
+						{sponsorList.length}
+					</span>
+				</div>
+
+				{
+					hasRecords ? (
+						<div class="space-y-3">
+							{sponsorList.map((item) => (
+								<div class="flex items-center gap-4 p-4 rounded-lg bg-[var(--btn-regular-bg)]">
+									<img
+										src={item.avatar}
+										alt={item.name}
+										loading="lazy"
+										class="w-11 h-11 rounded-full object-cover flex-none"
+									/>
+									<div class="min-w-0 flex-1">
+										<div class="font-medium truncate">
+											{item.name}
+										</div>
+										<div class="text-sm text-black/50 dark:text-white/50">
+											{item.date}
+										</div>
+									</div>
+									<div class="font-bold text-lg text-[var(--primary)] flex-none">
+										{item.amount}
+									</div>
+								</div>
+							))}
+						</div>
+					) : (
+						<div class="p-8 text-center rounded-lg border border-dashed border-black/20 dark:border-white/20 text-black/50 dark:text-white/50">
+							还没有打赏记录，期待你的支持
+						</div>
+					)
+				}
+			</div>
+		</div>
+	</div>
+</MainGridLayout>

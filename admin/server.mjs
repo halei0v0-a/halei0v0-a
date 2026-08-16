@@ -564,6 +564,16 @@ const DATA_FILES = [
 	{ exportName: "localAnimeList", title: "番剧列表", file: "anime.ts" },
 	{ exportName: "devicesData", title: "设备", file: "devices.ts" },
 	{ exportName: "diaryData", title: "日记", file: "diary.ts" },
+	{
+		exportName: "sponsorMethods",
+		title: "赞助-打赏方式",
+		file: "sponsor-methods.ts",
+	},
+	{
+		exportName: "sponsorList",
+		title: "赞助-打赏记录",
+		file: "sponsor-list.ts",
+	},
 ];
 
 /**
@@ -889,6 +899,57 @@ const DATA_SCHEMAS = {
 				type: "textarea",
 				placeholder: "每行一个 URL，可留空",
 			},
+		],
+	},
+	"sponsor-methods.ts": {
+		kind: "array",
+		idField: "id",
+		idAuto: true,
+		fields: [
+			{
+				key: "name",
+				label: "名称",
+				type: "text",
+				required: true,
+				placeholder: "如 支付宝 / 微信 / ko-fi",
+			},
+			{ key: "desc", label: "描述", type: "textarea", required: true },
+			{
+				key: "type",
+				label: "类型",
+				type: "select",
+				required: true,
+				options: ["image", "link"],
+			},
+			{
+				key: "image",
+				label: "收款二维码图片 URL",
+				type: "url",
+				placeholder: "type=image 时填写，留空显示暂未开放",
+			},
+			{
+				key: "link",
+				label: "平台打赏链接",
+				type: "url",
+				placeholder: "type=link 时填写，留空显示暂未开放",
+			},
+		],
+	},
+	"sponsor-list.ts": {
+		kind: "array",
+		idField: "id",
+		idAuto: true,
+		fields: [
+			{ key: "name", label: "昵称", type: "text", required: true },
+			{ key: "avatar", label: "头像 URL", type: "url", required: true },
+			{
+				key: "amount",
+				label: "金额",
+				type: "text",
+				required: true,
+				placeholder: "如 ¥20",
+			},
+			{ key: "date", label: "打赏时间", type: "date", required: true },
 		],
 	},
 };

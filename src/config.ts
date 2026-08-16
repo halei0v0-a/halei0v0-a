@@ -396,6 +396,11 @@ export const navBarConfig: NavBarConfig = {
 					icon: "material-symbols:person",
 				},
 				{
+					name: "赞助",
+					url: "/sponsor/",
+					icon: "material-symbols:favorite",
+				},
+				{
 					name: "Friends",
 					url: "/friends/",
 					icon: "material-symbols:group",
