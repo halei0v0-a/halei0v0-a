@@ -1,3 +1,5 @@
+import { aiReplyConfig } from "./ai-reply-config.js";
+
 /**
  * EdgeOne Pages Function：AI 评论自动回复
  * 路由：POST /api/ai-reply
@@ -10,29 +12,26 @@
  * 4. 用管理通道（accessToken = 管理密码明文）以「halei0v0博客小助手」身份提交回复
  *    （小助手使用专用邮箱，不是博主邮箱，因此不会被 Twikoo 标记为站长 master 身份）
  *
- * 环境变量（EdgeOne Pages 控制台配置，密码/Key 用 Secret 类型）：
- *   TWIKOO_ADMIN_PASS    Twikoo 管理密码（必需）
- *   AI_ADMIN_KEY         OpenRouter API Key（必需）
- *   TWIKOO_ENV_ID        Twikoo 服务地址（可选，默认 https://tool.halei0v0.dpdns.org）
- *   SITE_URL             博客站点地址（可选，默认 https://blog.halei0v0.ccwu.cc，用于抓取文章内容）
- *   TWIKOO_REPLY_NICK    回复昵称（可选，默认 halei0v0博客小助手）
- *   TWIKOO_REPLY_EMAIL   小助手邮箱（可选，默认 halei0v0-a@skymail.ink）
- *   OPENROUTER_MODEL     OpenRouter 模型（可选，默认 nvidia/nemotron-3-ultra-550b-a55b:free）
- *   AI_REPLY_MAX         每次最多回复条数（可选，默认 1，OpenRouter 免费额度 50/天 需保守）
+ * 配置：
+ * - 模型/昵称/邮箱/网址：在 ai-reply-config.js 中配置（本地后台可编辑，随代码部署）
+ * - 密钥只从环境变量读取（EdgeOne Pages 控制台，用 Secret 类型）：
+ *     TWIKOO_ADMIN_PASS    Twikoo 管理密码（必需）
+ *     AI_ADMIN_KEY         OpenRouter API Key（必需）
+ *   env 可选的覆盖项：
+ *     TWIKOO_ENV_ID        Twikoo 服务地址（默认 https://tool.halei0v0.dpdns.org）
+ *     SITE_URL             博客站点地址（默认 https://blog.halei0v0.ccwu.cc，用于抓取文章内容）
+ *     AI_REPLY_MAX         每次最多回复条数（默认 1，OpenRouter 免费额度 50/天 需保守）
  *
  * KV 绑定（可选，推荐）：绑定名为 REPLY_KV
- *   - last_run：上次执行时间戳（30 分钟内不重复执行）
+ *   - last_run：上次执行时间戳（5 分钟内不重复执行；只要执行过就写入，防止空跑）
  *   - replied：已回复评论 id 列表（JSON 数组）
  * 未绑定 KV 时降级为：每次都执行，但仅靠评论树判断防重复回复。
  */
 
 const DEFAULT_ENV = "https://tool.halei0v0.dpdns.org";
-const DEFAULT_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free";
-const DEFAULT_NICK = "halei0v0博客小助手";
-const DEFAULT_EMAIL = "halei0v0-a@skymail.ink";
 const DEFAULT_SITE_URL = "https://blog.halei0v0.ccwu.cc";
 
-export async function onRequest({ request, env }) {
+export async function onRequest({ request, env, waitUntil }) {
 	const cors = {
 		"Access-Control-Allow-Origin": "*",
 		"Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -55,134 +54,19 @@ export async function onRequest({ request, env }) {
 		);
 	}
 
-	const twikooUrl = env.TWIKOO_ENV_ID || DEFAULT_ENV;
-	const siteUrl = env.SITE_URL || DEFAULT_SITE_URL;
-	const nick = env.TWIKOO_REPLY_NICK || DEFAULT_NICK;
-	const email = env.TWIKOO_REPLY_EMAIL || DEFAULT_EMAIL;
-	const model = env.OPENROUTER_MODEL || DEFAULT_MODEL;
-	const maxRun = Math.min(
-		Math.max(parseInt(env.AI_REPLY_MAX || "1") || 1, 1),
-		3,
-	);
-
-	try {
-		// KV 防抖：30 分钟内只执行一次（可选）
-		const kv = env.REPLY_KV || null;
-		if (kv) {
-			const last = await kv.get("last_run");
-			if (last && Date.now() - Number(last) < 30 * 60 * 1000) {
-				return new Response(
-					JSON.stringify({
-						ok: true,
-						skipped: true,
-						reason: "30 分钟内已执行过",
-					}),
-					{ headers: cors },
-				);
-			}
-		}
-
-		// 1. 拉取最新主评论（不含回复）
-		const recent = await postJson(twikooUrl, {
-			event: "GET_RECENT_COMMENTS",
-			pageSize: 30,
-			includeReply: false,
-		});
-		const comments =
-			(recent && Array.isArray(recent.data) && recent.data) || [];
-		if (comments.length === 0) {
-			return new Response(JSON.stringify({ ok: true, replied: [] }), {
-				headers: cors,
-			});
-		}
-
-		// 2. 读取已回复记录（KV，可选）
-		let repliedIds = [];
-		if (kv) {
-			try {
-				repliedIds = JSON.parse((await kv.get("replied")) || "[]");
-			} catch {
-				repliedIds = [];
-			}
-		}
-
-		const results = [];
-		let count = 0;
-
-		for (const c of comments) {
-			if (count >= maxRun) break;
-			if (!c.id || !c.url) continue;
-			if (repliedIds.includes(c.id)) continue;
-
-			// 3. 拉该文章完整评论树，判断是否该回复
-			const tree = await postJson(twikooUrl, {
-				event: "COMMENT_GET",
-				url: c.url,
-			});
-			const treeData =
-				(tree && Array.isArray(tree.data) && tree.data) || [];
-			const node = treeData.find((n) => n.id === c.id);
-			if (!node) continue;
-			// 站长自己的评论不回复；已有任何回复的评论不回复
-			if (node.master === true) continue;
-			if (Array.isArray(node.replies) && node.replies.length > 0)
-				continue;
-
-			// 4. 生成回复（附带文章标题与正文摘要，让回复更贴合文章内容）
-			const article = await fetchArticleInfo(siteUrl, c.url);
-			let prompt = `文章地址：${c.url}`;
-			if (article.title) prompt += `\n文章标题：${article.title}`;
-			if (article.text) prompt += `\n文章内容摘要：${article.text}`;
-			prompt += `\n\n访客「${c.nick}」的评论：${c.commentText || c.comment || ""}\n\n请以站长博客的 AI 小助手「halei0v0博客小助手」的身份回复这条评论，回复内容尽量贴合文章内容。`;
-			const reply = await openrouterChat(apiKey, model, prompt);
-
-			// 5. 以「halei0v0博客小助手」身份提交回复（小助手专用邮箱，非博主邮箱）
-			const submit = {
-				event: "COMMENT_SUBMIT",
-				accessToken: pass,
-				url: c.url,
-				ua: "halei0v0-blog-ai-reply",
-				nick,
-				mail: email,
-				comment: reply,
-				pid: c.id,
-				rid: c.id,
-			};
-			const done = await postJson(twikooUrl, submit);
-			if (done && done.code) {
-				results.push({
-					ok: false,
-					id: c.id,
-					error: `${done.code}: ${done.message || ""}`,
-				});
-				continue;
-			}
-
-			repliedIds.push(c.id);
-			results.push({
-				ok: true,
-				id: c.id,
-				nick: c.nick,
-				reply: reply.slice(0, 80),
-			});
-			count++;
-		}
-
-		// 6. 持久化已回复记录
-		if (kv && results.length) {
-			repliedIds = repliedIds.slice(-500);
-			await kv.put("replied", JSON.stringify(repliedIds));
-			await kv.put("last_run", String(Date.now()));
-		}
-
+	// 主流程放入后台任务，避免边缘函数超时（AI 生成可能 30-60 秒）
+	// 先用 waitUntil 延长生命周期，立即返回响应
+	const task = runAiReply(env);
+	if (typeof waitUntil === "function") {
+		waitUntil(task.catch((e) => console.error("ai-reply:", e)));
 		return new Response(
-			JSON.stringify({
-				ok: true,
-				replied: results,
-				skipped: results.length === 0,
-			}),
+			JSON.stringify({ ok: true, processing: true }),
 			{ headers: cors },
 		);
+	}
+	try {
+		const result = await task;
+		return new Response(JSON.stringify(result), { headers: cors });
 	} catch (e) {
 		return new Response(
 			JSON.stringify({
@@ -194,13 +78,147 @@ export async function onRequest({ request, env }) {
 	}
 }
 
-/** 抓取文章页面，提取标题与正文纯文本摘要（失败时返回空对象，不影响回复） */
+/** AI 回复主流程（放在后台执行，返回结果对象） */
+async function runAiReply(env) {
+	const twikooUrl = env.TWIKOO_ENV_ID || DEFAULT_ENV;
+	const siteUrl = env.SITE_URL || DEFAULT_SITE_URL;
+	const nick = aiReplyConfig.nick || "halei0v0博客小助手";
+	const email = aiReplyConfig.email || "";
+	const replyUrl = aiReplyConfig.url || "";
+	const model = aiReplyConfig.model || "nvidia/nemotron-3-super-120b-a12b:free";
+	const maxRun = Math.min(
+		Math.max(parseInt(env.AI_REPLY_MAX || "1") || 1, 1),
+		3,
+	);
+
+	// KV 防抖：5 分钟内只执行一次（可选）
+	const kv = env.REPLY_KV || null;
+	if (kv) {
+		const last = await kv.get("last_run");
+		if (last && Date.now() - Number(last) < 5 * 60 * 1000) {
+			return {
+				ok: true,
+				skipped: true,
+				reason: "5 分钟内已执行过",
+			};
+		}
+		// 只要执行了就记录，避免没新评论时被反复触发
+		await kv.put("last_run", String(Date.now()));
+	}
+
+	// 1. 拉取最新主评论（不含回复）
+	const recent = await postJson(twikooUrl, {
+		event: "GET_RECENT_COMMENTS",
+		pageSize: 30,
+		includeReply: false,
+	});
+	const comments =
+		(recent && Array.isArray(recent.data) && recent.data) || [];
+	if (comments.length === 0) {
+		return { ok: true, replied: [] };
+	}
+
+	// 2. 读取已回复记录（KV，可选）
+	let repliedIds = [];
+	if (kv) {
+		try {
+			repliedIds = JSON.parse((await kv.get("replied")) || "[]");
+		} catch {
+			repliedIds = [];
+		}
+	}
+
+	const results = [];
+	let count = 0;
+
+	for (const c of comments) {
+		if (count >= maxRun) break;
+		if (!c.id || !c.url) continue;
+		if (repliedIds.includes(c.id)) continue;
+
+		// 3. 拉该文章完整评论树，判断是否该回复
+		const tree = await postJson(twikooUrl, {
+			event: "COMMENT_GET",
+			url: c.url,
+		});
+		const treeData =
+			(tree && Array.isArray(tree.data) && tree.data) || [];
+		const node = treeData.find((n) => n.id === c.id);
+		if (!node) continue;
+		// 站长自己的评论不回复；已有任何回复的评论不回复
+		if (node.master === true) continue;
+		if (Array.isArray(node.replies) && node.replies.length > 0)
+			continue;
+
+		// 4. 生成回复（附带文章标题与正文摘要，让回复更贴合文章内容）
+		const article = await fetchArticleInfo(siteUrl, c.url);
+		let prompt = `文章地址：${c.url}`;
+		if (article.title) prompt += `\n文章标题：${article.title}`;
+		if (article.text) prompt += `\n文章内容摘要：${article.text}`;
+		prompt += `\n\n访客「${c.nick}」的评论：${c.commentText || c.comment || ""}\n\n请以站长博客的 AI 小助手「halei0v0博客小助手」的身份回复这条评论，回复内容尽量贴合文章内容。`;
+		const reply = await openrouterChat(env.AI_ADMIN_KEY, model, prompt);
+
+		// 5. 以「halei0v0博客小助手」身份提交回复（小助手专用邮箱，非博主邮箱）
+		const submit = {
+			event: "COMMENT_SUBMIT",
+			accessToken: env.TWIKOO_ADMIN_PASS,
+			url: c.url,
+			ua: "halei0v0-blog-ai-reply",
+			nick,
+			mail: email,
+			comment: reply,
+			pid: c.id,
+			rid: c.id,
+		};
+		if (replyUrl) submit.link = replyUrl;
+		const done = await postJson(twikooUrl, submit);
+		if (done && done.code) {
+			results.push({
+				ok: false,
+				id: c.id,
+				error: `${done.code}: ${done.message || ""}`,
+			});
+			continue;
+		}
+
+		repliedIds.push(c.id);
+		results.push({
+			ok: true,
+			id: c.id,
+			nick: c.nick,
+			reply: reply.slice(0, 80),
+		});
+		count++;
+	}
+
+	// 6. 持久化已回复记录（last_run 已在开始时写入）
+	if (kv && results.length) {
+		repliedIds = repliedIds.slice(-500);
+		await kv.put("replied", JSON.stringify(repliedIds));
+	}
+
+	return {
+		ok: true,
+		replied: results,
+		skipped: results.length === 0,
+	};
+}
+
+/** 抓取文章页面，提取标题与正文纯文本摘要（失败或超时返回空对象，不影响回复） */
 async function fetchArticleInfo(siteUrl, articleUrl) {
 	try {
 		const url = new URL(articleUrl, siteUrl).toString();
-		const res = await fetch(url, {
-			headers: { "User-Agent": "halei0v0-blog-ai-reply" },
-		});
+		const controller = new AbortController();
+		const timer = setTimeout(() => controller.abort(), 8000);
+		let res;
+		try {
+			res = await fetch(url, {
+				headers: { "User-Agent": "halei0v0-blog-ai-reply" },
+				signal: controller.signal,
+			});
+		} finally {
+			clearTimeout(timer);
+		}
 		if (!res.ok) return {};
 		const html = await res.text();
 
@@ -246,43 +264,83 @@ async function postJson(url, body) {
 	}
 }
 
-/** 调用 OpenRouter 生成回复 */
+/** 调用 OpenRouter 生成回复（429/5xx 指数退避重试，最多 3 次） */
 async function openrouterChat(apiKey, model, prompt) {
-	const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${apiKey}`,
-		},
-		body: JSON.stringify({
-			model,
-			messages: [
-				{
-					role: "system",
-					content:
-						"你是博客「halei0v0博客小助手」，是站长开发的 AI 助手，正在替站长回复访客评论。用自然口语化的中文回复，长度控制在 500 字以内，友好热情，不要使用任何 emoji 表情，不要用 Markdown 语法。明确定位为博客小助手，不冒充站长本人，但也不用特意声明自己是 AI（除非访客直接询问），语气像真诚可靠的助手。",
+	const maxAttempts = 3;
+	let attempt = 0;
+	let lastErr = null;
+
+	for (; attempt < maxAttempts; attempt++) {
+		let res;
+		try {
+			res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${apiKey}`,
 				},
-				{ role: "user", content: prompt },
-			],
-			max_tokens: 1000,
-		}),
-	});
-	const text = await res.text();
-	let parsed;
-	try {
-		parsed = JSON.parse(text);
-	} catch {
-		throw new Error("OpenRouter 响应解析失败: " + text.slice(0, 200));
+				body: JSON.stringify({
+					model,
+					messages: [
+						{
+							role: "system",
+							content:
+								"你是博客「halei0v0博客小助手」，是站长开发的 AI 助手，正在替站长回复访客评论。用自然口语化的中文回复，长度控制在 500 字以内，友好热情，不要使用任何 emoji 表情，不要用 Markdown 语法。明确定位为博客小助手，不冒充站长本人，但也不用特意声明自己是 AI（除非访客直接询问），语气像真诚可靠的助手。",
+						},
+						{ role: "user", content: prompt },
+					],
+					max_tokens: 1000,
+				}),
+			});
+		} catch (e) {
+			lastErr = e;
+			if (attempt < maxAttempts - 1) {
+				await new Promise((r) =>
+					setTimeout(r, 1500 * (attempt + 1)),
+				);
+				continue;
+			}
+			break;
+		}
+
+		const text = await res.text();
+		let parsed;
+		try {
+			parsed = JSON.parse(text);
+		} catch {
+			parsed = null;
+		}
+
+		// 限流或服务端错误：退避重试
+		if (res.status === 429 || res.status >= 500) {
+			lastErr = new Error(
+				`OpenRouter ${res.status}: ${(parsed && parsed.error && parsed.error.message) || text.slice(0, 200)}`,
+			);
+			if (attempt < maxAttempts - 1) {
+				const retryMs = Number(
+					(res.headers && res.headers.get("Retry-After")) || 0,
+				);
+				await new Promise((r) =>
+					setTimeout(r, retryMs || 2000 * (attempt + 1)),
+				);
+				continue;
+			}
+			throw lastErr;
+		}
+
+		if (!res.ok) {
+			throw new Error(
+				`OpenRouter ${res.status}: ${(parsed && parsed.error && parsed.error.message) || text.slice(0, 200)}`,
+			);
+		}
+
+		const content =
+			parsed.choices && parsed.choices[0] && parsed.choices[0].message
+				? parsed.choices[0].message.content
+				: "";
+		if (!content) throw new Error("OpenRouter 未返回内容");
+		return String(content).trim();
 	}
-	if (!res.ok) {
-		throw new Error(
-			`OpenRouter ${res.status}: ${(parsed.error && parsed.error.message) || text.slice(0, 200)}`,
-		);
-	}
-	const content =
-		parsed.choices && parsed.choices[0] && parsed.choices[0].message
-			? parsed.choices[0].message.content
-			: "";
-	if (!content) throw new Error("OpenRouter 未返回内容");
-	return String(content).trim();
+
+	throw lastErr || new Error("OpenRouter 请求失败");
 }

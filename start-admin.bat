@@ -4,14 +4,10 @@ title 博客管理后台
 cd /d "%~dp0"
 
 rem ==========================================
-rem   AI 评论自动回复配置（可选，不填则 AI 回复功能不可用）
-rem   通过系统环境变量配置，不要写入本文件或任何本地文件：
-rem     setx TWIKOO_ADMIN_PASS "你的Twikoo管理密码"
-rem     setx AI_ADMIN_KEY "你的OpenRouterKey"
-rem   可选：
-rem     setx OPENROUTER_MODEL "deepseek/deepseek-chat-v3-0324:free"
-rem     setx TWIKOO_REPLY_NICK "halei0v0"
-rem     setx TWIKOO_REPLY_EMAIL "你的博主邮箱(可选，填了评论会带站长标识)"
+rem   AI 小助手：密钥只在 EdgeOne Pages 环境变量中
+rem   （TWIKOO_ADMIN_PASS / AI_ADMIN_KEY），本地无需配置
+rem   模型/昵称/邮箱/网址：在后台「AI 小助手」页编辑，
+rem   保存后 push 部署生效
 rem ==========================================
 
 echo ==========================================

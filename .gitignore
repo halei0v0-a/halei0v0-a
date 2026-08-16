@@ -59,5 +59,3 @@ admin/backups/
 # admin build history
 admin/build-history.json
 
-# admin AI reply state
-admin/ai-reply-state.json

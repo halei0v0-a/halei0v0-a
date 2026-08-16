@@ -73,10 +73,15 @@ const config = {
 
 		async function triggerAiReply() {
 			try {
-				if (sessionStorage.getItem("ai-reply-triggered")) {
+				// 前端冷却 5 分钟，与云端 KV 防抖一致，防止页面反复加载刷额度
+				const now = Date.now();
+				const last = Number(
+					localStorage.getItem("ai-reply-last") || 0,
+				);
+				if (now - last < 5 * 60 * 1000) {
 					return;
 				}
-				sessionStorage.setItem("ai-reply-triggered", "1");
+				localStorage.setItem("ai-reply-last", String(now));
 				fetch("/api/ai-reply", {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
@@ -103,7 +108,13 @@ const config = {
 
 				commentEl.innerHTML = "";
 				const dynamicConfig = createTwikooConfig();
+				// 评论提交成功后 Twikoo 会重新加载评论列表 → onCommentLoaded 触发
+				// 此时立即调 AI 回复，无需等下一个访客打开页面
+				// 注：Twikoo 脚本较旧，无 onCommentSubmitted 回调，用 onCommentLoaded 替代
+				dynamicConfig.onCommentLoaded = triggerAiReply;
 				await twikoo.init(dynamicConfig);
+				// 页面加载时触发一次，兜底回复积压评论
+				// （onCommentLoaded 在 init 时也会触发，重复调用会被前端 5 分钟冷却拦截）
 				triggerAiReply();
 			} catch (error) {
 				console.error("[Twikoo] 初始化失败:", error);

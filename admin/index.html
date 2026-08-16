@@ -812,32 +812,34 @@
 	<section id="tab-aireply" class="hidden">
 		<div class="status-bar" id="aireply-status"></div>
 		<div class="card">
-			<h3 style="font-size:15px;margin-bottom:10px;">AI 评论自动回复</h3>
+			<h3 style="font-size:15px;margin-bottom:10px;">AI 小助手配置</h3>
 			<p style="font-size:13px;color:var(--text-3);line-height:1.7;margin-bottom:14px;">
-				拉取博客最新评论，用 OpenRouter 免费模型以 halei0v0博客小助手 身份自动回复访客评论。<br>
-				前置配置（环境变量，请勿写入代码或本地文件）：
-				<code>TWIKOO_ADMIN_PASS</code>（Twikoo 管理密码，必填）、
-				<code>AI_ADMIN_KEY</code>（OpenRouter API Key，必填）、
-				<code>OPENROUTER_MODEL</code>（可选，默认免费模型）。
+				编辑 AI 小助手的回复身份和模型。保存后写入 <code>functions/api/ai-reply-config.js</code>，
+				<strong>需 push 代码部署到 EdgeOne Pages 后生效</strong>。<br>
+				密钥（<code>TWIKOO_ADMIN_PASS</code> / <code>AI_ADMIN_KEY</code>）只在云端环境变量中，本地不保存。
 			</p>
-			<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
-				<button class="primary" onclick="runAiReply()">
-					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8v4"/><path d="M10 10h4"/></svg>
-					回复最新评论（3条）
-				</button>
-				<button class="primary" onclick="runAiReply(10)">
-					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8v4"/><path d="M10 10h4"/></svg>
-					回复更多（10条）
-				</button>
-				<button class="danger" onclick="resetAiReplyState()" style="flex:none;background:var(--danger);color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:13px;">
-					清空已回复记录
-				</button>
+			<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+				<label style="font-size:13px;color:var(--text-3);display:flex;flex-direction:column;gap:4px;">
+					模型（OpenRouter ID）
+					<input type="text" id="aireply-model" style="padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--card-2);color:var(--text-1);">
+				</label>
+				<label style="font-size:13px;color:var(--text-3);display:flex;flex-direction:column;gap:4px;">
+					回复昵称
+					<input type="text" id="aireply-nick" style="padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--card-2);color:var(--text-1);">
+				</label>
+				<label style="font-size:13px;color:var(--text-3);display:flex;flex-direction:column;gap:4px;">
+					小助手邮箱
+					<input type="text" id="aireply-email" style="padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--card-2);color:var(--text-1);">
+				</label>
+				<label style="font-size:13px;color:var(--text-3);display:flex;flex-direction:column;gap:4px;">
+					小助手网址（可留空）
+					<input type="text" id="aireply-url" style="padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--card-2);color:var(--text-1);">
+				</label>
 			</div>
-			<div id="aireply-config" style="font-size:13px;color:var(--text-3);line-height:1.8;background:var(--card-2);border-radius:10px;padding:12px 14px;margin-bottom:14px;"></div>
-		</div>
-		<div class="card" style="margin-top:14px;">
-			<h3 style="font-size:15px;margin-bottom:10px;">最近回复记录</h3>
-			<div id="aireply-log" style="font-size:13px;color:var(--text-3);"></div>
+			<div style="display:flex;gap:10px;">
+				<button class="primary" onclick="saveAiReplyConfig()">保存配置</button>
+			</div>
+			<div id="aireply-config" style="font-size:13px;color:var(--text-3);line-height:1.8;background:var(--card-2);border-radius:10px;padding:12px 14px;margin-top:14px;"></div>
 		</div>
 	</section>
 </main>
@@ -992,7 +994,7 @@ function showTab(name) {
 	if (name === "build") refreshStatus();
 	if (name === "values") loadValues();
 	if (name === "posts") loadPosts();
-	if (name === "aireply") loadAiReplyStatus();
+	if (name === "aireply") loadAiReplyConfig();
 }
 
 // 首页状态栏与卡片徽标
@@ -1089,7 +1091,7 @@ function refreshAll() {
 	refreshStatus();
 	loadHomeStatus();
 	loadPosts();
-	loadAiReplyStatus();
+	loadAiReplyConfig();
 	toast("已刷新");
 }
 
@@ -2360,90 +2362,51 @@ function exportArticle() {
 );
 renderModules();
 
-// ============ AI 自动回复 ============
-async function loadAiReplyStatus() {
+// ============ AI 小助手配置 ============
+async function loadAiReplyConfig() {
 	const st = document.getElementById("aireply-status");
 	const cfg = document.getElementById("aireply-config");
-	const log = document.getElementById("aireply-log");
 	try {
-		const res = await fetch("/api/ai-reply/status");
+		const res = await fetch("/api/ai-reply/config");
 		const data = await res.json();
 		if (!data.ok) throw new Error(data.error || "未知错误");
-		const ok = data.passOk && data.apiKeyOk && data.envIdOk;
-		st.innerHTML = ok
-			? '<span style="color:var(--ok);">配置正常，可以自动回复</span>'
-			: '<span style="color:var(--danger);">配置不完整，请先设置环境变量</span>';
+		document.getElementById("aireply-model").value = data.model || "";
+		document.getElementById("aireply-nick").value = data.nick || "";
+		document.getElementById("aireply-email").value = data.email || "";
+		document.getElementById("aireply-url").value = data.url || "";
+		st.innerHTML = '<span style="color:var(--ok);">配置文件已加载</span>';
 		const badge = document.getElementById("badge-aireply");
-		if (badge) badge.textContent = ok ? "就绪" : "待配置";
+		if (badge) badge.textContent = "已配置";
 		cfg.innerHTML = `
-			<div>Twikoo 服务：<code>${data.envId}</code> ${data.envIdOk ? '<span style="color:var(--ok);">连通</span>' : `<span style="color:var(--danger);">失败: ${data.version}</span>`}${data.version ? `（版本 ${data.version}）` : ""}</div>
-			<div>管理密码：${data.passOk ? '<span style="color:var(--ok);">正确</span>' : `<span style="color:var(--danger);">${data.passMsg}</span>`}</div>
-			<div>OpenRouter Key：${data.apiKeyOk ? '<span style="color:var(--ok);">已配置</span>' : '<span style="color:var(--danger);">未配置 AI_ADMIN_KEY</span>'}</div>
-			<div>回复模型：<code>${data.model}</code></div>
+			<div>当前模型：<code>${data.model}</code></div>
 			<div>回复昵称：<code>${data.nick}</code></div>
-			<div>已回复评论数：<code>${data.repliedCount}</code></div>`;
-		log.innerHTML = data.lastLog && data.lastLog.length
-			? data.lastLog.map((l) => `
-				<div class="item-row">
-					<span class="dot run" style="flex:none;"></span>
-					<span class="name">${l.nick} @ ${l.url}</span>
-					<span class="meta">${fmtTime(l.time)} · 评论:「${l.comment}」→ 回复:「${l.reply}」</span>
-				</div>`).join("")
-			: '<div style="padding:6px 0;">暂无回复记录</div>';
+			<div>邮箱：<code>${data.email}</code></div>
+			<div>网址：<code>${data.url || "（空）"}</code></div>
+			<div style="margin-top:6px;color:var(--text-3);">密钥（TWIKOO_ADMIN_PASS / AI_ADMIN_KEY）仅在云端环境变量中。</div>`;
 	} catch (e) {
 		st.innerHTML = `<span style="color:var(--danger);">加载失败: ${e.message}</span>`;
 	}
 }
 
-async function runAiReply(maxCount) {
-	const btn = document.querySelector('#tab-aireply .primary');
+async function saveAiReplyConfig() {
 	const st = document.getElementById("aireply-status");
-	if (btn) {
-		btn.disabled = true;
-		btn.textContent = "回复中，请稍候...";
-	}
-	st.innerHTML = '<span style="color:var(--text-3);">正在拉取评论并生成回复...</span>';
 	try {
-		const res = await fetch("/api/ai-reply/run", {
+		const res = await fetch("/api/ai-reply/config", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ maxCount: maxCount || 3 }),
+			body: JSON.stringify({
+				model: document.getElementById("aireply-model").value.trim(),
+				nick: document.getElementById("aireply-nick").value.trim(),
+				email: document.getElementById("aireply-email").value.trim(),
+				url: document.getElementById("aireply-url").value.trim(),
+			}),
 		});
 		const data = await res.json();
 		if (!data.ok) throw new Error(data.error || "未知错误");
-		const results = data.replied || [];
-		if (data.skipped) {
-			st.innerHTML = '<span style="color:var(--text-3);">没有需要回复的新评论</span>';
-		} else {
-			const okCount = results.filter((r) => r.ok).length;
-			const failCount = results.length - okCount;
-			st.innerHTML = okCount > 0
-				? `<span style="color:var(--ok);">已回复 ${okCount} 条${failCount ? `，失败 ${failCount} 条` : ""}</span>`
-				: '<span style="color:var(--danger);">全部失败</span>';
-			if (failCount) {
-				results.filter((r) => !r.ok).forEach((r) => console.error("AI 回复失败:", r));
-			}
-		}
-		loadAiReplyStatus();
+		toast("配置已保存到 functions/api/ai-reply-config.js，push 部署后生效");
+		loadAiReplyConfig();
 	} catch (e) {
-		st.innerHTML = `<span style="color:var(--danger);">执行失败: ${e.message}</span>`;
-	}
-	if (btn) {
-		btn.disabled = false;
-		btn.textContent = "回复最新评论（3条）";
-	}
-}
-
-async function resetAiReplyState() {
-	if (!confirm("确定清空已回复记录？之后 AI 可能对历史评论重复回复。")) return;
-	try {
-		const res = await fetch("/api/ai-reply/reset", { method: "POST" });
-		const data = await res.json();
-		if (!data.ok) throw new Error(data.error);
-		toast("已清空");
-		loadAiReplyStatus();
-	} catch (e) {
-		toast("清空失败: " + e.message);
+		st.innerHTML = `<span style="color:var(--danger);">保存失败: ${e.message}</span>`;
 	}
 }
 
