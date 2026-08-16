@@ -31,6 +31,16 @@ export const friendsData: FriendItem[] = [
 		"tags": [
 			"Blog",
 		]
+	},
+	{
+		"title": "铃奈Yuki的博客",
+		"imgurl": "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEZP_ZqgR1mI7KXVhX4pcVLAQ7lExqYUgACdSYAArHjCFSUGyIAAfHAOIk9BA.png",
+		"desc": "是铃奈的小博客!分享小日常~！.",
+		"siteurl": "https://momonyako.ccwu.cc",
+		"tags": [
+			"Blog",
+		],
+		"id": 5,
 	}
 ];
 

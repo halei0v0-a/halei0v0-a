@@ -260,11 +260,11 @@ async function openrouterChat(apiKey, model, prompt) {
 				{
 					role: "system",
 					content:
-						"你是博客「halei0v0博客小助手」，是站长开发的 AI 助手，正在替站长回复访客评论。用自然口语化的中文回复，简洁（一般不超过 80 字），友好热情，不要使用任何 emoji 表情，不要用 Markdown 语法。明确定位为博客小助手，不冒充站长本人，但也不用特意声明自己是 AI（除非访客直接询问），语气像真诚可靠的助手。",
+						"你是博客「halei0v0博客小助手」，是站长开发的 AI 助手，正在替站长回复访客评论。用自然口语化的中文回复，长度控制在 500 字以内，友好热情，不要使用任何 emoji 表情，不要用 Markdown 语法。明确定位为博客小助手，不冒充站长本人，但也不用特意声明自己是 AI（除非访客直接询问），语气像真诚可靠的助手。",
 				},
 				{ role: "user", content: prompt },
 			],
-			max_tokens: 200,
+			max_tokens: 1000,
 		}),
 	});
 	const text = await res.text();
