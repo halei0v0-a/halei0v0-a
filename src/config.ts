@@ -695,7 +695,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 	components: {
 		left: ["profile", "announcement", "categories", "tags", "sponsor"],
 		right: ["dynamic", "site-stats", "umami-stats", "site-info", "calendar", "card-toc"],
-		drawer: ["profile", "announcement", "categories", "tags", "sponsor", "umami-stats"],
+		drawer: ["profile", "announcement", "categories", "tags", "sponsor", "site-stats", "umami-stats"],
 	},
 
 	// 默认动画配置
