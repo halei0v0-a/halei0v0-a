@@ -1,19 +1,11 @@
+import { localMusicList } from "../../../data/music";
 import type { Song } from "./types";
 
 export const STORAGE_KEY_VOLUME = "music-player-volume";
 
 export const DEFAULT_VOLUME = 0.7;
 
-export const LOCAL_PLAYLIST: Song[] = [
-	{
-		id: 1,
-		title: "萤萤微光",
-		artist: "泠鸢yousa",
-		cover: "assets/music/cover/OIP-C.webp",
-		url: "assets/music/url/萤萤微光.mp3",
-		duration: 0,
-	},
-];
+export const LOCAL_PLAYLIST: Song[] = localMusicList;
 
 export const DEFAULT_SONG: Song = {
 	title: "Sample Song",

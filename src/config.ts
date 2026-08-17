@@ -510,7 +510,7 @@ export const shareConfig: ShareConfig = {
 
 export const announcementConfig: AnnouncementConfig = {
 	title: "公告", // 公告标题，填空使用i18n字符串Key.announcement
-	content: "Welcome to my blog!", // 公告内容
+	content: "Welcome to my blog！【主站暂时停更，这个分站暂时作为主站更新，后续可能会逐步转变为主站~】", // 公告内容
 	closable: false, // 允许用户关闭公告
 	link: {
 		enable: true, // 启用链接
@@ -527,7 +527,7 @@ export const sponsorConfig: SponsorConfig = {
 	// 赞助链接，留空则不跳转
 	url: "",
 	// 未配置图片时的求赞助文案
-	fallbackText: "赞助一下，求求啦~【在留言板留言给我哦~】",
+	fallbackText: "赞助一下，求求啦~【赞助渠道暂未开放，在留言板留言给我哦~】",
 	// 已配置图片时的辅助文案
 	subText: "喜欢这个博客的话，可以支持一下作者哦",
 };

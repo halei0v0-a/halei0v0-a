@@ -32,6 +32,7 @@ const COMMENT_CONFIG_FILE = path.join(
 const DATA_DIR = path.join(ROOT, "src", "data");
 const POSTS_DIR = path.join(ROOT, "src", "content", "posts");
 const BACKUP_DIR = path.join(__dirname, "backups");
+const MUSIC_DIR = path.join(ROOT, "public", "assets", "music");
 const DEV_PORT = 4321;
 
 // 子进程状态
@@ -598,6 +599,10 @@ function copyRecursive(src, dst) {
 
 const BACKUP_TS_RE = /\.\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}$/;
 
+// 音乐文件扩展名白名单（拖拽上传分类依据）
+const AUDIO_EXTS = [".mp3", ".m4a", ".flac", ".ogg", ".wav", ".aac", ".opus", ".aiff"];
+const IMAGE_EXTS = [".jpg", ".jpeg", ".png", ".webp", ".gif", ".ico", ".bmp", ".svg"];
+
 // 列出全部备份条目（.bak 文件 + .del.* 目录）
 function listBackups() {
 	if (!fs.existsSync(BACKUP_DIR)) return [];
@@ -708,6 +713,7 @@ const DATA_FILES = [
 		title: "赞助-打赏记录",
 		file: "sponsor-list.ts",
 	},
+	{ exportName: "localMusicList", title: "音乐播放列表", file: "music.ts" },
 ];
 
 /**
@@ -1090,6 +1096,29 @@ const DATA_SCHEMAS = {
 				placeholder: "如 ¥20",
 			},
 			{ key: "date", label: "打赏时间", type: "date", required: true },
+		],
+	},
+	"music.ts": {
+		kind: "array",
+		idField: "id",
+		idAuto: true,
+		fields: [
+			{ key: "title", label: "歌曲名", type: "text", required: true },
+			{ key: "artist", label: "歌手", type: "text" },
+			{ key: "cover", label: "封面路径", type: "text" },
+			{
+				key: "url",
+				label: "音频路径",
+				type: "text",
+				required: true,
+				placeholder: "assets/music/url/xxx.mp3",
+			},
+			{
+				key: "duration",
+				label: "时长(秒)",
+				type: "number",
+				placeholder: "0 表示未知",
+			},
 		],
 	},
 };
@@ -2116,6 +2145,76 @@ async function handleApi(req, res, url) {
 					);
 			} catch (e) {
 				sendJson(res, 400, { ok: false, error: String(e.message || e) });
+			}
+		});
+		return;
+	}
+
+	// ---- 音乐文件上传（本地模式：拖入页面自动复制到 public/assets/music/） ----
+	if (pathname === "/api/music/upload" && method === "POST") {
+		let body = "";
+		req.on("data", (chunk) => (body += chunk));
+		req.on("end", () => {
+			try {
+				const { files } = JSON.parse(body);
+				if (!Array.isArray(files) || files.length === 0) {
+					return sendJson(res, 400, { ok: false, error: "没有文件" });
+				}
+				fs.mkdirSync(path.join(MUSIC_DIR, "url"), { recursive: true });
+				fs.mkdirSync(path.join(MUSIC_DIR, "cover"), { recursive: true });
+				const results = [];
+				for (const f of files) {
+					try {
+						const raw = String(f.name || "").trim();
+						if (!raw || path.basename(raw) !== raw || /[\\/]/.test(raw)) {
+							throw new Error("非法文件名");
+						}
+						const ext = path.extname(raw).toLowerCase();
+						const kind = AUDIO_EXTS.includes(ext)
+							? "url"
+							: IMAGE_EXTS.includes(ext)
+								? "cover"
+								: null;
+						if (!kind) {
+							throw new Error(`不支持的格式 ${ext || "(无扩展名)"}`);
+						}
+						const data = Buffer.from(f.data || "", "base64");
+						if (data.length === 0) throw new Error("文件内容为空");
+						if (data.length > 50 * 1024 * 1024) {
+							throw new Error("文件超过 50MB 限制");
+						}
+						let savedAs = raw;
+						let n = 1;
+						while (
+							fs.existsSync(path.join(MUSIC_DIR, kind, savedAs))
+						) {
+							savedAs = `${path.basename(raw, ext)} (${n++})${ext}`;
+						}
+						fs.writeFileSync(
+							path.join(MUSIC_DIR, kind, savedAs),
+							data,
+						);
+						results.push({
+							ok: true,
+							name: raw,
+							savedAs,
+							kind,
+							relPath: `assets/music/${kind}/${savedAs}`,
+						});
+					} catch (e) {
+						results.push({
+							ok: false,
+							name: String(f.name || ""),
+							error: String(e.message || e),
+						});
+					}
+				}
+				sendJson(res, 200, { ok: true, results });
+			} catch (e) {
+				sendJson(res, 400, {
+					ok: false,
+					error: String(e.message || e),
+				});
 			}
 		});
 		return;
