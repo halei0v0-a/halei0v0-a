@@ -1,6 +1,6 @@
 ---
 title: "免费域名获取指南：DNSHE 注册 ccwu.cc 并托管到 Cloudflare"
-published: 2026-08-17
+published: 2026-08-16
 description: "DNSHE 免费二级域名注册全流程：优先选择 ccwu.cc 后缀（初始 10 年有效期、可免费续期、支持托管 Cloudflare），附 Cloudflare 托管与解析配置步骤。"
 tags: [域名, DNSHE, Cloudflare, 免费资源]
 category: 教程

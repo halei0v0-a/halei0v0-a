@@ -1,6 +1,6 @@
 ---
 title: "免费 VPS / 云服务器资源整理"
-published: 2026-08-17
+published: 2026-08-15
 description: "精选 24+ 全球免费 VPS、云服务器、虚拟主机与 Serverless 平台，对比免费额度、使用限制与适用场景，帮你找到适合的免费云服务方案。"
 tags: [VPS, 云服务器, 免费资源]
 category: 资源
@@ -12,6 +12,12 @@ sourceLink: "https://www.rinuo.com/free/vps"
 # 免费 VPS / 云服务器资源整理
 
 > 免费云服务是低成本学习和测试的最佳起点：虚拟专用服务器（VPS）、云服务器、虚拟主机与 Serverless 平台，各取所需。
+
+:::warning[警告]
+
+部分平台已失效！！！
+
+:::
 
 ## 服务总览
 

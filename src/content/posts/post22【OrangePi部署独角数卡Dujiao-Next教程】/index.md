@@ -37,7 +37,7 @@ Cloudflare Tunnel使用需要绑定信用卡！！！但是是免费套餐！
 
 - **一个绑定在Cloudflare的域名**
 
-  > 免费域名获取指南参考[**DNSHE免费域名获取指南**](https://blog.halei0v0.ccwu.cc/posts/post21DNSHE免费域名获取指南)
+  > 免费域名获取指南参考[**DNSHE免费域名获取指南**](https://blog.halei0v0.ccwu.cc/posts/post21dnshe免费域名获取指南)
 
 ---
 
