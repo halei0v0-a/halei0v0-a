@@ -27,6 +27,7 @@ export const localMusicList: MusicItem[] = [
 		"cover": "assets/music/cover/羽肿 - Windy Hill.jpg",
 		"url": "assets/music/url/羽肿 - Windy Hill.m4a",
 		"id": 2,
+		"duration": 0,
 	},
 	{
 		"title": "烟袋斜街 - 接个吻，开一枪",
@@ -34,5 +35,6 @@ export const localMusicList: MusicItem[] = [
 		"cover": "assets/music/cover/烟袋斜街 - 接个吻，开一枪 .jpg",
 		"url": "assets/music/url/烟袋斜街 - 接个吻，开一枪 .mp3",
 		"id": 3,
+		"duration": 0,
 	}
 ];

@@ -1118,6 +1118,7 @@ const DATA_SCHEMAS = {
 				label: "时长(秒)",
 				type: "number",
 				placeholder: "0 表示未知",
+				defaultValue: 0,
 			},
 		],
 	},
@@ -1640,6 +1641,15 @@ async function handleApi(req, res, url) {
 							continue;
 						}
 						item[f.key] = raw;
+					}
+					// 缺省默认值
+					for (const f of schema.fields) {
+						if (
+							item[f.key] === undefined &&
+							f.defaultValue !== undefined
+						) {
+							item[f.key] = f.defaultValue;
+						}
 					}
 					// 必填校验
 					for (const f of schema.fields) {
