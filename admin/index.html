@@ -205,6 +205,33 @@
 	.data-file-card .btns button { padding: 5px 12px; font-size: 12px; }
 	.data-file-card .btns button.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
 	.data-file-card .btns button.primary:hover { opacity: .9; }
+	.backup-manager { margin-bottom: 14px; padding: 0; overflow: hidden; }
+	.backup-manager .backup-manager-head {
+		display: flex; align-items: center; justify-content: space-between;
+		padding: 12px 16px; cursor: pointer; user-select: none;
+	}
+	.backup-manager .backup-manager-head:hover { background: var(--card-2); }
+	.backup-manager .backup-manager-head .title {
+		display: flex; align-items: center; gap: 8px;
+		font-weight: 600; font-size: 14px;
+	}
+	.backup-manager .backup-manager-head svg { color: var(--primary); }
+	#backup-toggle { font-size: 12px; color: var(--text-2); }
+	#backup-list { border-top: 1px solid var(--border); padding: 4px 16px 14px; }
+	.backup-item {
+		display: flex; align-items: center; gap: 10px;
+		padding: 8px 2px; border-bottom: 1px dashed var(--border);
+	}
+	.backup-item:last-child { border-bottom: none; }
+	.backup-item .b-main { flex: 1; min-width: 0; }
+	.backup-item .b-file { font-weight: 600; font-size: 13px; word-break: break-all; }
+	.backup-item .b-meta { color: var(--text-2); font-size: 12px; margin-top: 2px; display: flex; gap: 10px; flex-wrap: wrap; }
+	.backup-item .b-meta .b-target { font-family: Consolas, monospace; color: var(--text-3); }
+	.backup-item .b-btns { display: flex; gap: 6px; flex: none; }
+	.backup-item .b-btns button { padding: 4px 10px; font-size: 12px; }
+	.backup-item .b-btns .restore-btn { background: var(--primary); border-color: var(--primary); color: #fff; }
+	.backup-item .b-btns .restore-btn:hover { opacity: .9; }
+	.backup-empty { color: var(--text-3); font-size: 12px; padding: 12px 2px 4px; }
 	textarea {
 		width: 100%;
 		min-height: 320px;
@@ -667,6 +694,17 @@
 	<!-- 数据管理 -->
 	<section id="tab-data">
 		<div class="status-bar" id="data-status"></div>
+		<div class="card backup-manager">
+			<div class="backup-manager-head" onclick="toggleBackupManager()">
+				<span class="title">
+					<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg>
+					备份管理
+					<span id="backup-count" class="badge">0</span>
+				</span>
+				<span id="backup-toggle">展开 ▾</span>
+			</div>
+			<div id="backup-list" class="hidden"></div>
+		</div>
 		<div id="data-file-list"></div>
 		<div id="data-editor" class="hidden">
 			<div class="back"><button onclick="backToDataList()">← 返回数据列表</button></div>
@@ -990,7 +1028,11 @@ function showTab(name) {
 	document.getElementById("tab-values").classList.toggle("hidden", name !== "values");
 	document.getElementById("tab-posts").classList.toggle("hidden", name !== "posts");
 	document.getElementById("tab-aireply").classList.toggle("hidden", name !== "aireply");
-	if (name === "data") loadDataFiles();
+	if (name === "data") {
+loadDataFiles();
+	loadBackups();
+		loadBackups();
+	}
 	if (name === "build") refreshStatus();
 	if (name === "values") loadValues();
 	if (name === "posts") loadPosts();
@@ -1189,6 +1231,80 @@ async function toggleSwitch(btn) {
 }
 
 // ============ 数据管理 ============
+let pendingBackupAction = null;
+
+async function loadBackups() {
+	const countEl = document.getElementById("backup-count");
+	const listEl = document.getElementById("backup-list");
+	const toggleEl = document.getElementById("backup-toggle");
+	try {
+		const res = await fetch("/api/backups");
+		const data = await res.json();
+		if (!data.ok) throw new Error(data.error);
+		const backups = data.backups || [];
+		if (countEl) countEl.textContent = backups.length;
+		if (!listEl || listEl.classList.contains("hidden")) return;
+		if (backups.length === 0) {
+			listEl.innerHTML = '<div class="backup-empty">暂无备份</div>';
+			return;
+		}
+		listEl.innerHTML = backups
+			.map((b) => {
+				const restoreDisabled = !b.exists ? "disabled title='当前文件已不存在，无法还原'" : "";
+				const sizeText = b.kind === "file" ? fmtSize(b.size) : "目录";
+				return `
+					<div class="backup-item">
+						<div class="b-main">
+							<div class="b-file">${b.original || b.name}${b.kind === "dir" ? ' <span class="badge">目录</span>' : ""}</div>
+							<div class="b-meta">
+								<span>${b.tsText || "未知时间"}</span>
+								<span>${sizeText}</span>
+								${b.target ? `<span class="b-target">→ ${b.target}</span>` : ""}
+							</div>
+						</div>
+						<div class="b-btns">
+							<button class="restore-btn" ${restoreDisabled} onclick="restoreBackup('${b.name}')">还原</button>
+							<button onclick="confirmDeleteBackup('${b.name}', '${(b.original || b.name).replace(/'/g, "\\'")}')">删除</button>
+						</div>
+					</div>`;
+			})
+			.join("");
+	} catch (e) {
+		if (listEl) listEl.innerHTML = `<div class="backup-empty">加载失败: ${e.message}</div>`;
+	}
+}
+
+function fmtSize(bytes) {
+	if (!bytes && bytes !== 0) return "0 B";
+	if (bytes < 1024) return bytes + " B";
+	if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+	return (bytes / 1024 / 1024).toFixed(1) + " MB";
+}
+
+function toggleBackupManager() {
+	const list = document.getElementById("backup-list");
+	const toggle = document.getElementById("backup-toggle");
+	const hidden = list.classList.toggle("hidden");
+	toggle.textContent = hidden ? "展开 ▾" : "收起 ▴";
+	if (!hidden) loadBackups();
+}
+
+function restoreBackup(name) {
+	pendingBackupAction = { action: "restore", name };
+	document.getElementById("modal-title").textContent = "还原备份";
+	document.getElementById("modal-text").textContent = `确定将该备份还原到原文件吗？当前文件内容会自动备份。`;
+	document.getElementById("modal-confirm").textContent = "还原";
+	document.getElementById("modal-mask").classList.remove("hidden");
+}
+
+function confirmDeleteBackup(name, original) {
+	pendingBackupAction = { action: "delete", name };
+	document.getElementById("modal-title").textContent = "删除备份";
+	document.getElementById("modal-text").textContent = `确定删除备份「${original}」吗？删除后无法恢复。`;
+	document.getElementById("modal-confirm").textContent = "删除";
+	document.getElementById("modal-mask").classList.remove("hidden");
+}
+
 async function loadDataFiles() {
 	const list = document.getElementById("data-file-list");
 	list.innerHTML = '<div class="card">加载中...</div>';
@@ -1471,10 +1587,37 @@ function confirmDelete(file, cat, idx, name) {
 
 function closeModal() {
 	pendingDelete = null;
+	pendingBackupAction = null;
+	document.getElementById("modal-confirm").textContent = "删除";
 	document.getElementById("modal-mask").classList.add("hidden");
 }
 
 async function doDelete() {
+	if (pendingBackupAction) {
+		const { action, name } = pendingBackupAction;
+		const btn = document.getElementById("modal-confirm");
+		btn.disabled = true;
+		try {
+			const res = await fetch("/api/backups/" + action, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ name }),
+			});
+			const data = await res.json();
+			if (!data.ok) throw new Error(data.error);
+			toast(
+				action === "restore" ? "已还原，当前文件已自动备份" : "备份已删除",
+				"ok",
+			);
+		} catch (e) {
+			toast("操作失败: " + e.message, "err");
+		} finally {
+			btn.disabled = false;
+			closeModal();
+			loadBackups();
+		}
+		return;
+	}
 	if (!pendingDelete) return;
 	const btn = document.getElementById("modal-confirm");
 	btn.disabled = true;

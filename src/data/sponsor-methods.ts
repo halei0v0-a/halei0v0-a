@@ -8,6 +8,7 @@ export interface SponsorMethod {
 	id: number;
 	name: string;
 	desc: string;
+	icon: string;
 	type: "image" | "link";
 	image?: string;
 	link?: string;
@@ -18,6 +19,7 @@ export const sponsorMethods: SponsorMethod[] = [
 		id: 1,
 		name: "支付宝",
 		desc: "使用 支付宝 扫码打赏",
+		icon: "fa7-brands:alipay",
 		type: "image",
 		image: "",
 	},
@@ -25,6 +27,7 @@ export const sponsorMethods: SponsorMethod[] = [
 		id: 2,
 		name: "微信",
 		desc: "使用 微信 扫码打赏",
+		icon: "fa7-brands:weixin",
 		type: "image",
 		image: "",
 	},
@@ -32,6 +35,7 @@ export const sponsorMethods: SponsorMethod[] = [
 		id: 3,
 		name: "ko-fi",
 		desc: "Buy a Coffee for halei0v0",
+		icon: "simple-icons:kofi",
 		type: "link",
 		link: "",
 	},
@@ -39,6 +43,7 @@ export const sponsorMethods: SponsorMethod[] = [
 		id: 4,
 		name: "爱发电",
 		desc: "通过 爱发电 进行打赏",
+		icon: "simple-icons:afdian",
 		type: "link",
 		link: "",
 	},

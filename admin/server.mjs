@@ -550,9 +550,143 @@ function writeFileWithBackup(filePath, content) {
 	const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 	const name = path.basename(filePath);
 	if (fs.existsSync(filePath)) {
-		fs.copyFileSync(filePath, path.join(BACKUP_DIR, `${name}.${ts}.bak`));
+		const backupPath = path.join(BACKUP_DIR, `${name}.${ts}.bak`);
+		fs.copyFileSync(filePath, backupPath);
+		// 记录备份对应的原文件路径，便于还原
+		const m = backupManifest();
+		m[`${name}.${ts}.bak`] = path
+			.relative(ROOT, filePath)
+			.replace(/\\/g, "/");
+		saveBackupManifest(m);
 	}
 	fs.writeFileSync(filePath, content, "utf-8");
+}
+
+// ============ 备份管理 ============
+const MANIFEST_FILE = path.join(BACKUP_DIR, "manifest.json");
+
+function backupManifest() {
+	try {
+		const m = JSON.parse(fs.readFileSync(MANIFEST_FILE, "utf-8"));
+		return m && typeof m === "object" ? m : {};
+	} catch {
+		return {};
+	}
+}
+
+function saveBackupManifest(m) {
+	try {
+		fs.writeFileSync(MANIFEST_FILE, JSON.stringify(m, null, "\t"), "utf-8");
+	} catch {
+		/* 忽略 */
+	}
+}
+
+// 递归复制（fs.cpSync 在中文路径下崩溃，手动实现）
+function copyRecursive(src, dst) {
+	for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+		const s = path.join(src, entry.name);
+		const d = path.join(dst, entry.name);
+		if (entry.isDirectory()) {
+			fs.mkdirSync(d, { recursive: true });
+			copyRecursive(s, d);
+		} else {
+			fs.copyFileSync(s, d);
+		}
+	}
+}
+
+const BACKUP_TS_RE = /\.\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}$/;
+
+// 列出全部备份条目（.bak 文件 + .del.* 目录）
+function listBackups() {
+	if (!fs.existsSync(BACKUP_DIR)) return [];
+	const items = fs.readdirSync(BACKUP_DIR, { withFileTypes: true });
+	const result = [];
+	for (const it of items) {
+		if (it.name === "manifest.json") continue;
+		const full = path.join(BACKUP_DIR, it.name);
+		const kind = it.isDirectory() ? "dir" : "file";
+		let original = null;
+		let tsText = null;
+		if (kind === "file" && it.name.endsWith(".bak")) {
+			const stem = it.name.slice(0, -4);
+			const m = stem.match(BACKUP_TS_RE);
+			if (m) {
+				tsText = stem.slice(m.index + 1).replace(/T/, " ").replace(/-/g, ":");
+				original = stem.slice(0, m.index);
+			} else {
+				original = stem;
+			}
+		} else if (kind === "dir" && it.name.includes(".del.")) {
+			const idx = it.name.lastIndexOf(".del.");
+			original = it.name.slice(0, idx);
+			tsText = it.name
+				.slice(idx + 5)
+				.replace(/T/, " ")
+				.replace(/-/g, ":");
+		}
+		let stat;
+		try {
+			stat = fs.statSync(full);
+		} catch {
+			continue;
+		}
+		result.push({
+			name: it.name,
+			kind,
+			original,
+			tsText,
+			size: stat.size,
+			time: stat.mtimeMs,
+		});
+	}
+	result.sort((a, b) => b.time - a.time);
+	return result;
+}
+
+// 解析备份对应的原文件路径：优先 manifest，回退按 basename 猜测
+function resolveBackupTarget(backupName, original) {
+	const m = backupManifest();
+	if (m[backupName]) {
+		const rel = m[backupName];
+		if (rel && !rel.includes("..")) {
+			const p = path.join(ROOT, rel);
+			if (fs.existsSync(p)) return p;
+		}
+	}
+	if (!original) return null;
+	const candidates = [];
+	if (original === path.basename(CONFIG_FILE)) candidates.push(CONFIG_FILE);
+	if (original === path.basename(COMMENT_CONFIG_FILE))
+		candidates.push(COMMENT_CONFIG_FILE);
+	candidates.push(path.join(DATA_DIR, original));
+	candidates.push(path.join(POSTS_DIR, original));
+	candidates.push(path.join(ROOT, "src", "content", "spec", original));
+	candidates.push(path.join(ROOT, "functions", "api", original));
+	for (const c of candidates) {
+		try {
+			if (fs.existsSync(c) && fs.statSync(c).isFile()) return c;
+		} catch {
+			/* 忽略 */
+		}
+	}
+	return null;
+}
+
+// 还原目录型备份（文章等），目标存在则先改名保险
+async function restoreDirBackup(backupDir, targetDir) {
+	if (fs.existsSync(targetDir)) {
+		const ts = new Date()
+			.toISOString()
+			.replace(/[:.]/g, "-")
+			.slice(0, 19);
+		const pre = path.join(BACKUP_DIR, `${path.basename(targetDir)}.pre.${ts}`);
+		fs.mkdirSync(BACKUP_DIR, { recursive: true });
+		await fs.promises.rename(targetDir, pre);
+	}
+	fs.mkdirSync(targetDir, { recursive: true });
+	copyRecursive(backupDir, targetDir);
 }
 
 // 可管理的数据文件：{ 导出名, 导出类型(数组/对象), 标题 }
@@ -914,6 +1048,12 @@ const DATA_SCHEMAS = {
 				placeholder: "如 支付宝 / 微信 / ko-fi",
 			},
 			{ key: "desc", label: "描述", type: "textarea", required: true },
+			{
+				key: "icon",
+				label: "图标 (Iconify)",
+				type: "text",
+				placeholder: "如 fa7-brands:alipay / simple-icons:kofi",
+			},
 			{
 				key: "type",
 				label: "类型",
@@ -1863,6 +2003,124 @@ async function handleApi(req, res, url) {
 		});
 	}
 
+	// ---- 备份管理：列表 ----
+	if (pathname === "/api/backups" && method === "GET") {
+		const backups = listBackups().map((b) => {
+			let target = null;
+			let exists = false;
+			if (b.kind === "file") {
+				target = resolveBackupTarget(b.name, b.original);
+				exists = !!target;
+			} else {
+				const rel = backupManifest()[b.name] || "";
+				if (rel && !rel.includes("..")) {
+					target = rel;
+					exists = fs.existsSync(path.join(ROOT, rel));
+				} else if (b.original) {
+					target = `src/content/posts/${b.original}`;
+					exists = fs.existsSync(
+						path.join(POSTS_DIR, b.original),
+					);
+				}
+			}
+			return { ...b, target, exists };
+		});
+		return sendJson(res, 200, { ok: true, backups });
+	}
+
+	// ---- 备份管理：还原 ----
+	if (pathname === "/api/backups/restore" && method === "POST") {
+		let body = "";
+		req.on("data", (chunk) => (body += chunk));
+		req.on("end", () => {
+			try {
+				const { name } = JSON.parse(body);
+				if (!name || path.basename(name) !== name) {
+					return sendJson(res, 400, { ok: false, error: "无效的备份名" });
+				}
+				const backupPath = path.join(BACKUP_DIR, name);
+				if (!fs.existsSync(backupPath)) {
+					return sendJson(res, 404, { ok: false, error: "备份不存在" });
+				}
+				const stat = fs.statSync(backupPath);
+				if (stat.isDirectory()) {
+					// 目录型备份（文章等）：保留备份，直接复制还原
+					const rel = backupManifest()[name];
+					const target =
+						rel && !rel.includes("..")
+							? path.join(ROOT, rel)
+							: path.join(POSTS_DIR, name.slice(0, -5));
+					if (!target || !target.startsWith(ROOT)) {
+						return sendJson(res, 400, { ok: false, error: "无法确定还原位置" });
+					}
+					fs.promises
+						.mkdir(BACKUP_DIR, { recursive: true })
+						.then(() => restoreDirBackup(backupPath, target))
+						.then(() => sendJson(res, 200, { ok: true, target }))
+						.catch((e) =>
+							sendJson(res, 400, {
+								ok: false,
+								error: String(e.message || e),
+							}),
+						);
+					return;
+				}
+				// 文件型备份
+				const entry = listBackups().find((b) => b.name === name);
+				const target = resolveBackupTarget(
+					name,
+					entry && entry.original
+						? entry.original
+						: path.basename(name, ".bak"),
+				);
+				if (!target) {
+					return sendJson(res, 400, { ok: false, error: "无法确定还原位置" });
+				}
+				writeFileWithBackup(
+					target,
+					fs.readFileSync(backupPath, "utf-8"),
+				);
+				sendJson(res, 200, { ok: true, target });
+			} catch (e) {
+				sendJson(res, 400, { ok: false, error: String(e.message || e) });
+			}
+		});
+		return;
+	}
+
+	// ---- 备份管理：删除 ----
+	if (pathname === "/api/backups/delete" && method === "POST") {
+		let body = "";
+		req.on("data", (chunk) => (body += chunk));
+		req.on("end", () => {
+			try {
+				const { name } = JSON.parse(body);
+				if (!name || path.basename(name) !== name) {
+					return sendJson(res, 400, { ok: false, error: "无效的备份名" });
+				}
+				const backupPath = path.join(BACKUP_DIR, name);
+				if (!fs.existsSync(backupPath)) {
+					return sendJson(res, 404, { ok: false, error: "备份不存在" });
+				}
+				const m = backupManifest();
+				delete m[name];
+				saveBackupManifest(m);
+				fs.promises
+					.rm(backupPath, { recursive: true, force: true })
+					.then(() => sendJson(res, 200, { ok: true }))
+					.catch((e) =>
+						sendJson(res, 400, {
+							ok: false,
+							error: String(e.message || e),
+						}),
+					);
+			} catch (e) {
+				sendJson(res, 400, { ok: false, error: String(e.message || e) });
+			}
+		});
+		return;
+	}
+
 	// ---- dev server 管理 ----
 	if (pathname === "/api/dev" && method === "GET") {
 		const alive = devProc && !devProc.killed;
@@ -2072,21 +2330,12 @@ async function handleApi(req, res, url) {
 					.slice(0, 19);
 				const backupDir = path.join(BACKUP_DIR, `${safe}.del.${ts}`);
 				fs.mkdirSync(backupDir, { recursive: true });
-				const copyRecursive = (src, dst) => {
-					for (const entry of fs.readdirSync(src, {
-						withFileTypes: true,
-					})) {
-						const s = path.join(src, entry.name);
-						const d = path.join(dst, entry.name);
-						if (entry.isDirectory()) {
-							fs.mkdirSync(d, { recursive: true });
-							copyRecursive(s, d);
-						} else {
-							fs.copyFileSync(s, d);
-						}
-					}
-				};
 				copyRecursive(dir, backupDir);
+				const m = backupManifest();
+				m[`${safe}.del.${ts}`] = path
+					.relative(ROOT, dir)
+					.replace(/\\/g, "/");
+				saveBackupManifest(m);
 				// fs.rmSync 在中文路径下崩溃（Node 24 Windows bug），改用异步版本
 				fs.promises
 					.rm(dir, { recursive: true, force: true })

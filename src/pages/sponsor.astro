@@ -1,136 +1,268 @@
 ---
-import { PageHeader } from "@components/features/page-header";
-import MainGridLayout from "@layouts/MainGridLayout.astro";
+import Comment from "@components/comment/index.astro";
+import { Icon } from "astro-icon/components";
+
+import { commentConfig } from "../config";
 import { sponsorList } from "../data/sponsor-list";
 import { sponsorMethods } from "../data/sponsor-methods";
+import MainGridLayout from "../layouts/MainGridLayout.astro";
 
 export const prerender = true;
 
-const title = "赞助";
+const commentService: string = commentConfig?.enable
+	? (commentConfig.type ||
+			commentConfig.system ||
+			(commentConfig.twikoo ? "twikoo" : "none"))
+	: "none";
+const isCommentEnabled = commentService !== "none";
+
+const title = "赞助支持";
+const description =
+	"如果我的内容对你有帮助，欢迎通过以下方式打赏我，你的支持是我持续创作的动力！";
 const hasMethods = sponsorMethods.length > 0;
 const hasRecords = sponsorList.length > 0;
 ---
 
-<MainGridLayout title={title} description={title}>
-	<script>
-		import("../scripts/right-sidebar-layout.js");
-	</script>
+<MainGridLayout title={title} description={description}>
+	<style>
+		.sponsor-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+			gap: 0.75rem;
+		}
+	</style>
 
 	<div
 		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
 	>
 		<div class="card-base z-10 px-9 py-6 relative w-full">
-			<PageHeader title={title} />
+			<!-- 标题 -->
+			<div class="mb-8">
+				<div class="flex items-center gap-3 mb-3">
+					<div
+						class="h-8 w-8 rounded-lg bg-(--primary) flex items-center justify-center text-white dark:text-black/70"
+					>
+						<Icon
+							is:inline
+							name="material-symbols:favorite"
+							class="text-[1.5rem]"
+						></Icon>
+					</div>
+					<div
+						class="text-3xl font-bold text-neutral-900 dark:text-neutral-100"
+					>
+						{title}
+					</div>
+				</div>
+				<p
+					class="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4"
+				>
+					{description}
+				</p>
+			</div>
 
-			<!-- 介绍 -->
+			<!-- 用途说明 -->
 			<div
-				class="mt-4 space-y-3 text-black/75 dark:text-white/75 leading-relaxed"
+				class="mb-8 p-4 rounded-lg bg-(--primary)/8 dark:bg-(--btn-regular-bg) border border-(--primary)/30 dark:border-none backdrop-blur-xs shadow-xs"
 			>
-				<p>
-					如果我的内容对你有帮助，欢迎通过以下方式打赏我，你的支持是我持续创作的动力！
-				</p>
-				<p>
-					您的打赏将用于服务器维护、内容创作和功能开发，帮助我持续提供优质内容。
-				</p>
+				<div class="flex items-start gap-2">
+					<Icon
+						is:inline
+						name="material-symbols:info-outline"
+						class="text-(--primary) text-lg shrink-0 mt-0.5"
+					></Icon>
+					<p
+						class="text-sm text-neutral-700 dark:text-neutral-200 leading-relaxed"
+					>
+						您的打赏将用于服务器维护、内容创作和功能开发，帮助我持续提供优质内容。
+					</p>
+				</div>
 			</div>
 
 			<!-- 打赏方式 -->
 			{
 				hasMethods ? (
-					<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 mt-8">
-						{sponsorMethods.map((m) => {
-							const available =
-								(m.type === "image" && m.image) ||
-								(m.type === "link" && m.link);
-							return (
-								<div class="card flex flex-col items-center gap-3 p-6 text-center">
-									<div class="font-bold text-lg">
-										{m.name}
-									</div>
-									<div class="text-sm text-black/60 dark:text-white/60">
-										{m.desc}
-									</div>
-									{m.type === "image" ? (
-										available ? (
-											<img
-												src={m.image}
-												alt={`${m.name} 扫码打赏`}
-												loading="lazy"
-												class="w-44 h-44 object-contain rounded-lg border border-black/10 dark:border-white/10"
-											/>
-										) : (
-											<div class="w-44 h-44 flex items-center justify-center rounded-lg border border-dashed border-black/20 dark:border-white/20 text-sm text-black/40 dark:text-white/40">
-												暂未开放
-											</div>
-										)
-									) : available ? (
-										<a
-											href={m.link}
-											target="_blank"
-											rel="noopener"
-											class="btn-primary"
+					<div class="mb-8">
+						<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+							{sponsorMethods.map((m) => {
+								const isImage = m.type === "image";
+								const available = isImage
+									? m.image
+									: m.link;
+								return (
+									<div
+										class="flex flex-col items-center card-base p-6 rounded-lg bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 hover:border-(--primary) transition-colors"
+									>
+										<div
+											class="flex items-center gap-3 mb-4"
 										>
-											前往打赏
-										</a>
-									) : (
-										<span class="px-5 py-2 rounded-lg border border-dashed border-black/20 dark:border-white/20 text-sm text-black/40 dark:text-white/40">
-											暂未开放
-										</span>
-									)}
-								</div>
-							);
-						})}
+											<Icon
+												is:inline
+												name={m.icon || "material-symbols:favorite"}
+												class="text-2xl text-neutral-900 dark:text-neutral-100 transition-colors"
+											></Icon>
+											<h3
+												class="text-xl font-semibold text-neutral-900 dark:text-neutral-100"
+											>
+												{m.name}
+											</h3>
+										</div>
+										<p
+											class="text-sm text-neutral-600 dark:text-neutral-400 mb-4 text-center"
+										>
+											{m.desc}
+										</p>
+										{
+											isImage ? (
+												available ? (
+													<div
+														class="relative w-full max-w-[200px] aspect-square bg-white rounded-lg p-4 shadow-md mb-4 overflow-hidden"
+													>
+														<img
+															src={m.image}
+															alt={`${m.name} 扫码打赏`}
+															loading="lazy"
+															class="relative w-full h-full object-contain"
+														/>
+													</div>
+												) : (
+													<div
+														class="w-full max-w-[200px] aspect-square mb-4 rounded-lg border border-dashed border-neutral-300 dark:border-neutral-700 flex items-center justify-center text-sm text-neutral-400 dark:text-neutral-500"
+													>
+														暂未开放
+													</div>
+												)
+											) : available ? (
+												<a
+													href={m.link}
+													target="_blank"
+													rel="noopener noreferrer"
+													class="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white dark:text-black/70 rounded-lg font-medium hover:bg-(--primary)/90 active:scale-95 transition-all"
+												>
+													<span>前往打赏</span>
+													<Icon
+														is:inline
+														name="material-symbols:open-in-new"
+														class="text-sm"
+													></Icon>
+												</a>
+											) : (
+												<span
+													class="px-4 py-2 rounded-lg border border-dashed border-neutral-300 dark:border-neutral-700 text-sm text-neutral-400 dark:text-neutral-500"
+												>
+													暂未开放
+												</span>
+											)
+										}
+									</div>
+								);
+							})}
+						</div>
 					</div>
 				) : (
-					<div class="mt-8 p-8 text-center rounded-lg border border-dashed border-black/20 dark:border-white/20 text-black/50 dark:text-white/50">
+					<div
+						class="mb-8 p-8 text-center rounded-lg border border-dashed border-neutral-300 dark:border-neutral-700 text-neutral-400 dark:text-neutral-500"
+					>
 						打赏功能暂未开放
 					</div>
 				)
 			}
-
-			<!-- 打赏列表 -->
-			<div class="mt-10">
-				<div class="flex items-center gap-3 mb-4">
-					<h2 class="text-xl font-bold">打赏列表</h2>
-					<span
-						class="text-xs px-2 py-0.5 rounded-full bg-[var(--btn-regular-bg)] text-black/60 dark:text-white/60"
-					>
-						{sponsorList.length}
-					</span>
-				</div>
-
-				{
-					hasRecords ? (
-						<div class="space-y-3">
-							{sponsorList.map((item) => (
-								<div class="flex items-center gap-4 p-4 rounded-lg bg-[var(--btn-regular-bg)]">
-									<img
-										src={item.avatar}
-										alt={item.name}
-										loading="lazy"
-										class="w-11 h-11 rounded-full object-cover flex-none"
-									/>
-									<div class="min-w-0 flex-1">
-										<div class="font-medium truncate">
-											{item.name}
-										</div>
-										<div class="text-sm text-black/50 dark:text-white/50">
-											{item.date}
-										</div>
-									</div>
-									<div class="font-bold text-lg text-[var(--primary)] flex-none">
-										{item.amount}
-									</div>
-								</div>
-							))}
-						</div>
-					) : (
-						<div class="p-8 text-center rounded-lg border border-dashed border-black/20 dark:border-white/20 text-black/50 dark:text-white/50">
-							还没有打赏记录，期待你的支持
-						</div>
-					)
-				}
-			</div>
 		</div>
+	</div>
+
+	<!-- 打赏列表 -->
+	<div
+		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mt-4"
+	>
+		<div class="card-base z-10 px-9 py-6 relative w-full">
+			<div class="flex items-center justify-between mb-6">
+				<div class="flex items-center gap-3">
+					<div
+						class="h-8 w-8 rounded-lg bg-(--primary)/10 flex items-center justify-center"
+					>
+						<Icon
+							is:inline
+							name="material-symbols:emoji-people-rounded"
+							class="text-[1.25rem] text-(--primary)"
+						></Icon>
+					</div>
+					<h2
+						class="text-xl font-bold text-neutral-900 dark:text-neutral-100"
+					>
+						打赏列表
+					</h2>
+				</div>
+				<span class="text-xs text-neutral-400 dark:text-neutral-500">
+					{sponsorList.length}
+				</span>
+			</div>
+
+			{
+				hasRecords ? (
+					<div class="sponsor-grid">
+						{sponsorList.map((item) => (
+							<div
+								class="group flex items-center gap-3 p-3 rounded-xl border border-(--line-divider) hover:border-(--primary) transition-all duration-200"
+							>
+								<img
+									src={item.avatar}
+									alt={item.name}
+									loading="lazy"
+									class="w-9 h-9 rounded-full object-cover shrink-0"
+									onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+								/>
+								<div
+									class="w-9 h-9 rounded-full bg-(--primary)/10 flex items-center justify-center shrink-0 group-hover:bg-(--primary)/20 transition-colors hidden"
+								>
+									<span
+										class="text-sm font-bold text-(--primary)"
+									>
+										{item.name.slice(0, 1)}
+									</span>
+								</div>
+								<div class="flex-1 min-w-0">
+									<div class="flex items-center gap-2">
+										<span
+											class="font-semibold text-sm text-neutral-900 dark:text-neutral-100 truncate"
+										>
+											{item.name}
+										</span>
+										<span
+											class="shrink-0 text-xs font-bold text-(--primary)"
+										>
+											{item.amount}
+										</span>
+									</div>
+									<span
+										class="text-[0.65rem] text-neutral-400 dark:text-neutral-500"
+									>
+										{item.date}
+									</span>
+								</div>
+							</div>
+						))}
+					</div>
+				) : (
+					<div
+						class="p-8 text-center rounded-lg border border-dashed border-neutral-300 dark:border-neutral-700 text-neutral-400 dark:text-neutral-500"
+					>
+						还没有打赏记录，期待你的支持
+					</div>
+				)
+			}
+		</div>
+	</div>
+
+	<!-- 评论区 -->
+	<div class="mt-4">
+		{isCommentEnabled ? (
+			<Comment customPath="/sponsor/" />
+		) : (
+			<div class="card-base p-8 mb-6 relative overflow-hidden">
+				<div class="text-center py-8 text-(--content-meta)">
+					评论区暂未开放
+				</div>
+			</div>
+		)}
 	</div>
 </MainGridLayout>
