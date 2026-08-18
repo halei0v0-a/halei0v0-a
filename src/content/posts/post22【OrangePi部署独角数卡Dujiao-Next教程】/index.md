@@ -12,6 +12,8 @@ comment: true
 
 > 一台 1GB 内存的 Orange Pi Zero 3，跑起一套完整的数字商品商城（发卡系统），再用 Cloudflare Tunnel 免费打通公网访问。本文记录完整搭建过程、踩坑经历和优化方案。快速搭建运维服务和国内快速安装docker请参照[**Linux新手实用指南**](https://blog.halei0v0.ccwu.cc/posts/post17linux%E6%96%B0%E6%89%8B%E5%AE%9E%E7%94%A8%E6%8C%87%E5%8D%97/)开头的OrangePi Zero3快速搭建脚本
 
+![preview](https://blogpicture.halei0v0.ccwu.cc/images/Classification/%E7%B4%A0%E6%9D%90/2026-08-17%2013-21%20%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE(12).png)
+
 ## 使用设备
 
 | 项目 | 配置 |
@@ -91,7 +93,7 @@ tar -xzf dujiao-next_v1.4.3_Linux_arm64.tar.gz
 cp config.yml.example config.yml
 ```
 
-> **坑位**：国内 GitHub 直连只有 60-120KB/s，19M 的包下了 5 分钟，可用 ghproxy 镜像加速：`https://mirror.ghproxy.com/https://github.com/...`
+> **坑位**：国内 GitHub 直连只有 60-120KB/s，19M 的包下了 5 分钟，可直接通过电脑下载后上传到开发板或服务器，选择对版本即可。注意!orangepi zero3时ARM64架构的，依据个人需要下载。
 
 ### 2.2 配置密钥（重点坑位）
 
@@ -214,6 +216,8 @@ systemctl status cloudflared   # active (running)
 
 ## 第四步：去掉后台广告
 
+![preview](https://blogpicture.halei0v0.ccwu.cc/images/Classification/%E7%B4%A0%E6%9D%90/2026-08-17%2013-21%20%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE(13).png)
+
 Dujiao-Next 后台运营仪表盘内置广告组件（`DashboardAd.vue`，从官方广告平台 `ads-gateway.dujiao-next.com` 拉取赞助商广告，带印象统计）。前端设计为"拉取失败则静默隐藏"，所以屏蔽广告网关即可，不影响任何功能：
 
 ```bash
@@ -237,6 +241,30 @@ systemctl restart dujiao-next
 | zram swap (512M zstd) | systemd 自启 | 压缩内存 |
 
 `free -h`：used 329Mi / available 562Mi，1GB 板子跑商城绰绰有余。
+
+## 更新
+
+Dujiao-Next 自带更新功能：
+
+**方式 1：后台一键更新（推荐）** 后台 → **设置 → 系统更新**（或"关于"页）→ 检查更新 → 有新版本直接点更新。它会自动下载新版本并重启服务。
+
+**方式 2：手动更新**（自动更新失败时）
+
+```bash
+cd /tmp
+wget https://github.com/dujiao-next/dujiao-next/releases/download/<新版本号>/dujiao-next_v<新版本号>_Linux_arm64.tar.gz
+tar -xzf dujiao-next_v*_Linux_arm64.tar.gz
+systemctl stop dujiao-next
+cp /tmp/dujiao-next /opt/dujiao-next/dujiao-next
+systemctl start dujiao-next
+curl -s http://127.0.0.1:8080/health
+```
+
+**注意：**
+
+- 更新只替换程序本体，**数据库（db/）和 config.yml 不会动**，数据安全
+- 检查更新走的是 `api.github.com`——之前屏蔽广告时我们没动它，所以能正常用
+- 大版本更新后建议看看后台有没有新配置项（config.yml 的格式可能变化）
 
 ## 安全建议
 

@@ -41,6 +41,8 @@ DNSHE 提供多个免费后缀，实测差异很大：
 2. **免费续期**：到期前 180 天后台会出现「免费续期」按钮，点击即续期，可一直续下去
 3. **可托管 Cloudflare**：ccwu.cc 已进入 PSL（Public Suffix List），可以像正式域名一样完整托管到 Cloudflare，使用 CDN、SSL、缓存、规则等功能
 
+![preview](https://blogpicture.halei0v0.ccwu.cc/images/Classification/%E7%B4%A0%E6%9D%90/2026-08-17%2013-57%20%E5%9F%9F%E5%90%8D.png)
+
 > 提醒：DNSHE 上免费的 `.com` 后缀目前无法托管到 Cloudflare，按本指南操作会卡在激活阶段，请勿选择。
 
 ## 注册步骤

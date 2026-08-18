@@ -67,6 +67,14 @@ const diaryData: DiaryItem[] = [
 		"content": "哇咔咔，AI回复评论功能上线啦！！！还在测试阶段~~~快去试试！\n免费版 20次/分钟 和 50次/天大家别干废了。\n用的nemotron-3-ultra-550b-a55b可能会会的慢点。",
 		"date": "2026-08-15",
 		"id": 7,
+	},
+	{
+		"content": "三角洲新赛季内容给你总结好了：德穆兰入侵，长弓溪谷2.0扩建，新标杆开大战场冲锋艇，钓鱼系统，自建房好友1v1，新干员旅人，黑潮爆破",
+		"date": "2026-08-18",
+		"images": [
+			"https://www.bilibili.com/video/BV1LXb86nEjd?vd_source=0957d3bb7550711acd815f905c37e537",
+		],
+		"id": 8,
 	}
 ];
 
