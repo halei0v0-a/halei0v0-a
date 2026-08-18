@@ -78,7 +78,7 @@ const diaryData: DiaryItem[] = [
 	},
 	{
 		"content": "高中最后一个暑假即将结束！最后的爆更已然完成，高考前基本不会更新了，如果有可能会在https://blogdraft.halei0v0.ccwu.cc写写草稿，在高考后会发布这些草稿文章~明年见~~~",
-		"date": "2026-08-18",
+		"date": "2026-08-19",
 		"images": [
 			"https://blogpicture.halei0v0.ccwu.cc/images/Classification/%E4%BA%8C%E6%AC%A1%E5%85%83/2026-05-01%2003-49%20%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E5%8F%AF%E7%88%B1%E7%8C%AB%E5%92%AA-%E6%B8%85%E6%96%B0%E5%94%AF%E7%BE%8E.png",
 		],
