@@ -71,9 +71,6 @@ const diaryData: DiaryItem[] = [
 	{
 		"content": "三角洲新赛季内容给你总结好了：德穆兰入侵，长弓溪谷2.0扩建，新标杆开大战场冲锋艇，钓鱼系统，自建房好友1v1，新干员旅人，黑潮爆破",
 		"date": "2026-08-18",
-		"images": [
-			"https://www.bilibili.com/video/BV1LXb86nEjd?vd_source=0957d3bb7550711acd815f905c37e537",
-		],
 		"id": 8,
 	},
 	{
