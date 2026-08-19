@@ -10,5 +10,5 @@ export const aiReplyConfig = {
 	/** 小助手邮箱（非博主邮箱，避免被标记为站长 master） */
 	email: "halei0v0-a@skymail.ink",
 	/** 小助手主页（可留空） */
-	url: "",
+	url: "https://openrouter.ai/collections/free-models",
 };
