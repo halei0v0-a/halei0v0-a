@@ -510,7 +510,7 @@ export const shareConfig: ShareConfig = {
 
 export const announcementConfig: AnnouncementConfig = {
 	title: "公告", // 公告标题，填空使用i18n字符串Key.announcement
-	content: "Welcome to my blog！【主站暂时停更，这个分站暂时作为主站更新，后续可能会逐步转变为主站~~我会在这个动态站写写草稿https://blogdraft.halei0v0.ccwu.cc】", // 公告内容
+	content: "Welcome to my blog！【主站暂时停更，这个分站暂时作为主站更新，后续可能会逐步转变为主站~~】", // 公告内容
 	closable: false, // 允许用户关闭公告
 	link: {
 		enable: true, // 启用链接
