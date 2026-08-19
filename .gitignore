@@ -53,9 +53,11 @@ src/data/bilibili-data.json
 # Lighthouse CI
 .lighthouseci/
 
-# admin local backups
-admin/backups/
+# admin（自定义后台，绝不入库：含密码文件与后台代码）
+admin/
 
-# admin build history
-admin/build-history.json
+# admin push history
+admin/push-history.json
 
+# admin login password (keep it out of git!)
+admin/.admin-password
