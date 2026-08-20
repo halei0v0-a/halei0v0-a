@@ -75,6 +75,7 @@ Openrouter免费版API限制调用 20次/分钟 和 50次/天。
 免费模型列表[https://openrouter.ai/collections/free-models](https://openrouter.ai/collections/free-models)
 
 代码能力：cohere/north-mini-code:free
+
 文本能力：nvidia/nemotron-3.5-content-safety:free
 
 :::tip[补充]
