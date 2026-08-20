@@ -1,9 +1,9 @@
 ---
-title: 免费大模型API
-published: 2026-08-11
-description: 国内外低门槛免费模型API分享整理与体验。
-tags: [AI,API]
-category: AI
+title: 免费大模型API  
+published: 2026-08-11  
+description: 国内外低门槛免费模型API分享整理与体验。  
+tags: [AI,API]  
+category: AI  
 draft: false
 ---
 
@@ -33,6 +33,12 @@ DeepSeek V4 flash和mimo V2.5的上下文只有200K，不是满血的1M，HY3的
 
 :::
 
+:::warning[重要通知]
+
+opencode zen已于2026.08.21移除DeepSeek V4 flash free该模型该模型目前需付费使用！
+
+:::
+
 ![preview](https://blogpicture.halei0v0.ccwu.cc/images/Classification/%E7%B4%A0%E6%9D%90/2026-08-12%2009-39%20%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE(5).png)
 
 可自定义API模型调取
@@ -49,7 +55,7 @@ DeepSeek V4 flash和mimo V2.5的上下文只有200K，不是满血的1M，HY3的
 
 :::tip[补充]
 
-文本模型推荐：deepseek/deepseek-v4-flash
+文本模型推荐：deepseek/deepseek-v4-flash  
 图片识别推荐：xiaomi/mimo-v2.5
 
 :::
@@ -204,33 +210,33 @@ outlook邮箱及outlook邮箱注册的GitHub账号无法注册，但我的自建
 
 > 个人比较中意Opencode和魔搭社区（ModelScope）
 
-**国内免费大模型 API 平台**
-阿里云百炼（通义千问系列）
-火山引擎（豆包大模型）
-腾讯云（混元大模型）
-百度千帆大模型平台（文心一言系列）
-智谱 AI 开放平台（GLM 系列）
-科大讯飞星火开放平台
-小米 MiMo API 开放平台
-硅基流动（SiliconFlow，聚合平台）
-魔搭社区（ModelScope，阿里开源社区）
-零一万物（Yi 系列）
-百川智能（Baichuan 系列）
-阶跃星辰（Step 系列）
-月之暗面（Kimi 开放平台）
-商汤科技（SenseNova 日日新）
+**国内免费大模型 API 平台**  
+阿里云百炼（通义千问系列）  
+火山引擎（豆包大模型）  
+腾讯云（混元大模型）  
+百度千帆大模型平台（文心一言系列）  
+智谱 AI 开放平台（GLM 系列）  
+科大讯飞星火开放平台  
+小米 MiMo API 开放平台  
+硅基流动（SiliconFlow，聚合平台）  
+魔搭社区（ModelScope，阿里开源社区）  
+零一万物（Yi 系列）  
+百川智能（Baichuan 系列）  
+阶跃星辰（Step 系列）  
+月之暗面（Kimi 开放平台）  
+商汤科技（SenseNova 日日新）  
 昆仑万维（天工 Skykwork）
 
-**国外免费大模型 API 平台**
-Google AI Studio（Gemini 系列，提供 Free Tier）
-Groq（提供极速的 Llama、Mixtral 等开源模型免费推理）
-OpenRouter（API 聚合路由，包含大量免费的开源模型）
-Hugging Face（Inference API，提供基础免费调用层）
-Mistral AI（La Plateforme，提供部分模型免费层/试用额度）
-Cohere（提供 Trial API Key 用于开发测试）
-Cloudflare Workers AI（提供 Serverless 的免费 AI 推理额度）
-Together AI（注册赠送免费 Credits，支持众多开源模型）
-NVIDIA NIM（提供模型推理微服务的免费试用额度）
-AI21 Labs（提供 Jamba 等模型的 Studio 免费试用）
-Deepinfra（注册赠送免费额度，主打开源模型部署）
+**国外免费大模型 API 平台**  
+Google AI Studio（Gemini 系列，提供 Free Tier）  
+Groq（提供极速的 Llama、Mixtral 等开源模型免费推理）  
+OpenRouter（API 聚合路由，包含大量免费的开源模型）  
+Hugging Face（Inference API，提供基础免费调用层）  
+Mistral AI（La Plateforme，提供部分模型免费层/试用额度）  
+Cohere（提供 Trial API Key 用于开发测试）  
+Cloudflare Workers AI（提供 Serverless 的免费 AI 推理额度）  
+Together AI（注册赠送免费 Credits，支持众多开源模型）  
+NVIDIA NIM（提供模型推理微服务的免费试用额度）  
+AI21 Labs（提供 Jamba 等模型的 Studio 免费试用）  
+Deepinfra（注册赠送免费额度，主打开源模型部署）  
 Ollama / LM Studio（支持本地部署并自动生成兼容 OpenAI 格式的本地免费 API）
