@@ -80,6 +80,11 @@ const diaryData: DiaryItem[] = [
 			"https://blogpicture.halei0v0.ccwu.cc/images/Classification/%E9%A3%8E%E6%99%AF/2026-04-06%2006-16%2072.webp",
 		],
 		"id": 9,
+	},
+	{
+		"content": "早上刚起来，天塌了！【Remote sent 401 response: {\"type\":\"error\",\"error\":{\"type\":\"ModelError\",\"message\":\"DeepSeek V4 Flash Free 的限免活动已结束。您可以订阅 OpenCode Go 继续使用该模型 - https://opencode.ai/go\"}}】这你让我怎么玩？？以下实现目前还免费的模型Big Pickle\tFree\nOx Alpha Free\nMiMo-V2.5 Free\nHy3 Free\nNemotron 3 Ultra Free\nNemotron 3.5 Lightning Free\nMuse Spark 1.2 Contributor Free",
+		"date": "2026-08-21",
+		"id": 10,
 	}
 ];
 
