@@ -136,7 +136,7 @@ export const siteConfig: SiteConfig = {
 				// "/assets/desktop-banner/cat (9).png",
 			], // 桌面横幅图片
 			mobile: [
-				"https://blogpicture.halei0v0.ccwu.cc/api/random/博客?type=mobile ",
+				"https://blogpicture.halei0v0.ccwu.cc/api/random/博客?type=mobile",
 				// "/assets/mobile-banner/cat (1).png",
 				// "/assets/mobile-banner/cat (2).png",
 				// "/assets/mobile-banner/cat (3).jpg",

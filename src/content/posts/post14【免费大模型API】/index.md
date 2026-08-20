@@ -85,6 +85,33 @@ Opencode的north-mini-code:free无法正常调用
 
 :::
 
+### 三、Agnes AI
+[Agnes AI](https://platform.agnes-ai.com/)【新加坡AI公司】
+接口：https://apihub.agnes-ai.com/v1
+免费模型：
+1.文本模型【限制：免费版20次每分钟】
+Agnes 2.0 Flash
+Agnes 2.5 Flash
+2.视频模型【限制：免费版1次每分钟】
+agnes-video-v20
+3.图片模型
+agnes-image-21-flash【限制：免费版1次每分钟】
+
+:::tip
+可作为备用选择
+:::
+
+:::note
+outlook邮箱及outlook邮箱注册的GitHub账号无法注册，但我的自建邮箱却可以，可以注意一下。
+:::
+
+
+### 四、NVIDIA NIM
+优点：可以用大模型（glm5.2等）
+缺点：不好用，太慢了
+40次每分钟，1000次每天
+【不详细介绍了】
+
 ## 国内免费模型API
 
 ### 一、魔搭社区（ModelScope）
