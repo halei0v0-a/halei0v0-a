@@ -37,5 +37,10 @@ export function formatRelativeTime(
 		ja: "ja-JP", ko: "ko-KR",
 	};
 	const locale = localeMap[siteConfig.lang || "zh_CN"] || "zh-CN";
+	const entryYear = date.getFullYear();
+	const currentYear = localNow ? new Date(localNow).getFullYear() : now.getFullYear();
+	if (entryYear !== currentYear) {
+		return date.toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric" });
+	}
 	return date.toLocaleDateString(locale, { month: "long", day: "numeric" });
 }
