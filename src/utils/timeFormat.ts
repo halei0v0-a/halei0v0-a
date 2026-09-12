@@ -31,6 +31,11 @@ export function formatRelativeTime(
 		const hours = Math.floor(diffInMinutes / 60);
 		return `${hours}${hoursAgo}`;
 	}
-	const days = Math.floor(diffInMinutes / 1440);
-	return `${days}${daysAgo}`;
+	// 超过24小时显示绝对日期
+	const localeMap: Record<string, string> = {
+		zh_CN: "zh-CN", zh_TW: "zh-TW", en: "en-US",
+		ja: "ja-JP", ko: "ko-KR",
+	};
+	const locale = localeMap[siteConfig.lang || "zh_CN"] || "zh-CN";
+	return date.toLocaleDateString(locale, { month: "long", day: "numeric" });
 }
