@@ -85,6 +85,11 @@ const diaryData: DiaryItem[] = [
 		"content": "早上刚起来，天塌了！【Remote sent 401 response: {\"type\":\"error\",\"error\":{\"type\":\"ModelError\",\"message\":\"DeepSeek V4 Flash Free 的限免活动已结束。您可以订阅 OpenCode Go 继续使用该模型 - https://opencode.ai/go\"}}】这你让我怎么玩？？以下是现目前还免费的模型Big Pickle\tFree\nOx Alpha Free\nMiMo-V2.5 Free\nHy3 Free\nNemotron 3 Ultra Free\nNemotron 3.5 Lightning Free\nMuse Spark 1.2 Contributor Free",
 		"date": "2026-08-21",
 		"id": 10,
+	},
+	{
+		"content": "你别说，我还真就是那个玩team端三角洲的人，虽然账号数据和wegame不通，打我毕竟不玩手机版不是吗【不卖号就不存在充钱低人一等的说法】，开心就好，要让我再转wegame也不现实了。玩steam端也挺好的，希望三家篓子能出个数据互通的功能，用惯了steam别的啥都不习惯。",
+		"date": "2026-09-12",
+		"id": 11,
 	}
 ];
 
