@@ -15,7 +15,11 @@ comment: true
 
 
 # 【开源项目推荐】DLSS5-Swapper
-DLSS5-Swapper::github{repo="rakanki911/DLSS5-Swapper"}
+
+
+::github{repo="rakanki911/DLSS5-Swapper"}
+
+
 ### 前言
 很多玩家面临过一个共同的问题：手里的老游戏不支持 DLSS，或者使用的非旗舰显卡无法享受最新的帧生成和超分技术。DLSS5-Swapper 就是为了解决这些限制而诞生的。它并非单一软件，而是一个整合了 ReShade、Feeder 和 OptiScaler 的综合性工具包。其核心逻辑是通过 DLL 替换、API 桥接和注入，将高级超分与画质增强方案强行应用到原本不支持的游戏中。
 
