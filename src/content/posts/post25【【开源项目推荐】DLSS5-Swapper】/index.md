@@ -1,16 +1,14 @@
 ---
-title: "【开源项目推荐6】DLSS5-Swapper""  
+title: "【开源项目推荐6】DLSS5-Swapper"  
 published: 2026-09-13  
 updated: 2026-09-13  
-description: "大力水手民间版，让20/30/40系显卡用上DLSS5""  
+description: "大力水手民间版，让20/30/40系显卡用上DLSS5"  
 tags: [DLSS5]  
 category: 开源项目推荐  
 draft: false  
 pinned: false  
 comment: true
 ---
-
-
 
 
 
