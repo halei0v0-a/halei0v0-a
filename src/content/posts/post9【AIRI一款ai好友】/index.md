@@ -1,7 +1,7 @@
 ---
-title: "【开源项目推荐1】AIRI：开源 AI 数字桌宠 / 赛博生命""  
+title: "【开源项目推荐1】AIRI：开源 AI 数字桌宠 / 赛博生命"  
 published: 2026-03-08  
-description: "一个模型驱动的开源数字生命容器：能聊天、能听见、能开口说话，支持 Live2D / VRM 桌宠、游戏智能体与 MCP 工具。""  
+description: "一个模型驱动的开源数字生命容器：能聊天、能听见、能开口说话，支持 Live2D / VRM 桌宠、游戏智能体与 MCP 工具。"  
 image: https://github.com/moeru-ai/airi/raw/main/docs/content/public/banner-light-1280x640.avif  
 tags: [AI]  
 category: 开源项目推荐  
