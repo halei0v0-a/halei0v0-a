@@ -1,12 +1,16 @@
 ---
-title: 个人免费随机图床搭建
-published: 2026-04-25
-description: Vercel-Random-Picture-halei0v0我改编优化的一款随机图床，可部署到Eageone和Vercel pages。
-tags: [项目,发布]
-image: "https://picture.halei0v0.top/api/random/人文"
-category: 项目
-draft: false
+title: "【开源项目推荐4】个人免费随机图床搭建"  
+published: 2026-04-25  
+description: "Vercel-Random-Picture-halei0v0我改编优化的一款随机图床，可部署到Eageone和Vercel pages。"  
+image: https://picture.halei0v0.top/api/random/人文  
+tags: [项目, 发布]  
+category: 开源项目推荐  
+draft: false  
+pinned: false  
+comment: true
 ---
+
+
 
 
 

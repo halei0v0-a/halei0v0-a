@@ -1,12 +1,16 @@
 ---
-title: FireRed-OpenStoryline - 完全自动的 AI 视频剪辑工具
-published: 2026-03-08
-description: FireRed-OpenStoryline 将复杂的视频创作转化为自然直观的对话体验。兼顾易用性和企业级可靠性，让视频创作对初学者和创意爱好者都变得简单友好。
-tags: [工具]
-image: "https://fireredteam.github.io/demos/firered_openstoryline/pics/FireRed_OpenStoryline.png"
-category: 工具
-draft: false
+title: "【开源项目推荐2】FireRed-OpenStoryline - 完全自动的 AI 视频剪辑工具"  
+published: 2026-03-08  
+description: "FireRed-OpenStoryline 将复杂的视频创作转化为自然直观的对话体验。兼顾易用性和企业级可靠性，让视频创作对初学者和创意爱好者都变得简单友好。"  
+image: https://fireredteam.github.io/demos/firered_openstoryline/pics/FireRed_OpenStoryline.png  
+tags: [工具]  
+category: 开源项目推荐  
+draft: false  
+pinned: false  
+comment: true
 ---
+
+
 
 
 

@@ -1,14 +1,16 @@
 ---
-title: "MaaEnd-一款终末地辅助工具"
-published: 2026-05-04
-description: "终末地辅助工具推荐"
-image: "https://maaend.com/MaaEnd-Tiny-512.png"
-tags: [工具]
-category: 工具
-draft: false
-pinned: false
+title: "【开源项目推荐5】MaaEnd-一款终末地辅助工具"  
+published: 2026-05-04  
+description: "终末地辅助工具推荐"  
+image: https://maaend.com/MaaEnd-Tiny-512.png  
+tags: [工具]  
+category: 开源项目推荐  
+draft: false  
+pinned: false  
 comment: true
 ---
+
+
 # MaaEnd-终末地小助手
 
 ::::tip

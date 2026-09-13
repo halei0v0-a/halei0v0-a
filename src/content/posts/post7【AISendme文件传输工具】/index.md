@@ -1,12 +1,16 @@
 ---
-title: AltSendme - 开源免费的文件传输工具
-published: 2026-03-08
-description: 从您的计算机直接、加密的文件传输到任何人、任何地方 — 无需注册，中间没有云存储。
-tags: [工具]
-image: "https://picture.tianhw.top/images/114.webp"
-category: 工具
-draft: false
+title: "【开源项目推荐3】AltSendme - 开源免费的文件传输工具"  
+published: 2026-03-08  
+description: "从您的计算机直接、加密的文件传输到任何人、任何地方 — 无需注册，中间没有云存储。"  
+image: https://picture.tianhw.top/images/114.webp  
+tags: [工具]  
+category: 开源项目推荐  
+draft: false  
+pinned: false  
+comment: true
 ---
+
+
 
 
 
