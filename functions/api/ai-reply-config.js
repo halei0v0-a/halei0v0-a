@@ -4,7 +4,7 @@
  */
 export const aiReplyConfig = {
 	/** OpenRouter 模型 ID */
-	model: "nvidia/nemotron-3-super-120b-a12b:free",
+	model: "openrouter/free",
 	/** 回复昵称 */
 	nick: "halei0v0博客小助手",
 	/** 小助手邮箱（非博主邮箱，避免被标记为站长 master） */
